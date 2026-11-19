@@ -54,10 +54,11 @@ class InviteScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           // Codes are Latin letters and digits; keep them
-                          // LTR in Urdu.
+                          // LTR in Urdu. Plain text: "Copy code" copies it,
+                          // and a selection here wouldn't clear on tap.
                           Directionality(
                             textDirection: TextDirection.ltr,
-                            child: SelectableText(
+                            child: Text(
                               group.joinCode,
                               textAlign: TextAlign.center,
                               style: theme.textTheme.headlineMedium,
