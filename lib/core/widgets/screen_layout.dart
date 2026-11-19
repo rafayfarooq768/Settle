@@ -25,39 +25,32 @@ class ScreenLayout extends StatelessWidget {
     const margin = EdgeInsets.symmetric(
       horizontal: AppSpacing.screenHorizontal,
     );
+    // SliverFillRemaining instead of IntrinsicHeight: some children (the QR
+    // code) can't report an intrinsic height, which left the screen blank.
     return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: IntrinsicHeight(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: padded ? margin : EdgeInsets.zero,
+      child: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: padded ? margin : EdgeInsets.zero,
+            sliver: SliverList.list(children: body),
+          ),
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: actions.isEmpty
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: margin.copyWith(
+                      top: AppSpacing.xl,
+                      bottom: AppSpacing.lg,
+                    ),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: body,
+                      children: actions,
                     ),
                   ),
-                  const Spacer(),
-                  if (actions.isNotEmpty)
-                    Padding(
-                      padding: margin.copyWith(
-                        top: AppSpacing.xl,
-                        bottom: AppSpacing.lg,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: actions,
-                      ),
-                    ),
-                ],
-              ),
-            ),
           ),
-        ),
+        ],
       ),
     );
   }
