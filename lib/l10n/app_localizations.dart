@@ -148,6 +148,30 @@ abstract class AppLocalizations {
   /// **'Create account'**
   String get signUpTitle;
 
+  /// No description provided for @signUpNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get signUpNameLabel;
+
+  /// No description provided for @signUpNameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends see this name in groups.'**
+  String get signUpNameHelper;
+
+  /// No description provided for @signInPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get signInPrompt;
+
+  /// Between the Google button and the email form
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orDivider;
+
   /// No description provided for @forgotPasswordButton.
   ///
   /// In en, this message translates to:
@@ -163,7 +187,7 @@ abstract class AppLocalizations {
   /// No description provided for @resetPasswordInstructions.
   ///
   /// In en, this message translates to:
-  /// **'Enter your email and we\'ll send you a reset link.'**
+  /// **'Enter your account email. We\'ll send you a link to choose a new password.'**
   String get resetPasswordInstructions;
 
   /// No description provided for @resetPasswordButton.
@@ -172,11 +196,41 @@ abstract class AppLocalizations {
   /// **'Send reset link'**
   String get resetPasswordButton;
 
+  /// No description provided for @resetPasswordCheckEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email'**
+  String get resetPasswordCheckEmailTitle;
+
   /// Firebase email enumeration protection hides whether the account exists, so don't claim it was sent
   ///
   /// In en, this message translates to:
-  /// **'If an account uses this email, a reset link is on its way. Check your inbox and spam folder.'**
-  String get resetPasswordSent;
+  /// **'If an account uses {email}, a reset link is on its way. Open it, choose a new password, then come back and sign in.'**
+  String resetPasswordCheckEmailBody(String email);
+
+  /// No description provided for @resetPasswordSpamHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Not there after a few minutes? Check your spam folder.'**
+  String get resetPasswordSpamHint;
+
+  /// No description provided for @resetPasswordResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send again'**
+  String get resetPasswordResend;
+
+  /// No description provided for @backToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get backToSignIn;
+
+  /// No description provided for @errorNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name.'**
+  String get errorNameRequired;
 
   /// No description provided for @errorInvalidEmail.
   ///

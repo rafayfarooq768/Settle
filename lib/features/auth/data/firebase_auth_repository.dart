@@ -14,7 +14,7 @@ class FirebaseAuthRepository implements AuthRepository {
   final GoogleSignIn _googleSignIn;
 
   @override
-  Stream<fb.User?> authStateChanges() => _auth.authStateChanges();
+  Stream<fb.User?> userChanges() => _auth.userChanges();
 
   @override
   fb.User? get currentUser => _auth.currentUser;
@@ -63,14 +63,17 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> signUpWithEmail({
+    required String name,
     required String email,
     required String password,
   }) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
+      final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      // userChanges() emits again once the name is saved, so Home updates.
+      await credential.user?.updateDisplayName(name);
     } on fb.FirebaseAuthException catch (e) {
       throw AuthException(_mapCode(e.code));
     }

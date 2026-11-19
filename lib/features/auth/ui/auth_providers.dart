@@ -8,6 +8,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return FirebaseAuthRepository();
 });
 
-final authStateChangesProvider = StreamProvider<User?>((ref) {
-  return ref.watch(authRepositoryProvider).authStateChanges();
+/// Current user, updated on sign-in, sign-out and profile changes.
+final userChangesProvider = StreamProvider<User?>((ref) {
+  return ref.watch(authRepositoryProvider).userChanges();
 });

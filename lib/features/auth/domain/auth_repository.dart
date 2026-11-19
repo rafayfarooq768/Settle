@@ -18,11 +18,11 @@ class AuthException implements Exception {
   final AuthFailure failure;
 }
 
-/// Auth operations the app needs. Firestore/Firebase types never leak past
-/// this interface into UI code (CLAUDE.md: repositories only, no Firebase
-/// calls in widgets).
+/// Auth operations the app needs. Firebase calls stay behind this interface
+/// (CLAUDE.md: repositories only, no Firebase calls in widgets).
 abstract class AuthRepository {
-  Stream<User?> authStateChanges();
+  /// Emits on sign-in, sign-out and profile changes (e.g. display name).
+  Stream<User?> userChanges();
 
   User? get currentUser;
 
@@ -34,6 +34,7 @@ abstract class AuthRepository {
   });
 
   Future<void> signUpWithEmail({
+    required String name,
     required String email,
     required String password,
   });

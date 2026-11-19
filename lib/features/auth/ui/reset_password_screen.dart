@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/form_message.dart';
@@ -10,6 +11,8 @@ import 'auth_error_text.dart';
 import 'auth_fields.dart';
 import 'auth_providers.dart';
 
+/// Two states: the email form, then "Check your email" once the link is sent.
+/// The new password itself is chosen on the page the emailed link opens.
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
@@ -22,7 +25,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   bool _isLoading = false;
-  bool _sent = false;
+  String? _sentTo;
   String? _errorMessage;
 
   @override
@@ -31,18 +34,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _send() async {
+    if (_sentTo == null && !_formKey.currentState!.validate()) return;
+    final email = _emailController.text.trim();
     setState(() {
       _isLoading = true;
-      _sent = false;
       _errorMessage = null;
     });
     try {
-      await ref
-          .read(authRepositoryProvider)
-          .sendPasswordResetEmail(_emailController.text.trim());
-      if (mounted) setState(() => _sent = true);
+      await ref.read(authRepositoryProvider).sendPasswordResetEmail(email);
+      if (mounted) setState(() => _sentTo = email);
     } on AuthException catch (e) {
       if (!mounted) return;
       setState(() => _errorMessage = authFailureMessage(context, e.failure));
@@ -61,37 +62,77 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.screenHorizontal,
           ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: AppSpacing.xl),
-                Text(
-                  l10n.resetPasswordInstructions,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                EmailField(controller: _emailController),
-                if (_sent) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  FormMessage(l10n.resetPasswordSent, isError: false),
-                ],
-                if (_errorMessage != null) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  FormMessage(_errorMessage!),
-                ],
-                const SizedBox(height: AppSpacing.xl),
-                LoadingButton(
-                  label: l10n.resetPasswordButton,
-                  isLoading: _isLoading,
-                  onPressed: _submit,
-                ),
-              ],
-            ),
-          ),
+          child: _sentTo == null ? _buildForm(l10n) : _buildSent(l10n),
         ),
       ),
+    );
+  }
+
+  Widget _buildForm(AppLocalizations l10n) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            l10n.resetPasswordInstructions,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          EmailField(controller: _emailController),
+          if (_errorMessage != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            FormMessage(_errorMessage!),
+          ],
+          const SizedBox(height: AppSpacing.xl),
+          LoadingButton(
+            label: l10n.resetPasswordButton,
+            isLoading: _isLoading,
+            onPressed: _send,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSent(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          l10n.resetPasswordCheckEmailTitle,
+          style: theme.textTheme.titleLarge,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          l10n.resetPasswordCheckEmailBody(_sentTo!),
+          style: theme.textTheme.bodyLarge,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          l10n.resetPasswordSpamHint,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        if (_errorMessage != null) ...[
+          const SizedBox(height: AppSpacing.sm),
+          FormMessage(_errorMessage!),
+        ],
+        const SizedBox(height: AppSpacing.xl),
+        FilledButton(
+          onPressed: () => context.pop(),
+          child: Text(l10n.backToSignIn),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        TextButton(
+          onPressed: _isLoading ? null : _send,
+          child: Text(l10n.resetPasswordResend),
+        ),
+      ],
     );
   }
 }

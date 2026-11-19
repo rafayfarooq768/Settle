@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/form_message.dart';
 import '../../../core/widgets/loading_button.dart';
+import '../../../core/widgets/settle_logo.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/auth_repository.dart';
 import 'auth_error_text.dart';
 import 'auth_fields.dart';
 import 'auth_providers.dart';
+import 'google_sign_in_button.dart';
 
 enum _Action { email, google }
 
@@ -74,8 +77,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
     final busy = _running != null;
+    final logoVariant = theme.brightness == Brightness.dark
+        ? SettleLogoVariant.night
+        : SettleLogoVariant.light;
 
     return Scaffold(
       body: SafeArea(
@@ -88,16 +94,23 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: AppSpacing.xxl),
-                Text(l10n.signInTitle, style: textTheme.titleLarge),
                 const SizedBox(height: AppSpacing.xl),
-                LoadingButton(
-                  label: l10n.signInWithGoogle,
-                  style: LoadingButtonStyle.outlined,
+                Center(
+                  child: SettleLogo(
+                    size: AppSizes.signInLogo,
+                    variant: logoVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                Text(l10n.signInTitle, style: theme.textTheme.titleLarge),
+                const SizedBox(height: AppSpacing.lg),
+                GoogleSignInButton(
                   isLoading: _running == _Action.google,
                   onPressed: busy ? null : _signInWithGoogle,
                 ),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.lg),
+                const OrLabel(),
+                const SizedBox(height: AppSpacing.lg),
                 EmailField(controller: _emailController),
                 const SizedBox(height: AppSpacing.lg),
                 PasswordField(
@@ -128,7 +141,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(l10n.signUpPrompt, style: textTheme.bodyMedium),
+                    Text(l10n.signUpPrompt, style: theme.textTheme.bodyMedium),
                     TextButton(
                       onPressed: busy ? null : () => context.push('/sign-up'),
                       child: Text(l10n.signUpButton),

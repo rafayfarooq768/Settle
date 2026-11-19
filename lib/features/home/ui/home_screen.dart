@@ -14,7 +14,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     // Watch the stream so the name updates; read the current user for the value.
-    ref.watch(authStateChangesProvider);
+    ref.watch(userChangesProvider);
     final user = ref.read(authRepositoryProvider).currentUser;
     final displayName = user?.displayName?.trim();
     final name = (displayName != null && displayName.isNotEmpty)

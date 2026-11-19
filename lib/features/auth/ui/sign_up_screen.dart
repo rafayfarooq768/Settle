@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/form_message.dart';
@@ -9,6 +10,9 @@ import '../domain/auth_repository.dart';
 import 'auth_error_text.dart';
 import 'auth_fields.dart';
 import 'auth_providers.dart';
+import 'google_sign_in_button.dart';
+
+enum _Action { email, google }
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -19,43 +23,64 @@ class SignUpScreen extends ConsumerStatefulWidget {
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
+  _Action? _running;
   String? _errorMessage;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _run(_Action action, Future<void> Function() task) async {
     setState(() {
-      _isLoading = true;
+      _running = action;
       _errorMessage = null;
     });
     try {
-      await ref
-          .read(authRepositoryProvider)
-          .signUpWithEmail(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          );
+      await task();
       // On success the router redirects to Home.
     } on AuthException catch (e) {
       if (!mounted) return;
-      setState(() => _errorMessage = authFailureMessage(context, e.failure));
+      final message = authFailureMessage(context, e.failure);
+      setState(() => _errorMessage = message.isEmpty ? null : message);
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _running = null);
     }
+  }
+
+  void _signUpWithEmail() {
+    if (!_formKey.currentState!.validate()) return;
+    _run(
+      _Action.email,
+      () => ref
+          .read(authRepositoryProvider)
+          .signUpWithEmail(
+            name: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          ),
+    );
+  }
+
+  void _continueWithGoogle() {
+    // Google sign-in creates the account on first use, with the Google name.
+    _run(
+      _Action.google,
+      () => ref.read(authRepositoryProvider).signInWithGoogle(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final busy = _running != null;
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.signUpTitle)),
       body: SafeArea(
@@ -68,13 +93,22 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.lg),
+                GoogleSignInButton(
+                  isLoading: _running == _Action.google,
+                  onPressed: busy ? null : _continueWithGoogle,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                const OrLabel(),
+                const SizedBox(height: AppSpacing.lg),
+                NameField(controller: _nameController),
+                const SizedBox(height: AppSpacing.lg),
                 EmailField(controller: _emailController),
                 const SizedBox(height: AppSpacing.lg),
                 PasswordField(
                   controller: _passwordController,
                   isNewPassword: true,
-                  onSubmitted: _isLoading ? null : _submit,
+                  onSubmitted: busy ? null : _signUpWithEmail,
                 ),
                 if (_errorMessage != null) ...[
                   const SizedBox(height: AppSpacing.sm),
@@ -83,9 +117,24 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 const SizedBox(height: AppSpacing.xl),
                 LoadingButton(
                   label: l10n.signUpButton,
-                  isLoading: _isLoading,
-                  onPressed: _submit,
+                  isLoading: _running == _Action.email,
+                  onPressed: busy ? null : _signUpWithEmail,
                 ),
+                const SizedBox(height: AppSpacing.lg),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      l10n.signInPrompt,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    TextButton(
+                      onPressed: busy ? null : () => context.pop(),
+                      child: Text(l10n.signInButton),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.lg),
               ],
             ),
           ),

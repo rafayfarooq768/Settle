@@ -37,6 +37,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signUpTitle => 'Create account';
 
   @override
+  String get signUpNameLabel => 'Your name';
+
+  @override
+  String get signUpNameHelper => 'Friends see this name in groups.';
+
+  @override
+  String get signInPrompt => 'Already have an account?';
+
+  @override
+  String get orDivider => 'or';
+
+  @override
   String get forgotPasswordButton => 'Forgot password?';
 
   @override
@@ -44,14 +56,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resetPasswordInstructions =>
-      'Enter your email and we\'ll send you a reset link.';
+      'Enter your account email. We\'ll send you a link to choose a new password.';
 
   @override
   String get resetPasswordButton => 'Send reset link';
 
   @override
-  String get resetPasswordSent =>
-      'If an account uses this email, a reset link is on its way. Check your inbox and spam folder.';
+  String get resetPasswordCheckEmailTitle => 'Check your email';
+
+  @override
+  String resetPasswordCheckEmailBody(String email) {
+    return 'If an account uses $email, a reset link is on its way. Open it, choose a new password, then come back and sign in.';
+  }
+
+  @override
+  String get resetPasswordSpamHint =>
+      'Not there after a few minutes? Check your spam folder.';
+
+  @override
+  String get resetPasswordResend => 'Send again';
+
+  @override
+  String get backToSignIn => 'Back to sign in';
+
+  @override
+  String get errorNameRequired => 'Enter your name.';
 
   @override
   String get errorInvalidEmail => 'Enter a valid email address.';

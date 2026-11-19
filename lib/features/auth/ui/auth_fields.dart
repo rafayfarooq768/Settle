@@ -2,6 +2,50 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
 
+/// Plain muted "or" between the Google button and the email form. Text only,
+/// no divider lines (DESIGN.md §12: no decorative separators).
+class OrLabel extends StatelessWidget {
+  const OrLabel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Text(
+      AppLocalizations.of(context)!.orDivider,
+      textAlign: TextAlign.center,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+    );
+  }
+}
+
+class NameField extends StatelessWidget {
+  const NameField({super.key, required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.name,
+      textCapitalization: TextCapitalization.words,
+      textInputAction: TextInputAction.next,
+      autofillHints: const [AutofillHints.name],
+      decoration: InputDecoration(
+        labelText: l10n.signUpNameLabel,
+        helperText: l10n.signUpNameHelper,
+      ),
+      validator: (value) {
+        if ((value?.trim() ?? '').isEmpty) return l10n.errorNameRequired;
+        return null;
+      },
+    );
+  }
+}
+
 class EmailField extends StatelessWidget {
   const EmailField({super.key, required this.controller});
 

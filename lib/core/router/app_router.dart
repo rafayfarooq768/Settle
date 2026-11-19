@@ -49,6 +49,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
 class _AuthRefresh extends ChangeNotifier {
   _AuthRefresh(Ref ref) {
-    ref.listen(authStateChangesProvider, (_, _) => notifyListeners());
+    ref.listen(userChangesProvider, (_, _) => notifyListeners());
   }
 }

@@ -18,41 +18,57 @@ class AppTheme {
           brightness: Brightness.light,
         ).copyWith(
           primary: AppColors.primary,
+          onPrimary: AppColors.white,
           secondary: AppColors.secondary,
           tertiary: AppColors.tertiary,
           surface: AppColors.surface,
           onSurface: AppColors.text,
+          onSurfaceVariant: AppColors.textMuted,
           outline: AppColors.outline,
         );
-    return _base(colorScheme, MoneyColors.light);
+    return _base(
+      colorScheme,
+      MoneyColors.light,
+      background: AppColors.background,
+      // DESIGN.md §2: Deep teal for teal text and links on light backgrounds.
+      linkColor: AppColors.deepTeal,
+    );
   }
 
   static ThemeData dark() {
+    // DESIGN.md §2: same seed; Night is the dark base instead of black.
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
+    ).copyWith(surface: AppColors.night);
+    return _base(
+      colorScheme,
+      MoneyColors.dark,
+      background: AppColors.night,
+      linkColor: colorScheme.primary,
     );
-    return _base(colorScheme, MoneyColors.dark);
   }
 
-  static ThemeData _base(ColorScheme colorScheme, MoneyColors moneyColors) {
-    final isLight = colorScheme.brightness == Brightness.light;
+  static ThemeData _base(
+    ColorScheme colorScheme,
+    MoneyColors moneyColors, {
+    required Color background,
+    required Color linkColor,
+  }) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: isLight
-          ? AppColors.background
-          : colorScheme.surface,
+      scaffoldBackgroundColor: background,
       extensions: [moneyColors],
       appBarTheme: AppBarTheme(
-        backgroundColor: isLight ? AppColors.background : colorScheme.surface,
-        foregroundColor: isLight ? AppColors.text : colorScheme.onSurface,
+        backgroundColor: background,
+        foregroundColor: colorScheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
         titleTextStyle: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w600,
-          color: isLight ? AppColors.text : colorScheme.onSurface,
+          color: colorScheme.onSurface,
         ),
       ),
       textTheme: _textTheme(colorScheme),
@@ -67,6 +83,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
+          foregroundColor: colorScheme.onSurface,
+          side: BorderSide(color: colorScheme.outline),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.standard),
           ),
@@ -76,6 +94,7 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
+          foregroundColor: linkColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.standard),
           ),
