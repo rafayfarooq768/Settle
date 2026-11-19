@@ -64,23 +64,23 @@ Build order (§9) decides the sequence, not separate releases.
 11. WhatsApp reminder (prefilled `wa.me` message, no API).
 12. Activity log: every add/edit/delete/settle, with who did it.
 13. Monthly summary per group (totals by month, computed in the app; no charts for decoration).
-14. Export group to CSV (shared through the Android share sheet).
-
-### Committees
-15. Committee (BC/kameti) tracking: members, monthly amount, payout order, who has paid
-    this month, who receives this month. Ledger only, like the rest of the app.
 
 ### App-wide
-16. Offline use (Firestore offline cache).
-17. English UI with light **Roman Urdu** touches (greetings, empty states, success messages,
+14. Offline use (Firestore offline cache).
+15. English UI with light **Roman Urdu** touches (greetings, empty states, success messages,
     WhatsApp reminders). Money lines, buttons and errors stay in English. See DESIGN.md §10.
-18. Full Urdu (Urdu script) as a second language option, RTL layout.
-19. Light and dark mode.
+16. Full Urdu (Urdu script) as a second language option, RTL layout.
+17. Light and dark mode.
 
 ### Not included (needs a paid service)
 - Receipt photos: Firebase Storage needs the paid Blaze plan for new projects (verify before deciding).
 - Push notifications: sending them needs a server or Cloud Functions. Use in-app notices
   (pending confirmations shown on open) and WhatsApp reminders instead.
+
+### Removed from scope (owner's decision, 2026-11-19)
+Don't build these or suggest them back unless the owner asks.
+- Committee (BC/kameti) tracking.
+- Export group to CSV.
 
 ---
 
@@ -137,7 +137,7 @@ Positive = is owed. Negative = owes. Sum of all nets in a group = 0 (assert this
 
 ## 6. Groups, invites, placeholders
 
-- **Group type** is free text with suggestions (Friends, Trip, Home, Office, Family, Committee).
+- **Group type** is free text with suggestions (Friends, Trip, Home, Office, Family).
 - Each group has a short **join code** (e.g. `CHAI-4821`) and a QR code of that code.
 - **Invite** opens WhatsApp share:
   "Join our group on Settle. Code: CHAI-4821. Download: <GitHub release link>"
@@ -227,10 +227,9 @@ See DESIGN.md for how each one should look.
 8. Exact / Percent / Shares splits, then Itemized and multiple payers.
 9. Edit/delete + activity log + duplicate guard.
 10. Payment methods + settle-up pay screen.
-11. Recurring expenses, search/filter, monthly summary, CSV export.
-12. Committees.
-13. Full Urdu locale (RTL) and dark mode.
-14. Polish against DESIGN.md, test on a low-end phone, release APK on GitHub Releases.
+11. Recurring expenses, search/filter, monthly summary.
+12. Full Urdu locale (RTL) and dark mode.
+13. Polish against DESIGN.md, test on a low-end phone, release APK on GitHub Releases.
 
 ---
 
