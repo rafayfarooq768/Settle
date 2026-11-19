@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "492392093523",
+    "project_id": "settle-e2fd7",
+    "storage_bucket": "settle-e2fd7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492392093523:android:6c8ae7bed24f326f49f3a6",
+        "android_client_info": {
+          "package_name": "com.settleapp.settle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "492392093523-21n9ojl3i7dnuj64leod4b0vdu9ibqrd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZOotxGiVf--_QtivFFuxAR-cI-Dy3jew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "492392093523-21n9ojl3i7dnuj64leod4b0vdu9ibqrd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
