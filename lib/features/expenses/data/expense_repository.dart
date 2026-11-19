@@ -52,7 +52,7 @@ class ExpenseRepository {
       summary: draft.title,
       after: expenseSnapshot(draft),
     );
-    await batch.commit();
+    await commitOrQueue(batch);
     return doc.id;
   }
 
@@ -78,7 +78,7 @@ class ExpenseRepository {
       before: expenseSnapshot(ExpenseDraft.of(before)),
       after: expenseSnapshot(draft),
     );
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   /// Delete ([deleted] true) or Undo ([deleted] false).
@@ -104,7 +104,7 @@ class ExpenseRepository {
       summary: expense.title,
       before: deleted ? expenseSnapshot(ExpenseDraft.of(expense)) : null,
     );
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   void _validate(ExpenseDraft draft) {

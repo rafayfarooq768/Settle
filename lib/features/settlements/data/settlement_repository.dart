@@ -61,7 +61,7 @@ class SettlementRepository {
       targetId: doc.id,
       after: {'from': from, 'to': to, 'amount': amount},
     );
-    await batch.commit();
+    await commitOrQueue(batch);
     return doc.id;
   }
 
@@ -82,7 +82,7 @@ class SettlementRepository {
       actorMemberId: actorMemberId,
       targetId: settlement.id,
     );
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   /// Cancel a pending "I paid", reject one, or undo a recorded payment.
@@ -105,7 +105,7 @@ class SettlementRepository {
         'status': settlement.status.name,
       },
     );
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 }
 

@@ -291,6 +291,426 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign out'**
   String get signOutButton;
+
+  /// No description provided for @homeNoGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups yet. Create one or join with a code.'**
+  String get homeNoGroups;
+
+  /// No description provided for @createGroupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create group'**
+  String get createGroupButton;
+
+  /// No description provided for @joinWithCodeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Join with a code'**
+  String get joinWithCodeButton;
+
+  /// No description provided for @moreOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get moreOptions;
+
+  /// No description provided for @createGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New group'**
+  String get createGroupTitle;
+
+  /// No description provided for @groupNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name'**
+  String get groupNameLabel;
+
+  /// No description provided for @groupTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type (optional)'**
+  String get groupTypeLabel;
+
+  /// No description provided for @groupTypeHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'For example Trip or Home.'**
+  String get groupTypeHelper;
+
+  /// No description provided for @groupTypeFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get groupTypeFriends;
+
+  /// No description provided for @groupTypeTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip'**
+  String get groupTypeTrip;
+
+  /// No description provided for @groupTypeHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get groupTypeHome;
+
+  /// No description provided for @groupTypeOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Office'**
+  String get groupTypeOffice;
+
+  /// No description provided for @groupTypeFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get groupTypeFamily;
+
+  /// No description provided for @errorGroupNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a group name.'**
+  String get errorGroupNameRequired;
+
+  /// Success SnackBar; Roman Urdu touch (DESIGN.md §10)
+  ///
+  /// In en, this message translates to:
+  /// **'Done! Group ban gaya'**
+  String get groupCreated;
+
+  /// No description provided for @groupSettingsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Group settings'**
+  String get groupSettingsTooltip;
+
+  /// No description provided for @groupOnlyYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your friends to start splitting.'**
+  String get groupOnlyYou;
+
+  /// Empty expenses state; Roman Urdu touch
+  ///
+  /// In en, this message translates to:
+  /// **'Abhi koi expense nahi.'**
+  String get groupNoExpenses;
+
+  /// No description provided for @inviteFriendsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends'**
+  String get inviteFriendsButton;
+
+  /// No description provided for @addByNameButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add by name'**
+  String get addByNameButton;
+
+  /// No description provided for @groupSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group settings'**
+  String get groupSettingsTitle;
+
+  /// No description provided for @sectionGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get sectionGroup;
+
+  /// No description provided for @sectionMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members ({count})'**
+  String sectionMembers(int count);
+
+  /// No description provided for @sectionInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get sectionInvite;
+
+  /// No description provided for @joinCodeRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Join code {code}'**
+  String joinCodeRow(String code);
+
+  /// No description provided for @memberYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (you)'**
+  String memberYou(String name);
+
+  /// No description provided for @memberNotJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'not joined yet'**
+  String get memberNotJoined;
+
+  /// No description provided for @memberLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'left the group'**
+  String get memberLeft;
+
+  /// No description provided for @editGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get editGroupTitle;
+
+  /// No description provided for @saveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveButton;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
+
+  /// No description provided for @addPlaceholderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add by name'**
+  String get addPlaceholderTitle;
+
+  /// No description provided for @addPlaceholderHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'They can claim this name when they join.'**
+  String get addPlaceholderHelper;
+
+  /// No description provided for @renamePlaceholderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change name'**
+  String get renamePlaceholderTitle;
+
+  /// No description provided for @memberNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get memberNameLabel;
+
+  /// No description provided for @addButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addButton;
+
+  /// No description provided for @placeholderAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} added'**
+  String placeholderAdded(String name);
+
+  /// No description provided for @leaveGroupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave group'**
+  String get leaveGroupButton;
+
+  /// No description provided for @leaveGroupDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave {group}?'**
+  String leaveGroupDialogTitle(String group);
+
+  /// No description provided for @leaveGroupDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You won\'t see this group any more. You can join again with its code.'**
+  String get leaveGroupDialogBody;
+
+  /// No description provided for @leaveGroupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leaveGroupConfirm;
+
+  /// No description provided for @leaveGroupNotSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Settle up first. Your balance here is {amount}.'**
+  String leaveGroupNotSettled(String amount);
+
+  /// No description provided for @inviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends'**
+  String get inviteTitle;
+
+  /// No description provided for @inviteInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends install Settle, tap Join with a code, and enter this code or scan the QR.'**
+  String get inviteInstructions;
+
+  /// No description provided for @inviteQrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code for {code}'**
+  String inviteQrLabel(String code);
+
+  /// No description provided for @shareOnWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Share on WhatsApp'**
+  String get shareOnWhatsApp;
+
+  /// No description provided for @copyCodeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy code'**
+  String get copyCodeButton;
+
+  /// No description provided for @codeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied'**
+  String get codeCopied;
+
+  /// WhatsApp invite text (PLAN.md §6)
+  ///
+  /// In en, this message translates to:
+  /// **'Join our group on Settle. Code: {code}. Download: {link}'**
+  String inviteMessage(String code, String link);
+
+  /// No description provided for @newCodeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Get a new code'**
+  String get newCodeButton;
+
+  /// No description provided for @newCodeDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get a new join code?'**
+  String get newCodeDialogTitle;
+
+  /// No description provided for @newCodeDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The code {code} will stop working. People already in the group stay in it.'**
+  String newCodeDialogBody(String code);
+
+  /// No description provided for @newCodeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Get new code'**
+  String get newCodeConfirm;
+
+  /// No description provided for @errorOpenWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open WhatsApp.'**
+  String get errorOpenWhatsApp;
+
+  /// No description provided for @joinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join a group'**
+  String get joinTitle;
+
+  /// No description provided for @joinCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Join code'**
+  String get joinCodeLabel;
+
+  /// No description provided for @joinCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'CHAI-7KQ2M'**
+  String get joinCodeHint;
+
+  /// No description provided for @scanQrButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR'**
+  String get scanQrButton;
+
+  /// No description provided for @joinButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get joinButton;
+
+  /// No description provided for @errorCodeFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Codes look like CHAI-7KQ2M.'**
+  String get errorCodeFormat;
+
+  /// No description provided for @errorCodeNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No group has this code. It may have been changed.'**
+  String get errorCodeNotFound;
+
+  /// No description provided for @scanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR'**
+  String get scanTitle;
+
+  /// No description provided for @scanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at the group\'s QR code.'**
+  String get scanHint;
+
+  /// No description provided for @errorCameraDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Settle needs the camera to scan. Allow it in Settings, or type the code.'**
+  String get errorCameraDenied;
+
+  /// No description provided for @errorCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera isn\'t available. Type the code instead.'**
+  String get errorCamera;
+
+  /// No description provided for @claimTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which one are you?'**
+  String get claimTitle;
+
+  /// No description provided for @claimBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick your name so expenses added for you come with you.'**
+  String get claimBody;
+
+  /// No description provided for @claimNotListed.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m not listed'**
+  String get claimNotListed;
+
+  /// No description provided for @claimRejoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejoin as {name}'**
+  String claimRejoin(String name);
+
+  /// Success SnackBar after joining; Roman Urdu touch
+  ///
+  /// In en, this message translates to:
+  /// **'Khush aamdeed! You\'re in {group}.'**
+  String joinedGroup(String group);
 }
 
 class _AppLocalizationsDelegate

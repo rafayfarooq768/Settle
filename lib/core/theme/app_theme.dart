@@ -29,6 +29,7 @@ class AppTheme {
     return _base(
       colorScheme,
       MoneyColors.light,
+      ExtraColors.light,
       background: AppColors.background,
       // DESIGN.md §2: Deep teal for teal text and links on light backgrounds.
       linkColor: AppColors.deepTeal,
@@ -44,6 +45,7 @@ class AppTheme {
     return _base(
       colorScheme,
       MoneyColors.dark,
+      ExtraColors.dark,
       background: AppColors.night,
       linkColor: colorScheme.primary,
     );
@@ -51,7 +53,8 @@ class AppTheme {
 
   static ThemeData _base(
     ColorScheme colorScheme,
-    MoneyColors moneyColors, {
+    MoneyColors moneyColors,
+    ExtraColors extraColors, {
     required Color background,
     required Color linkColor,
   }) {
@@ -59,7 +62,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: background,
-      extensions: [moneyColors],
+      extensions: [moneyColors, extraColors],
       appBarTheme: AppBarTheme(
         backgroundColor: background,
         foregroundColor: colorScheme.onSurface,

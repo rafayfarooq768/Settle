@@ -51,3 +51,13 @@ List<String> readStringList(Object? value) => [
 /// Null for unknown values (e.g. a newer app version wrote a new type).
 T? readEnum<T extends Enum>(List<T> values, Object? value) =>
     value is String ? values.asNameMap()[value] : null;
+
+/// How long to wait for the server before treating a write as queued.
+const _queueAfter = Duration(seconds: 4);
+
+/// Commits [batch]. Offline, Firestore applies it to the local cache at once
+/// and syncs later, but the Future only completes when the server answers.
+/// So wait briefly: server errors in that window are thrown; after it the
+/// write is treated as queued and the UI moves on (PLAN.md §3 offline use).
+Future<void> commitOrQueue(WriteBatch batch) =>
+    batch.commit().timeout(_queueAfter, onTimeout: () {});

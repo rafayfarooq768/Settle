@@ -14,4 +14,13 @@ class AppSizes {
 
   /// Logo tile size T on the sign-in screen (BRAND.md §6).
   static const double signInLogo = 64;
+
+  /// Member avatar circle (DESIGN.md §6 Avatars).
+  static const double avatar = 40;
+
+  /// Join-code QR on the invite screen: big enough to scan across a table.
+  static const double qrCode = 200;
+
+  /// Width of the placeholder avatar's outline.
+  static const double avatarOutline = 1;
 }

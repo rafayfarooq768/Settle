@@ -6,6 +6,12 @@ import '../../features/auth/ui/auth_providers.dart';
 import '../../features/auth/ui/reset_password_screen.dart';
 import '../../features/auth/ui/sign_in_screen.dart';
 import '../../features/auth/ui/sign_up_screen.dart';
+import '../../features/groups/ui/create_group_screen.dart';
+import '../../features/groups/ui/group_screen.dart';
+import '../../features/groups/ui/group_settings_screen.dart';
+import '../../features/groups/ui/invite_screen.dart';
+import '../../features/groups/ui/join_screen.dart';
+import '../../features/groups/ui/scan_code_screen.dart';
 import '../../features/home/ui/home_screen.dart';
 
 const _authRoutes = {'/sign-in', '/sign-up', '/reset-password'};
@@ -43,6 +49,37 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ResetPasswordScreen(),
       ),
       GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/groups/new',
+        builder: (context, state) => const CreateGroupScreen(),
+      ),
+      GoRoute(
+        path: '/groups/:id',
+        builder: (context, state) =>
+            GroupScreen(groupId: state.pathParameters['id']!),
+        routes: [
+          GoRoute(
+            path: 'settings',
+            builder: (context, state) =>
+                GroupSettingsScreen(groupId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: 'invite',
+            builder: (context, state) =>
+                InviteScreen(groupId: state.pathParameters['id']!),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/join',
+        builder: (context, state) => const JoinScreen(),
+        routes: [
+          GoRoute(
+            path: 'scan',
+            builder: (context, state) => const ScanCodeScreen(),
+          ),
+        ],
+      ),
     ],
   );
 });

@@ -271,4 +271,7 @@ See DESIGN.md for how each one should look.
 - Sign with a release keystore. **Keep the keystore and its password backed up and out of git.**
   Losing it means users can't update without reinstalling.
 - Upload to GitHub Releases with short release notes.
+- The repo must be public before the first release: invites link to
+  `github.com/rafayfarooq768/Settle/releases/latest` (`lib/core/config/app_links.dart`),
+  and private-repo releases don't open for friends. Restrict the API key first.
 - Share the release link in WhatsApp groups.

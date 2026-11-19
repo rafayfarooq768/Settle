@@ -24,3 +24,16 @@ final groupProvider = StreamProvider.autoDispose.family<Group?, String>(
 final membersProvider = StreamProvider.autoDispose.family<List<Member>, String>(
   (ref, groupId) => ref.watch(groupRepositoryProvider).watchMembers(groupId),
 );
+
+/// The signed-in user's active member in a group. Data(null) means they
+/// joined (are in memberUids) but haven't picked "Which one are you?" yet.
+final myMemberProvider = Provider.autoDispose
+    .family<AsyncValue<Member?>, String>((ref, groupId) {
+      final uid = ref.watch(userChangesProvider).valueOrNull?.uid;
+      return ref
+          .watch(membersProvider(groupId))
+          .whenData(
+            (members) =>
+                members.where((m) => m.uid == uid && m.active).firstOrNull,
+          );
+    });

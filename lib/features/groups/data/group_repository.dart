@@ -77,7 +77,7 @@ class GroupRepository {
       targetId: group.id,
       summary: name,
     );
-    await batch.commit();
+    await commitOrQueue(batch);
     return group.id;
   }
 
@@ -97,7 +97,7 @@ class GroupRepository {
       targetId: member.id,
       summary: name,
     );
-    await batch.commit();
+    await commitOrQueue(batch);
     return member.id;
   }
 
@@ -119,7 +119,7 @@ class GroupRepository {
       before: {'displayName': member.displayName},
       after: {'displayName': name},
     );
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   /// The group id for what the user typed or scanned, or null if the code
@@ -148,7 +148,7 @@ class GroupRepository {
       ..update(_group(groupId), {
         'memberUids': FieldValue.arrayUnion([uid]),
       });
-    await batch.commit();
+    await batch.commit(); // must reach the server
   }
 
   /// "That's me": takes over a placeholder and its history.
@@ -172,7 +172,7 @@ class GroupRepository {
       targetId: placeholder.id,
       summary: placeholder.displayName,
     );
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   /// "I'm not listed": a new member. Returns the member id.
@@ -193,7 +193,7 @@ class GroupRepository {
       targetId: member.id,
       summary: displayName,
     );
-    await batch.commit();
+    await commitOrQueue(batch);
     return member.id;
   }
 
@@ -209,7 +209,7 @@ class GroupRepository {
       targetId: member.id,
       summary: member.displayName,
     );
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   Future<void> updateGroup({
@@ -230,7 +230,7 @@ class GroupRepository {
       before: {'name': group.name, 'type': group.type},
       after: {'name': name, 'type': type},
     );
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   /// Creator only (PLAN.md §6). The old code stops working at once.
@@ -250,7 +250,7 @@ class GroupRepository {
       actorMemberId: actorMemberId,
       targetId: group.id,
     );
-    await batch.commit();
+    await commitOrQueue(batch);
     return code;
   }
 
@@ -274,7 +274,7 @@ class GroupRepository {
     batch.update(_group(groupId), {
       'memberUids': FieldValue.arrayRemove([uid]),
     });
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   /// Copies the user's name and payment methods onto their member doc in
@@ -298,7 +298,7 @@ class GroupRepository {
         batch.update(member.reference, update);
       }
     }
-    await batch.commit();
+    await commitOrQueue(batch);
   }
 
   Json _newMember(
