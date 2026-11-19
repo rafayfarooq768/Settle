@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "492392093523-f34or4at0huho6okd2feio688bllphig.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.settleapp.settle",
+            "certificate_hash": "da5dbc90aaa45d01d64ac162510ffcf53abcefe9"
+          }
+        },
+        {
           "client_id": "492392093523-21n9ojl3i7dnuj64leod4b0vdu9ibqrd.apps.googleusercontent.com",
           "client_type": 3
         }
