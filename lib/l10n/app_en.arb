@@ -1,0 +1,36 @@
+{
+  "@@locale": "en",
+  "appTitle": "Settle",
+  "@appTitle": {"description": "App name shown in title bars"},
+
+  "signInTitle": "Sign in",
+  "signInWithGoogle": "Continue with Google",
+  "signInEmailLabel": "Email",
+  "signInPasswordLabel": "Password",
+  "signInButton": "Sign in",
+  "signUpPrompt": "New here?",
+  "signUpButton": "Create account",
+  "signUpTitle": "Create account",
+  "forgotPasswordButton": "Forgot password?",
+  "resetPasswordTitle": "Reset password",
+  "resetPasswordInstructions": "Enter your email and we'll send you a reset link.",
+  "resetPasswordButton": "Send reset link",
+  "resetPasswordSent": "Reset link sent. Check your email.",
+  "backToSignIn": "Back to sign in",
+
+  "errorInvalidEmail": "Enter a valid email address.",
+  "errorWeakPassword": "Password must be at least 6 characters.",
+  "errorWrongPassword": "Incorrect email or password.",
+  "errorUserNotFound": "No account found with this email.",
+  "errorEmailInUse": "An account already exists with this email.",
+  "errorGeneric": "Something went wrong. Please try again.",
+  "errorNetwork": "No internet connection. Please try again.",
+
+  "homeGreeting": "Salam, {name}",
+  "@homeGreeting": {
+    "description": "Home screen greeting with a light Roman Urdu touch",
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "homeNoGroupsEmptyState": "No groups yet. Create one or join with a code.",
+  "signOutButton": "Sign out"
+}

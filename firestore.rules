@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isMember(groupData) {
+      return isSignedIn() && request.auth.uid in groupData.memberUids;
+    }
+
+    // users/{uid} — a user can only read/write their own profile doc.
+    match /users/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // groups/{groupId} and its subcollections — readable/writable only by
+    // signed-in members listed in memberUids. Subcollections (members,
+    // expenses, settlements, activity) inherit the same membership check by
+    // reading the parent group doc.
+    match /groups/{groupId} {
+      allow read, update, delete: if isMember(resource.data);
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.memberUids;
+
+      match /{subcollection}/{docId} {
+        allow read, write: if isMember(get(/databases/$(database)/documents/groups/$(groupId)).data);
+      }
+    }
+
+    // joinCodes/{code} — readable by any signed-in user (needed to resolve a
+    // code before joining); writes happen only through the group doc's own
+    // rules plus the joinCode set at group creation.
+    match /joinCodes/{code} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+    }
+  }
+}
