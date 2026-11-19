@@ -15,10 +15,11 @@
   "resetPasswordTitle": "Reset password",
   "resetPasswordInstructions": "Enter your email and we'll send you a reset link.",
   "resetPasswordButton": "Send reset link",
-  "resetPasswordSent": "Reset link sent. Check your email.",
-  "backToSignIn": "Back to sign in",
+  "resetPasswordSent": "If an account uses this email, a reset link is on its way. Check your inbox and spam folder.",
+  "@resetPasswordSent": {"description": "Firebase email enumeration protection hides whether the account exists, so don't claim it was sent"},
 
   "errorInvalidEmail": "Enter a valid email address.",
+  "errorPasswordRequired": "Enter your password.",
   "errorWeakPassword": "Password must be at least 6 characters.",
   "errorWrongPassword": "Incorrect email or password.",
   "errorUserNotFound": "No account found with this email.",
@@ -28,9 +29,8 @@
 
   "homeGreeting": "Salam, {name}",
   "@homeGreeting": {
-    "description": "Home screen greeting with a light Roman Urdu touch",
+    "description": "Home greeting; the one Roman Urdu touch on this screen (DESIGN.md §10)",
     "placeholders": {"name": {"type": "String"}}
   },
-  "homeNoGroupsEmptyState": "No groups yet. Create one or join with a code.",
   "signOutButton": "Sign out"
 }

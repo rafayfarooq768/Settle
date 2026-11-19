@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 import 'app_radius.dart';
+import 'app_sizes.dart';
 import 'app_theme_extensions.dart';
 
 /// Theme defined once from DESIGN.md tokens (§2, §3, §5, §6). Widgets must
@@ -11,17 +12,18 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData light() {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: Brightness.light,
-    ).copyWith(
-      primary: AppColors.primary,
-      secondary: AppColors.secondary,
-      tertiary: AppColors.tertiary,
-      surface: AppColors.surface,
-      onSurface: AppColors.text,
-      outline: AppColors.outline,
-    );
+    final colorScheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: AppColors.primary,
+          secondary: AppColors.secondary,
+          tertiary: AppColors.tertiary,
+          surface: AppColors.surface,
+          onSurface: AppColors.text,
+          outline: AppColors.outline,
+        );
     return _base(colorScheme, MoneyColors.light);
   }
 
@@ -38,14 +40,13 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor:
-          isLight ? AppColors.background : colorScheme.surface,
+      scaffoldBackgroundColor: isLight
+          ? AppColors.background
+          : colorScheme.surface,
       extensions: [moneyColors],
       appBarTheme: AppBarTheme(
-        backgroundColor:
-            isLight ? AppColors.background : colorScheme.surface,
-        foregroundColor:
-            isLight ? AppColors.text : colorScheme.onSurface,
+        backgroundColor: isLight ? AppColors.background : colorScheme.surface,
+        foregroundColor: isLight ? AppColors.text : colorScheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
         titleTextStyle: TextStyle(
@@ -54,17 +55,14 @@ class AppTheme {
           color: isLight ? AppColors.text : colorScheme.onSurface,
         ),
       ),
-      textTheme: _textTheme(isLight ? AppColors.text : null, colorScheme),
+      textTheme: _textTheme(colorScheme),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.standard),
           ),
-          minimumSize: const Size.fromHeight(48),
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          minimumSize: const Size.fromHeight(AppSizes.buttonHeight),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -72,11 +70,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.standard),
           ),
-          minimumSize: const Size.fromHeight(48),
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          minimumSize: const Size.fromHeight(AppSizes.buttonHeight),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -84,10 +79,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.standard),
           ),
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -125,11 +117,11 @@ class AppTheme {
     );
   }
 
-  static TextTheme _textTheme(Color? textColor, ColorScheme colorScheme) {
+  static TextTheme _textTheme(ColorScheme colorScheme) {
     const fontFeatures = [FontFeature.tabularFigures()];
-    var theme = Typography.material2021(
-      colorScheme: colorScheme,
-    ).black.apply(fontFamily: null);
+    final typography = Typography.material2021(colorScheme: colorScheme);
+    final isLight = colorScheme.brightness == Brightness.light;
+    var theme = isLight ? typography.black : typography.white;
     theme = theme.copyWith(
       titleLarge: theme.titleLarge?.copyWith(fontSize: 22),
       headlineMedium: theme.headlineMedium?.copyWith(
@@ -147,9 +139,9 @@ class AppTheme {
         fontWeight: FontWeight.w500,
       ),
     );
-    if (textColor != null) {
-      theme = theme.apply(bodyColor: textColor, displayColor: textColor);
-    }
-    return theme;
+    return theme.apply(
+      bodyColor: colorScheme.onSurface,
+      displayColor: colorScheme.onSurface,
+    );
   }
 }

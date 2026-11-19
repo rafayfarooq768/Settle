@@ -172,23 +172,23 @@ abstract class AppLocalizations {
   /// **'Send reset link'**
   String get resetPasswordButton;
 
-  /// No description provided for @resetPasswordSent.
+  /// Firebase email enumeration protection hides whether the account exists, so don't claim it was sent
   ///
   /// In en, this message translates to:
-  /// **'Reset link sent. Check your email.'**
+  /// **'If an account uses this email, a reset link is on its way. Check your inbox and spam folder.'**
   String get resetPasswordSent;
-
-  /// No description provided for @backToSignIn.
-  ///
-  /// In en, this message translates to:
-  /// **'Back to sign in'**
-  String get backToSignIn;
 
   /// No description provided for @errorInvalidEmail.
   ///
   /// In en, this message translates to:
   /// **'Enter a valid email address.'**
   String get errorInvalidEmail;
+
+  /// No description provided for @errorPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password.'**
+  String get errorPasswordRequired;
 
   /// No description provided for @errorWeakPassword.
   ///
@@ -226,17 +226,11 @@ abstract class AppLocalizations {
   /// **'No internet connection. Please try again.'**
   String get errorNetwork;
 
-  /// Home screen greeting with a light Roman Urdu touch
+  /// Home greeting; the one Roman Urdu touch on this screen (DESIGN.md §10)
   ///
   /// In en, this message translates to:
   /// **'Salam, {name}'**
   String homeGreeting(String name);
-
-  /// No description provided for @homeNoGroupsEmptyState.
-  ///
-  /// In en, this message translates to:
-  /// **'No groups yet. Create one or join with a code.'**
-  String get homeNoGroupsEmptyState;
 
   /// No description provided for @signOutButton.
   ///

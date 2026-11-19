@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_theme_extensions.dart';
+import '../../../core/widgets/form_message.dart';
+import '../../../core/widgets/loading_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/auth_repository.dart';
 import 'auth_error_text.dart';
+import 'auth_fields.dart';
 import 'auth_providers.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -36,10 +38,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       _errorMessage = null;
     });
     try {
-      await ref.read(authRepositoryProvider).signUpWithEmail(
+      await ref
+          .read(authRepositoryProvider)
+          .signUpWithEmail(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
+      // On success the router redirects to Home.
     } on AuthException catch (e) {
       if (!mounted) return;
       setState(() => _errorMessage = authFailureMessage(context, e.failure));
@@ -64,48 +69,22 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppSpacing.xl),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  decoration: InputDecoration(labelText: l10n.signInEmailLabel),
-                  validator: (value) {
-                    if (value == null || !value.contains('@')) {
-                      return l10n.errorInvalidEmail;
-                    }
-                    return null;
-                  },
-                ),
+                EmailField(controller: _emailController),
                 const SizedBox(height: AppSpacing.lg),
-                TextFormField(
+                PasswordField(
                   controller: _passwordController,
-                  obscureText: true,
-                  autofillHints: const [AutofillHints.newPassword],
-                  decoration: InputDecoration(labelText: l10n.signInPasswordLabel),
-                  validator: (value) {
-                    if (value == null || value.length < 6) {
-                      return l10n.errorWeakPassword;
-                    }
-                    return null;
-                  },
+                  isNewPassword: true,
+                  onSubmitted: _isLoading ? null : _submit,
                 ),
                 if (_errorMessage != null) ...[
                   const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    _errorMessage!,
-                    style: TextStyle(color: context.moneyColors.owe),
-                  ),
+                  FormMessage(_errorMessage!),
                 ],
-                const SizedBox(height: AppSpacing.lg),
-                FilledButton(
-                  onPressed: _isLoading ? null : _submit,
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.signUpButton),
+                const SizedBox(height: AppSpacing.xl),
+                LoadingButton(
+                  label: l10n.signUpButton,
+                  isLoading: _isLoading,
+                  onPressed: _submit,
                 ),
               ],
             ),

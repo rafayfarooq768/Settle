@@ -1,12 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../domain/auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({fb.FirebaseAuth? auth, GoogleSignIn? googleSignIn})
-      : _auth = auth ?? fb.FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+    : _auth = auth ?? fb.FirebaseAuth.instance,
+      _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   final fb.FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
@@ -30,11 +32,20 @@ class FirebaseAuthRepository implements AuthRepository {
         accessToken: auth.accessToken,
       );
       await _auth.signInWithCredential(credential);
+    } on AuthException {
+      rethrow;
     } on fb.FirebaseAuthException catch (e) {
       throw AuthException(_mapCode(e.code));
-    } catch (e) {
-      if (e is AuthException) rethrow;
-      throw const AuthException(AuthFailure.network);
+    } on PlatformException catch (e) {
+      // google_sign_in reports failures as PlatformException. "sign_in_failed"
+      // with ApiException 10 means the app's SHA fingerprint isn't registered
+      // in Firebase. Keep it visible in debug logs instead of hiding it.
+      debugPrint('Google sign-in failed: ${e.code} ${e.message}');
+      throw AuthException(
+        e.code == GoogleSignIn.kNetworkError
+            ? AuthFailure.network
+            : AuthFailure.generic,
+      );
     }
   }
 

@@ -50,13 +50,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPasswordButton => 'Send reset link';
 
   @override
-  String get resetPasswordSent => 'Reset link sent. Check your email.';
-
-  @override
-  String get backToSignIn => 'Back to sign in';
+  String get resetPasswordSent =>
+      'If an account uses this email, a reset link is on its way. Check your inbox and spam folder.';
 
   @override
   String get errorInvalidEmail => 'Enter a valid email address.';
+
+  @override
+  String get errorPasswordRequired => 'Enter your password.';
 
   @override
   String get errorWeakPassword => 'Password must be at least 6 characters.';
@@ -80,10 +81,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String homeGreeting(String name) {
     return 'Salam, $name';
   }
-
-  @override
-  String get homeNoGroupsEmptyState =>
-      'No groups yet. Create one or join with a code.';
 
   @override
   String get signOutButton => 'Sign out';

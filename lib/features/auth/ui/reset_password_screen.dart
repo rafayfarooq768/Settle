@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_theme_extensions.dart';
+import '../../../core/widgets/form_message.dart';
+import '../../../core/widgets/loading_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/auth_repository.dart';
 import 'auth_error_text.dart';
+import 'auth_fields.dart';
 import 'auth_providers.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  ConsumerState<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
@@ -32,6 +35,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() {
       _isLoading = true;
+      _sent = false;
       _errorMessage = null;
     });
     try {
@@ -68,42 +72,20 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  decoration: InputDecoration(labelText: l10n.signInEmailLabel),
-                  validator: (value) {
-                    if (value == null || !value.contains('@')) {
-                      return l10n.errorInvalidEmail;
-                    }
-                    return null;
-                  },
-                ),
+                EmailField(controller: _emailController),
                 if (_sent) ...[
                   const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    l10n.resetPasswordSent,
-                    style: TextStyle(color: context.moneyColors.owed),
-                  ),
+                  FormMessage(l10n.resetPasswordSent, isError: false),
                 ],
                 if (_errorMessage != null) ...[
                   const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    _errorMessage!,
-                    style: TextStyle(color: context.moneyColors.owe),
-                  ),
+                  FormMessage(_errorMessage!),
                 ],
-                const SizedBox(height: AppSpacing.lg),
-                FilledButton(
-                  onPressed: _isLoading ? null : _submit,
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.resetPasswordButton),
+                const SizedBox(height: AppSpacing.xl),
+                LoadingButton(
+                  label: l10n.resetPasswordButton,
+                  isLoading: _isLoading,
+                  onPressed: _submit,
                 ),
               ],
             ),

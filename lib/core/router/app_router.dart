@@ -8,25 +8,36 @@ import '../../features/auth/ui/sign_in_screen.dart';
 import '../../features/auth/ui/sign_up_screen.dart';
 import '../../features/home/ui/home_screen.dart';
 
+const _authRoutes = {'/sign-in', '/sign-up', '/reset-password'};
+
+/// Built once. Auth changes only re-run [GoRouter.redirect] (via
+/// [_AuthRefresh]), so the navigation stack isn't thrown away.
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateChangesProvider);
+  final refresh = _AuthRefresh(ref);
+  ref.onDispose(refresh.dispose);
 
   return GoRouter(
     initialLocation: '/home',
-    refreshListenable: GoRouterRefreshStream(ref),
+    refreshListenable: refresh,
     redirect: (context, state) {
-      final isSignedIn = authState.valueOrNull != null;
-      final isAuthRoute = state.matchedLocation == '/sign-in' ||
-          state.matchedLocation == '/sign-up' ||
-          state.matchedLocation == '/reset-password';
+      // After Firebase.initializeApp the persisted user is available
+      // synchronously on Android, so there's no signed-out flash on start.
+      final isSignedIn = ref.read(authRepositoryProvider).currentUser != null;
+      final isAuthRoute = _authRoutes.contains(state.matchedLocation);
 
       if (!isSignedIn && !isAuthRoute) return '/sign-in';
       if (isSignedIn && isAuthRoute) return '/home';
       return null;
     },
     routes: [
-      GoRoute(path: '/sign-in', builder: (context, state) => const SignInScreen()),
-      GoRoute(path: '/sign-up', builder: (context, state) => const SignUpScreen()),
+      GoRoute(
+        path: '/sign-in',
+        builder: (context, state) => const SignInScreen(),
+      ),
+      GoRoute(
+        path: '/sign-up',
+        builder: (context, state) => const SignUpScreen(),
+      ),
       GoRoute(
         path: '/reset-password',
         builder: (context, state) => const ResetPasswordScreen(),
@@ -36,10 +47,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Lets go_router's `redirect` re-run whenever auth state changes, without
-/// pulling go_router's Listenable API into the auth feature itself.
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Ref ref) {
-    ref.listen(authStateChangesProvider, (previous, next) => notifyListeners());
+class _AuthRefresh extends ChangeNotifier {
+  _AuthRefresh(Ref ref) {
+    ref.listen(authStateChangesProvider, (_, _) => notifyListeners());
   }
 }

@@ -3,11 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_theme_extensions.dart';
+import '../../../core/widgets/form_message.dart';
+import '../../../core/widgets/loading_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/auth_repository.dart';
 import 'auth_error_text.dart';
+import 'auth_fields.dart';
 import 'auth_providers.dart';
+
+enum _Action { email, google }
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -20,7 +24,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
+  _Action? _running;
   String? _errorMessage;
 
   @override
@@ -30,44 +34,49 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _run(_Action action, Future<void> Function() task) async {
     setState(() {
-      _isLoading = true;
+      _running = action;
       _errorMessage = null;
     });
     try {
-      await ref.read(authRepositoryProvider).signInWithEmail(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          );
-    } on AuthException catch (e) {
-      if (!mounted) return;
-      setState(() => _errorMessage = authFailureMessage(context, e.failure));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _signInWithGoogle() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-    try {
-      await ref.read(authRepositoryProvider).signInWithGoogle();
+      await task();
+      // On success the router redirects to Home.
     } on AuthException catch (e) {
       if (!mounted) return;
       final message = authFailureMessage(context, e.failure);
-      if (message.isNotEmpty) setState(() => _errorMessage = message);
+      setState(() => _errorMessage = message.isEmpty ? null : message);
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _running = null);
     }
+  }
+
+  void _signInWithEmail() {
+    if (!_formKey.currentState!.validate()) return;
+    _run(
+      _Action.email,
+      () => ref
+          .read(authRepositoryProvider)
+          .signInWithEmail(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          ),
+    );
+  }
+
+  void _signInWithGoogle() {
+    _run(
+      _Action.google,
+      () => ref.read(authRepositoryProvider).signInWithGoogle(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    final busy = _running != null;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -80,42 +89,26 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppSpacing.xxl),
-                Text(l10n.signInTitle, style: Theme.of(context).textTheme.titleLarge),
+                Text(l10n.signInTitle, style: textTheme.titleLarge),
                 const SizedBox(height: AppSpacing.xl),
-                OutlinedButton(
-                  onPressed: _isLoading ? null : _signInWithGoogle,
-                  child: Text(l10n.signInWithGoogle),
+                LoadingButton(
+                  label: l10n.signInWithGoogle,
+                  style: LoadingButtonStyle.outlined,
+                  isLoading: _running == _Action.google,
+                  onPressed: busy ? null : _signInWithGoogle,
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  decoration: InputDecoration(labelText: l10n.signInEmailLabel),
-                  validator: (value) {
-                    if (value == null || !value.contains('@')) {
-                      return l10n.errorInvalidEmail;
-                    }
-                    return null;
-                  },
-                ),
+                EmailField(controller: _emailController),
                 const SizedBox(height: AppSpacing.lg),
-                TextFormField(
+                PasswordField(
                   controller: _passwordController,
-                  obscureText: true,
-                  autofillHints: const [AutofillHints.password],
-                  decoration: InputDecoration(labelText: l10n.signInPasswordLabel),
-                  validator: (value) {
-                    if (value == null || value.length < 6) {
-                      return l10n.errorWeakPassword;
-                    }
-                    return null;
-                  },
+                  isNewPassword: false,
+                  onSubmitted: busy ? null : _signInWithEmail,
                 ),
                 Align(
-                  alignment: Alignment.centerRight,
+                  alignment: AlignmentDirectional.centerEnd,
                   child: TextButton(
-                    onPressed: _isLoading
+                    onPressed: busy
                         ? null
                         : () => context.push('/reset-password'),
                     child: Text(l10n.forgotPasswordButton),
@@ -123,33 +116,26 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 ),
                 if (_errorMessage != null) ...[
                   const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    _errorMessage!,
-                    style: TextStyle(color: context.moneyColors.owe),
-                  ),
+                  FormMessage(_errorMessage!),
                 ],
                 const SizedBox(height: AppSpacing.lg),
-                FilledButton(
-                  onPressed: _isLoading ? null : _submit,
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.signInButton),
+                LoadingButton(
+                  label: l10n.signInButton,
+                  isLoading: _running == _Action.email,
+                  onPressed: busy ? null : _signInWithEmail,
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(l10n.signUpPrompt, style: Theme.of(context).textTheme.bodyMedium),
+                    Text(l10n.signUpPrompt, style: textTheme.bodyMedium),
                     TextButton(
-                      onPressed: _isLoading ? null : () => context.push('/sign-up'),
+                      onPressed: busy ? null : () => context.push('/sign-up'),
                       child: Text(l10n.signUpButton),
                     ),
                   ],
                 ),
+                const SizedBox(height: AppSpacing.lg),
               ],
             ),
           ),
