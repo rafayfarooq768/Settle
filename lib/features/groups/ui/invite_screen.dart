@@ -15,6 +15,7 @@ import '../domain/group.dart';
 import 'groups_providers.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/screen_layout.dart';
+import '../../../core/widgets/selectable_code.dart';
 
 /// Invite (PLAN.md §6): the join code, its QR, and a WhatsApp share.
 class InviteScreen extends ConsumerWidget {
@@ -54,13 +55,11 @@ class InviteScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           // Codes are Latin letters and digits; keep them
-                          // LTR in Urdu. Plain text: "Copy code" copies it,
-                          // and a selection here wouldn't clear on tap.
+                          // LTR in Urdu.
                           Directionality(
                             textDirection: TextDirection.ltr,
-                            child: Text(
+                            child: SelectableCode(
                               group.joinCode,
-                              textAlign: TextAlign.center,
                               style: theme.textTheme.headlineMedium,
                             ),
                           ),
