@@ -1,40 +1,261 @@
 rules_version = '2';
 
+// Settle security rules (PLAN.md §7). The app has no server, so these rules
+// are the only thing stopping a modified app from misbehaving. Tested with
+// the Firestore emulator: see firestore-tests/.
+//
+// Not enforceable here (rules can't loop or compute balances), enforced in
+// the app and by the money core instead:
+//   - payers/shares summing to the amount (bad docs are left out of balances)
+//   - "leave only when your balance is zero"
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isSignedIn() {
-      return request.auth != null;
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+    function changed() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+    function str(v, min, max) {
+      return v is string && v.size() >= min && v.size() <= max;
+    }
+    function groupDoc(g) {
+      return /databases/$(database)/documents/groups/$(g);
+    }
+    function memberDoc(g, m) {
+      return /databases/$(database)/documents/groups/$(g)/members/$(m);
+    }
+    function codeDoc(code) {
+      return /databases/$(database)/documents/joinCodes/$(code);
     }
 
-    function isMember(groupData) {
-      return isSignedIn() && request.auth.uid in groupData.memberUids;
+    // Reads use the group as it is now.
+    function isMember(g) {
+      return signedIn() && me() in get(groupDoc(g)).data.memberUids;
+    }
+    // Writes may be batched with a membership change (creating a group,
+    // leaving one), so being a member before OR after the batch counts.
+    function canWrite(g) {
+      return signedIn() && (me() in getAfter(groupDoc(g)).data.memberUids
+        || me() in get(groupDoc(g)).data.memberUids);
     }
 
-    // users/{uid} — a user can only read/write their own profile doc.
-    match /users/{uid} {
-      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    // Max amount: Rs 1 billion, in paisa.
+    function paisa(v) { return v is int && v > 0 && v <= 100000000000; }
+
+    // ---------------------------------------------------------------- users
+    // Private to the owner. Group-mates see name and payment methods through
+    // the copy on the member doc instead.
+    match /users/{userId} {
+      function validUser(d) {
+        return str(d.displayName, 0, 60)
+          && d.paymentMethods is list && d.paymentMethods.size() <= 20;
+      }
+      allow read: if signedIn() && me() == userId;
+      allow create: if signedIn() && me() == userId
+        && request.resource.data.keys().hasOnly(
+             ['displayName', 'email', 'createdAt', 'paymentMethods'])
+        && request.resource.data.email is string
+        && request.resource.data.createdAt == request.time
+        && validUser(request.resource.data);
+      allow update: if signedIn() && me() == userId
+        && changed().hasOnly(['displayName', 'paymentMethods'])
+        && validUser(request.resource.data);
+      allow delete: if false;
     }
 
-    // groups/{groupId} and its subcollections — readable/writable only by
-    // signed-in members listed in memberUids. Subcollections (members,
-    // expenses, settlements, activity) inherit the same membership check by
-    // reading the parent group doc.
+    // --------------------------------------------------------------- groups
     match /groups/{groupId} {
-      allow read, update, delete: if isMember(resource.data);
-      allow create: if isSignedIn() && request.auth.uid in request.resource.data.memberUids;
+      function validGroup(d) {
+        return str(d.name, 1, 60) && str(d.type, 0, 40)
+          && d.memberUids is list && d.memberUids.size() <= 100;
+      }
+      function isMemberNow() {
+        return signedIn() && me() in resource.data.memberUids;
+      }
+      // Creator swaps the code: new code doc made, old one deleted.
+      function codeSwapped() {
+        return resource.data.createdBy == me()
+          && existsAfter(codeDoc(request.resource.data.joinCode))
+          && !existsAfter(codeDoc(resource.data.joinCode));
+      }
+      // A member removes only themselves.
+      function leaving() {
+        return changed().hasOnly(['memberUids'])
+          && request.resource.data.memberUids.toSet()
+             == resource.data.memberUids.toSet().difference([me()].toSet());
+      }
+      // Someone adds only themselves, and proves they have the CURRENT code
+      // by writing joinCodes/{code}/joins/{uid} in the same batch.
+      function joining() {
+        return signedIn()
+          && changed().hasOnly(['memberUids'])
+          && request.resource.data.memberUids.toSet()
+             == resource.data.memberUids.toSet().union([me()].toSet())
+          && existsAfter(/databases/$(database)/documents/joinCodes/$(resource.data.joinCode)/joins/$(me()));
+      }
 
-      match /{subcollection}/{docId} {
-        allow read, write: if isMember(get(/databases/$(database)/documents/groups/$(groupId)).data);
+      allow read: if isMemberNow();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['name', 'type', 'createdBy',
+             'createdAt', 'joinCode', 'currency', 'memberUids'])
+        && validGroup(request.resource.data)
+        && request.resource.data.createdBy == me()
+        && request.resource.data.memberUids == [me()]
+        && request.resource.data.currency == 'PKR'
+        && request.resource.data.createdAt == request.time
+        && existsAfter(codeDoc(request.resource.data.joinCode));
+      allow update: if validGroup(request.resource.data) && (
+        (isMemberNow() && (
+          changed().hasOnly(['name', 'type'])
+          || (changed().hasOnly(['joinCode']) && codeSwapped())
+          || leaving()))
+        || joining());
+      allow delete: if false;
+
+      // Real members and placeholders (uid null). Never deleted: expenses
+      // refer to memberIds forever.
+      match /members/{memberId} {
+        function validMember(d) {
+          return d.keys().hasOnly(['displayName', 'uid', 'claimedAt',
+                   'joinedAt', 'active', 'paymentMethods'])
+            && str(d.displayName, 1, 60)
+            && d.active is bool
+            && d.paymentMethods is list && d.paymentMethods.size() <= 20;
+        }
+        allow read: if isMember(groupId);
+        allow create: if canWrite(groupId)
+          && validMember(request.resource.data)
+          && request.resource.data.active == true
+          && request.resource.data.claimedAt == null
+          && request.resource.data.joinedAt == request.time
+          && (
+            // a placeholder, added by any member
+            (request.resource.data.uid == null
+              && request.resource.data.paymentMethods.size() == 0)
+            // yourself
+            || request.resource.data.uid == me());
+        allow update: if canWrite(groupId)
+          && validMember(request.resource.data) && (
+            // "That's me": claim a placeholder for yourself
+            (resource.data.uid == null && request.resource.data.uid == me()
+              && changed().hasOnly(['uid', 'claimedAt', 'paymentMethods'])
+              && request.resource.data.claimedAt == request.time)
+            // fix a placeholder's name
+            || (resource.data.uid == null && changed().hasOnly(['displayName']))
+            // your own: name, payment methods, leave / rejoin
+            || (resource.data.uid == me()
+              && changed().hasOnly(['displayName', 'paymentMethods', 'active'])));
+        allow delete: if false;
+      }
+
+      // Soft delete only (deleted: true), so history and Undo keep working.
+      match /expenses/{expenseId} {
+        function validExpense(d) {
+          return d.keys().hasOnly(['title', 'amount', 'date', 'createdBy',
+                   'createdAt', 'updatedAt', 'deleted', 'splitMode', 'payers',
+                   'shares', 'splitInput', 'note'])
+            && str(d.title, 1, 100)
+            && paisa(d.amount)
+            && d.date is timestamp
+            && d.splitMode in ['equal', 'exact', 'percent', 'shares', 'itemized']
+            && d.payers is map && d.payers.size() >= 1 && d.payers.size() <= 100
+            && d.shares is map && d.shares.size() >= 1 && d.shares.size() <= 100
+            && d.splitInput is map
+            && str(d.note, 0, 500)
+            && d.deleted is bool;
+        }
+        allow read: if isMember(groupId);
+        allow create: if canWrite(groupId)
+          && validExpense(request.resource.data)
+          && request.resource.data.createdBy == me()
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.deleted == false;
+        allow update: if isMember(groupId)
+          && validExpense(request.resource.data)
+          && request.resource.data.createdBy == resource.data.createdBy
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if false;
+      }
+
+      // "I paid" (pending) → the person paid confirms. Only they can
+      // confirm; they can also record a payment directly (confirmed).
+      match /settlements/{settlementId} {
+        function uidOf(m) { return get(memberDoc(groupId, m)).data.uid; }
+        function validSettlement(d) {
+          return d.keys().hasOnly(['from', 'to', 'amount', 'status',
+                   'createdBy', 'createdAt', 'confirmedAt'])
+            && d.from is string && d.to is string && d.from != d.to
+            && exists(memberDoc(groupId, d.from))
+            && exists(memberDoc(groupId, d.to))
+            && paisa(d.amount);
+        }
+        allow read: if isMember(groupId);
+        allow create: if isMember(groupId)
+          && validSettlement(request.resource.data)
+          && request.resource.data.createdBy == me()
+          && request.resource.data.createdAt == request.time
+          && (
+            // the payer says "I paid"
+            (request.resource.data.status == 'pending'
+              && request.resource.data.confirmedAt == null
+              && uidOf(request.resource.data.from) == me())
+            // the person paid records it; or anyone, if they're a
+            // placeholder who can't confirm
+            || (request.resource.data.status == 'confirmed'
+              && request.resource.data.confirmedAt == request.time
+              && (uidOf(request.resource.data.to) == me()
+                || uidOf(request.resource.data.to) == null)));
+        allow update: if isMember(groupId)
+          && resource.data.status == 'pending'
+          && request.resource.data.status == 'confirmed'
+          && changed().hasOnly(['status', 'confirmedAt'])
+          && request.resource.data.confirmedAt == request.time
+          && uidOf(resource.data.to) == me();
+        allow delete: if isMember(groupId)
+          && (resource.data.createdBy == me() || uidOf(resource.data.to) == me());
+      }
+
+      // Append-only log; the actor must be your own member.
+      match /activity/{activityId} {
+        allow read: if isMember(groupId);
+        allow create: if canWrite(groupId)
+          && request.resource.data.keys().hasOnly(['type', 'actorMemberId',
+               'targetId', 'summary', 'before', 'after', 'createdAt'])
+          && str(request.resource.data.type, 1, 40)
+          && str(request.resource.data.summary, 0, 200)
+          && request.resource.data.createdAt == request.time
+          && getAfter(memberDoc(groupId, request.resource.data.actorMemberId))
+               .data.uid == me();
+        allow update, delete: if false;
       }
     }
 
-    // joinCodes/{code} — readable by any signed-in user (needed to resolve a
-    // code before joining); writes happen only through the group doc's own
-    // rules plus the joinCode set at group creation.
+    // ------------------------------------------------------------ join codes
+    // Look up a code you were given (get only, no listing). Created and
+    // deleted only together with the group's joinCode field.
     match /joinCodes/{code} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
+      function groupAfter(g) { return getAfter(groupDoc(g)).data; }
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['groupId'])
+        && groupAfter(request.resource.data.groupId).joinCode == code
+        && groupAfter(request.resource.data.groupId).createdBy == me();
+      allow update: if false;
+      allow delete: if signedIn()
+        && groupAfter(resource.data.groupId).createdBy == me()
+        && groupAfter(resource.data.groupId).joinCode != code;
+
+      // Proof of knowing the code, written while joining.
+      match /joins/{joinerUid} {
+        allow read, delete: if signedIn() && me() == joinerUid;
+        allow create, update: if signedIn() && me() == joinerUid
+          && exists(codeDoc(code))
+          && request.resource.data.keys().hasOnly(['groupId', 'joinedAt']);
+      }
     }
   }
 }

@@ -162,9 +162,10 @@ groups/{groupId}
 
 groups/{groupId}/members/{memberId}
   displayName, uid (null for placeholder), claimedAt, joinedAt, active
+  paymentMethods: [...]           // copy of the user's own, for settle-up (§5)
 
 groups/{groupId}/expenses/{expenseId}
-  title, amount (paisa), date, createdBy, createdAt, updatedAt, deleted (soft delete)
+  title, amount (paisa), date, createdBy (uid), createdAt, updatedAt, deleted (soft delete)
   splitMode: "equal" | "exact" | "percent" | "shares" | "itemized"
   payers: { memberId: paisa }     // sums to amount
   shares: { memberId: paisa }     // sums to amount
@@ -173,26 +174,48 @@ groups/{groupId}/expenses/{expenseId}
 
 groups/{groupId}/settlements/{settlementId}
   from (memberId), to (memberId), amount (paisa), status: "pending" | "confirmed"
-  createdBy, createdAt, confirmedAt
+  createdBy (uid), createdAt, confirmedAt
 
 groups/{groupId}/activity/{activityId}
   type, actorMemberId, targetId, summary, before, after, createdAt
+  // summary is data (expense title / member name), not UI text; the app
+  // builds the localized sentence from type.
 
 joinCodes/{code}
-  groupId                          // lookup for joining
+  groupId                          // lookup for joining (get only, never listed)
+
+joinCodes/{code}/joins/{uid}
+  groupId, joinedAt                // proof the joiner had the current code
 ```
 
 Membership uses `memberId` (not `uid`) everywhere in expenses, so placeholders and claimed
-members work the same way. Claiming a placeholder just sets `uid` on the member doc and
-adds the uid to `memberUids`.
+members work the same way. Claiming a placeholder just sets `uid` on the member doc
+(after joining has added the uid to `memberUids`).
+
+**Joining:** the joiner writes `joinCodes/{code}/joins/{uid}` and adds their own uid to
+`memberUids` in one batch. The rules allow that only if the joins doc exists under the
+group's *current* code. Regenerating deletes the old code doc, so old codes stop working.
+Then the joiner can read members and pick "Which one are you?" (claim) or "I'm not listed".
 
 ### Security rules (must ship with the release)
-- A user can read/write a group and its subcollections only if `request.auth.uid in memberUids`.
-- Users can only edit their own `users/{uid}` doc.
-- Payment methods readable only by users sharing a group (simplest: store a copy on the
-  member doc, or accept read for any signed-in user and document the trade-off).
-- Joining via code: allowed to add own uid to `memberUids` only when the code matches.
+`firestore.rules`, tested on the Firestore emulator (`firestore-tests/`; the run command is at the
+top of `rules.test.js`). Decisions (2026-11-19):
+- Group and subcollections: only users in `memberUids`. Nobody can add someone else.
+- `users/{uid}`: owner only. Payment methods are copied onto the member doc so group-mates
+  see them (the "store a copy on the member doc" option).
+- Members are never deleted. Placeholders: any member adds/renames; only you can claim one
+  for yourself, and only while unclaimed.
+- Expenses: soft delete only; `createdBy` must be you and can't change; amounts must be
+  integer paisa.
+- Settlements: "I paid" only by the payer; confirm only by the person paid; the person paid
+  (or anyone, if they're a placeholder) can record a confirmed payment directly.
+- Activity: append-only, and you can only log actions as your own member.
+- Join codes: get by exact code only; only the creator regenerates.
 - Never ship with open test-mode rules.
+
+**Rules can't check these** (no loops or balance math in rules), so the app enforces them
+and the money core rejects bad stored data (such expenses are left out of balances):
+payers/shares summing to the amount, and "leave only when your balance is zero".
 
 ---
 
