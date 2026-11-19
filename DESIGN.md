@@ -21,13 +21,15 @@ Flat colours only. Material 3 `ColorScheme.fromSeed` with overrides.
 
 | Role | Hex | Use |
 |---|---|---|
-| Primary | `#0A7A91` | Primary buttons, FAB, selected tab, links. White text passes contrast. |
-| Primary (bright) | `#0E8FA8` | Large fills only (no small text on it). |
+| Primary (Teal) | `#0B8295` | Primary buttons, FAB, selected tab, app bar accents. White text on it passes (4.5:1). |
+| Deep teal | `#0A6170` | Teal text and links on light backgrounds. |
+| Night | `#0A3A42` | Dark surfaces, dark-mode base. Use instead of black. |
+| Mist | `#A7D9E2` | Second bar shade in the logo; light teal tints. |
 | Secondary | `#4E8C85` | Secondary/tonal buttons, selected chips. |
 | Tertiary | `#7B6FD6` | Used rarely: one accent, e.g. "All settled" state. Never as a gradient. |
 | Background | `#F7F8F8` | Screen background. |
 | Surface | `#FFFFFF` | Sheets, list sections that need separation. |
-| Text | `#1B1F20` | Main text. |
+| Text (Ink) | `#14272B` | Main text. |
 | Text muted | `#5F6B6D` | Secondary text, dates, labels. |
 | Outline | `#D5DBDC` | Input borders, the few dividers we use. |
 | Owed (positive) | `#12884E` | "You are owed", + amounts. |
@@ -43,7 +45,9 @@ Rules:
 
 ## 3. Typography
 
-- **One font family.** Use the platform default (Roboto). Urdu: Noto Nastaliq Urdu or Noto Sans Arabic, only for Urdu text.
+- **One font family for the interface.** Use the platform default (Roboto). Urdu: Noto Nastaliq Urdu or Noto Sans Arabic, only for Urdu text.
+- **Manrope** is the brand font. Use it only for the logo wordmark, the splash screen and the sign-in screen's logo. Never for body text, buttons or lists. See BRAND.md.
+- Logo, icon and brand rules live in **BRAND.md**.
 - Use Material 3 type scale; don't invent sizes.
 
 | Use | Style |

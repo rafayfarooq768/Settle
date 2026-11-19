@@ -3,6 +3,7 @@
 Read these before doing any work:
 - **@PLAN.md** — what we're building, constraints, money rules, data model, build order.
 - **@DESIGN.md** — how it must look and behave. Follow the anti-slop checklist strictly.
+- **@BRAND.md** — logo, app icon, brand colours and brand font. Logo files are in `assets/icon/`.
 
 If a request conflicts with PLAN.md or DESIGN.md, point out the conflict before writing code.
 When a decision changes the plan, update PLAN.md in the same change.
