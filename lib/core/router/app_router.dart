@@ -13,6 +13,8 @@ import '../../features/groups/ui/invite_screen.dart';
 import '../../features/groups/ui/join_screen.dart';
 import '../../features/groups/ui/scan_code_screen.dart';
 import '../../features/home/ui/home_screen.dart';
+import '../../features/profile/ui/change_password_screen.dart';
+import '../../features/profile/ui/settings_screen.dart';
 
 const _authRoutes = {'/sign-in', '/sign-up', '/reset-password'};
 
@@ -49,6 +51,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ResetPasswordScreen(),
       ),
       GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+        routes: [
+          GoRoute(
+            path: 'password',
+            builder: (context, state) => const ChangePasswordScreen(),
+          ),
+        ],
+      ),
       GoRoute(
         path: '/groups/new',
         builder: (context, state) => const CreateGroupScreen(),

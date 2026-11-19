@@ -41,5 +41,16 @@ abstract class AuthRepository {
 
   Future<void> sendPasswordResetEmail(String email);
 
+  /// Changes the name shown in the app (Settings).
+  Future<void> updateDisplayName(String name);
+
+  /// True if the account has an email/password sign-in (Google-only
+  /// accounts have no password to change).
+  bool get hasPassword;
+
+  /// Checks [current] first (Firebase needs a recent sign-in), then sets
+  /// [next]. Throws [AuthException] with wrongPassword or weakPassword.
+  Future<void> changePassword({required String current, required String next});
+
   Future<void> signOut();
 }

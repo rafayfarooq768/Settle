@@ -39,61 +39,80 @@ extension MoneyColorsContext on BuildContext {
       Theme.of(this).extension<MoneyColors>() ?? MoneyColors.light;
 }
 
-/// Avatar tints and QR colours (DESIGN.md §6). Avatars use one of six flat,
-/// muted tints chosen by name hash; the QR stays dark-on-light in both
-/// themes so every scanner can read it.
+/// Brand-only colours for avatars, group tiles, QR and panels (BRAND.md §3,
+/// DESIGN.md §2 and §6). No other tints: people are Mist, groups are Teal
+/// like the app icon.
 class ExtraColors extends ThemeExtension<ExtraColors> {
   const ExtraColors({
-    required this.avatarTints,
+    required this.avatar,
     required this.onAvatar,
+    required this.groupTile,
+    required this.onGroupTile,
+    required this.settled,
     required this.qrDark,
     required this.qrLight,
+    required this.panel,
   });
 
-  final List<Color> avatarTints;
+  /// Person avatar fill and initials.
+  final Color avatar;
   final Color onAvatar;
+
+  /// Group tile fill and initials.
+  final Color groupTile;
+  final Color onGroupTile;
+
+  /// "Settled up" text: brand teal, never a money colour.
+  final Color settled;
+
+  /// QR stays dark-on-light in both themes so any scanner reads it.
   final Color qrDark;
   final Color qrLight;
 
+  /// Panel fill (DESIGN.md §4): Surface on light, one step above Night on dark.
+  final Color panel;
+
   static const light = ExtraColors(
-    avatarTints: [
-      Color(0xFFD6EBEF),
-      Color(0xFFE2E8D3),
-      Color(0xFFF0DFD4),
-      Color(0xFFE2DEF2),
-      Color(0xFFD9EADF),
-      Color(0xFFF0E6CF),
-    ],
-    onAvatar: AppColors.ink,
+    avatar: AppColors.mist,
+    onAvatar: AppColors.deepTeal,
+    groupTile: AppColors.teal,
+    onGroupTile: AppColors.white,
+    settled: AppColors.deepTeal,
     qrDark: AppColors.ink,
     qrLight: AppColors.white,
+    panel: AppColors.surface,
   );
 
   static const dark = ExtraColors(
-    avatarTints: [
-      Color(0xFF1F5A65),
-      Color(0xFF414D30),
-      Color(0xFF5C4033),
-      Color(0xFF433D60),
-      Color(0xFF2F5242),
-      Color(0xFF5C4D2C),
-    ],
-    onAvatar: AppColors.white,
+    avatar: AppColors.deepTeal,
+    onAvatar: AppColors.mist,
+    groupTile: AppColors.teal,
+    onGroupTile: AppColors.white,
+    settled: AppColors.mist,
     qrDark: AppColors.ink,
     qrLight: AppColors.white,
+    panel: AppColors.nightPanel,
   );
 
   @override
   ExtraColors copyWith({
-    List<Color>? avatarTints,
+    Color? avatar,
     Color? onAvatar,
+    Color? groupTile,
+    Color? onGroupTile,
+    Color? settled,
     Color? qrDark,
     Color? qrLight,
+    Color? panel,
   }) => ExtraColors(
-    avatarTints: avatarTints ?? this.avatarTints,
+    avatar: avatar ?? this.avatar,
     onAvatar: onAvatar ?? this.onAvatar,
+    groupTile: groupTile ?? this.groupTile,
+    onGroupTile: onGroupTile ?? this.onGroupTile,
+    settled: settled ?? this.settled,
     qrDark: qrDark ?? this.qrDark,
     qrLight: qrLight ?? this.qrLight,
+    panel: panel ?? this.panel,
   );
 
   @override

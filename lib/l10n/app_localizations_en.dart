@@ -351,4 +351,168 @@ class AppLocalizationsEn extends AppLocalizations {
   String joinedGroup(String group) {
     return 'Khush aamdeed! You\'re in $group.';
   }
+
+  @override
+  String get overallLabel => 'Overall';
+
+  @override
+  String get groupsLabel => 'Groups';
+
+  @override
+  String balanceYouOwe(String amount) {
+    return 'You owe $amount';
+  }
+
+  @override
+  String balanceYouAreOwed(String amount) {
+    return 'You are owed $amount';
+  }
+
+  @override
+  String get balanceAllSettled => 'You\'re all settled up';
+
+  @override
+  String get balanceSettledHere => 'You\'re settled up here';
+
+  @override
+  String balanceBothLine(String owe, String owed) {
+    return 'You owe $owe · You are owed $owed';
+  }
+
+  @override
+  String rowYouOwe(String amount) {
+    return 'you owe $amount';
+  }
+
+  @override
+  String rowYouAreOwed(String amount) {
+    return 'you are owed $amount';
+  }
+
+  @override
+  String get rowSettled => 'settled up';
+
+  @override
+  String memberOwes(String amount) {
+    return 'owes $amount';
+  }
+
+  @override
+  String memberIsOwed(String amount) {
+    return 'is owed $amount';
+  }
+
+  @override
+  String membersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupSubtitle(String type, String members) {
+    return '$type · $members';
+  }
+
+  @override
+  String get newGroupOrJoin => 'New group or join';
+
+  @override
+  String get tabExpenses => 'Expenses';
+
+  @override
+  String get tabBalances => 'Balances';
+
+  @override
+  String get tabSettleUp => 'Settle up';
+
+  @override
+  String get settleEveryoneSettled => 'Everyone is settled up.';
+
+  @override
+  String transferPays(String from, String to) {
+    return '$from pays $to';
+  }
+
+  @override
+  String get youLabel => 'You';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsTooltip => 'Settings';
+
+  @override
+  String get accountSection => 'Account';
+
+  @override
+  String get nameRow => 'Name';
+
+  @override
+  String get emailRow => 'Email';
+
+  @override
+  String get passwordRow => 'Password';
+
+  @override
+  String get googleOnlyAccount => 'You sign in with Google';
+
+  @override
+  String get changeNameTitle => 'Your name';
+
+  @override
+  String get nameUpdated => 'Name updated';
+
+  @override
+  String get changePasswordTitle => 'Change password';
+
+  @override
+  String get currentPasswordLabel => 'Current password';
+
+  @override
+  String get newPasswordLabel => 'New password';
+
+  @override
+  String get passwordChanged => 'Password changed';
+
+  @override
+  String get errorCurrentPasswordWrong => 'That isn\'t your current password.';
+
+  @override
+  String get placeholderRemove => 'Remove';
+
+  @override
+  String placeholderRemoved(String name) {
+    return '$name removed';
+  }
+
+  @override
+  String placeholderNotSettled(String name, String amount) {
+    return '$name has a balance of $amount. Settle up before removing them.';
+  }
+
+  @override
+  String get deleteGroupButton => 'Delete group';
+
+  @override
+  String deleteGroupDialogTitle(String group) {
+    return 'Delete $group?';
+  }
+
+  @override
+  String get deleteGroupDialogBody =>
+      'You\'re the only member left. This deletes the group, its expenses and its history. It can\'t be undone.';
+
+  @override
+  String get deleteGroupConfirm => 'Delete';
+
+  @override
+  String groupDeleted(String group) {
+    return '$group deleted';
+  }
 }

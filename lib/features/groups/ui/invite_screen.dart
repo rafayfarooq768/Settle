@@ -9,9 +9,12 @@ import '../../../core/errors/error_text.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_theme_extensions.dart';
+import '../../../core/widgets/panel.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/group.dart';
 import 'groups_providers.dart';
+import '../../../core/widgets/loading_button.dart';
+import '../../../core/widgets/screen_layout.dart';
 
 /// Invite (PLAN.md §6): the join code, its QR, and a WhatsApp share.
 class InviteScreen extends ConsumerWidget {
@@ -29,50 +32,66 @@ class InviteScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.inviteTitle)),
-      body: SafeArea(
-        child: group == null
-            ? const Center(child: CircularProgressIndicator())
-            : ListView(
-                padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-                children: [
+      body: group == null
+          ? const Center(child: CircularProgressIndicator())
+          : ScreenLayout(
+              padded: false,
+              body: [
+                const SizedBox(height: AppSpacing.lg),
+                _Padded(
                   Text(
                     l10n.inviteInstructions,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xl),
-                  // Codes are Latin letters and digits; keep them LTR in Urdu.
-                  Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: SelectableText(
-                      group.joinCode,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.headlineMedium,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  Center(child: _JoinQr(code: group.joinCode)),
-                  const SizedBox(height: AppSpacing.xl),
-                  FilledButton(
-                    onPressed: () => _share(context, group),
-                    child: Text(l10n.shareOnWhatsApp),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  OutlinedButton(
-                    onPressed: () => _copy(context, group.joinCode),
-                    child: Text(l10n.copyCodeButton),
-                  ),
-                  if (isCreator) ...[
-                    const SizedBox(height: AppSpacing.xl),
-                    TextButton(
-                      onPressed: () => _newCode(context, ref, group, me.id),
-                      child: Text(l10n.newCodeButton),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Panel(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: Column(
+                        children: [
+                          // Codes are Latin letters and digits; keep them
+                          // LTR in Urdu.
+                          Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: SelectableText(
+                              group.joinCode,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.headlineMedium,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+                          _JoinQr(code: group.joinCode),
+                        ],
+                      ),
                     ),
                   ],
+                ),
+              ],
+              actions: [
+                LoadingButton(
+                  label: l10n.shareOnWhatsApp,
+                  onPressed: () => _share(context, group),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                LoadingButton(
+                  label: l10n.copyCodeButton,
+                  onPressed: () => _copy(context, group.joinCode),
+                  style: LoadingButtonStyle.outlined,
+                ),
+                if (isCreator) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  LoadingButton(
+                    label: l10n.newCodeButton,
+                    onPressed: () => _newCode(context, ref, group, me.id),
+                    style: LoadingButtonStyle.text,
+                  ),
                 ],
-              ),
-      ),
+              ],
+            ),
     );
   }
 
@@ -158,4 +177,19 @@ class _JoinQr extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Screen-margin padding for content outside panels.
+class _Padded extends StatelessWidget {
+  const _Padded(this.child);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.screenHorizontal,
+    ),
+    child: child,
+  );
 }

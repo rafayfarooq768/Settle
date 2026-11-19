@@ -10,6 +10,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../profile/ui/profile_providers.dart';
 import 'group_type_field.dart';
 import 'groups_providers.dart';
+import '../../../core/widgets/screen_layout.dart';
 
 /// New group: name + free-text type. Works offline; it syncs later.
 class CreateGroupScreen extends ConsumerStatefulWidget {
@@ -70,36 +71,35 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.createGroupTitle)),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-          children: [
-            TextField(
-              controller: _name,
-              autofocus: true,
-              maxLength: 60,
-              textCapitalization: TextCapitalization.words,
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                labelText: l10n.groupNameLabel,
-                errorText: _nameError,
-                counterText: '',
-              ),
+      body: ScreenLayout(
+        body: [
+          const SizedBox(height: AppSpacing.lg),
+          TextField(
+            controller: _name,
+            autofocus: true,
+            maxLength: 60,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              labelText: l10n.groupNameLabel,
+              errorText: _nameError,
+              counterText: '',
             ),
-            const SizedBox(height: AppSpacing.lg),
-            GroupTypeField(controller: _type),
-            const SizedBox(height: AppSpacing.xl),
-            if (_error != null) ...[
-              FormMessage(_error!),
-              const SizedBox(height: AppSpacing.md),
-            ],
-            LoadingButton(
-              label: l10n.createGroupButton,
-              isLoading: _saving,
-              onPressed: _create,
-            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          GroupTypeField(controller: _type),
+        ],
+        actions: [
+          if (_error != null) ...[
+            FormMessage(_error!),
+            const SizedBox(height: AppSpacing.md),
           ],
-        ),
+          LoadingButton(
+            label: l10n.createGroupButton,
+            isLoading: _saving,
+            onPressed: _create,
+          ),
+        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../theme/app_spacing.dart';
+import 'app_sheet.dart';
 
 /// A bottom sheet with one text field and a Save-style button
 /// (DESIGN.md §8: sheets for small inputs). Returns the trimmed text, or null.
@@ -14,10 +15,9 @@ Future<String?> showTextInputSheet(
   String? helper,
   String? emptyError,
 }) {
-  return showModalBottomSheet<String>(
+  return showAppSheet<String>(
     context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
+    scrollControlled: true,
     builder: (context) => _TextInputSheet(
       title: title,
       label: label,

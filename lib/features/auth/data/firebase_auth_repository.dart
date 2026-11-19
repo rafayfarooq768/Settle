@@ -89,6 +89,42 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> updateDisplayName(String name) async {
+    try {
+      await _auth.currentUser?.updateDisplayName(name);
+    } on fb.FirebaseAuthException catch (e) {
+      throw AuthException(_mapCode(e.code));
+    }
+  }
+
+  @override
+  bool get hasPassword =>
+      _auth.currentUser?.providerData.any(
+        (p) => p.providerId == fb.EmailAuthProvider.PROVIDER_ID,
+      ) ??
+      false;
+
+  @override
+  Future<void> changePassword({
+    required String current,
+    required String next,
+  }) async {
+    final user = _auth.currentUser;
+    final email = user?.email;
+    if (user == null || email == null) {
+      throw const AuthException(AuthFailure.generic);
+    }
+    try {
+      await user.reauthenticateWithCredential(
+        fb.EmailAuthProvider.credential(email: email, password: current),
+      );
+      await user.updatePassword(next);
+    } on fb.FirebaseAuthException catch (e) {
+      throw AuthException(_mapCode(e.code));
+    }
+  }
+
+  @override
   Future<void> signOut() async {
     await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
   }

@@ -144,8 +144,13 @@ Positive = is owed. Negative = owes. Sum of all nets in a group = 0 (assert this
 - **Join flow:** install → sign in → enter or scan code → "Which one are you?" list of
   unclaimed placeholders → tap your name (merges history) or "I'm not listed" (new member).
 - **Placeholders** can't log in. Any real member can add expenses involving them.
+- Any member can **remove an unclaimed placeholder**, only while its balance is zero
+  (owner's decision, 2026-11-19). It's hidden, not deleted, so past expenses keep their names.
 - Creator can regenerate the join code (old code stops working).
 - Members can leave only when their group balance is zero.
+- When you are the **only real member left**, you can delete the group (owner's decision,
+  2026-11-19). It deletes the group, all its subcollections and its join code from the app
+  (no Cloud Functions), so it needs a connection. Confirmed by dialog.
 
 ---
 
@@ -211,6 +216,8 @@ top of `rules.test.js`). Decisions (2026-11-19):
   (or anyone, if they're a placeholder) can record a confirmed payment directly.
 - Activity: append-only, and you can only log actions as your own member.
 - Join codes: get by exact code only; only the creator regenerates.
+- Deleting: only when `memberUids` is exactly you; then the group, its subcollections and its
+  join code may be deleted.
 - Never ship with open test-mode rules.
 
 **Rules can't check these** (no loops or balance math in rules), so the app enforces them
@@ -218,6 +225,10 @@ and the money core rejects bad stored data (such expenses are left out of balanc
 payers/shares summing to the amount, and "leave only when your balance is zero".
 
 ---
+
+**Reads:** a group's subcollections are listened to while its screen is open, and also while
+Home is open (Home shows your balance in each group, DESIGN.md §11). Fine for a handful of
+groups on the free plan; revisit if someone has many large groups.
 
 ## 8. Screens
 
@@ -231,7 +242,7 @@ payers/shares summing to the amount, and "leave only when your balance is zero".
 8. Join group (code / QR / claim name)
 9. Group settings (name, type, members, add placeholder, join code)
 10. Activity
-11. Settings (payment methods, language, sign out)
+11. Settings (name, password, payment methods, language, sign out)
 
 See DESIGN.md for how each one should look.
 

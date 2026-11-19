@@ -40,3 +40,16 @@ final groupNetsProvider = Provider.autoDispose
         return AsyncError(e, st);
       }
     });
+
+/// The signed-in user's net in one group (0 until they pick their member).
+final myGroupNetProvider = Provider.autoDispose.family<AsyncValue<int>, String>(
+  (ref, groupId) {
+    final me = ref.watch(myMemberProvider(groupId));
+    final nets = ref.watch(groupNetsProvider(groupId));
+    if (me.hasError) return AsyncError(me.error!, me.stackTrace!);
+    if (nets.hasError) return AsyncError(nets.error!, nets.stackTrace!);
+    if (!me.hasValue || !nets.hasValue) return const AsyncLoading();
+    final id = me.requireValue?.id;
+    return AsyncData(id == null ? 0 : nets.requireValue[id] ?? 0);
+  },
+);

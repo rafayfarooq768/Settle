@@ -9,6 +9,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../profile/ui/profile_providers.dart';
 import '../domain/group.dart';
 import 'groups_providers.dart';
+import '../../../core/widgets/loading_button.dart';
 
 /// "Which one are you?" (PLAN.md §6): tap your placeholder to take over its
 /// history, or "I'm not listed" to join as a new member.
@@ -111,7 +112,8 @@ class _ClaimMemberViewState extends ConsumerState<ClaimMemberView> {
               if (_busy)
                 const Center(child: CircularProgressIndicator())
               else
-                OutlinedButton(
+                LoadingButton(
+                  label: l10n.claimNotListed,
                   onPressed: () => _run(
                     (me) => repo
                         .joinAsNewMember(
@@ -122,7 +124,7 @@ class _ClaimMemberViewState extends ConsumerState<ClaimMemberView> {
                         )
                         .then((_) {}),
                   ),
-                  child: Text(l10n.claimNotListed),
+                  style: LoadingButtonStyle.outlined,
                 ),
             ],
           ),

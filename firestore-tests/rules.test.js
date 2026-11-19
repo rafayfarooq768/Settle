@@ -368,9 +368,34 @@ describe('placeholders', () => {
     );
   });
 
+  test('any member can remove (hide) an unclaimed placeholder', async () => {
+    await createGroup();
+    await joinAsNew('bob', 'm-bob');
+    await addPlaceholder('alice', 'm-alice', 'm-sara', 'Sara');
+    await assertSucceeds(
+      updateDoc(doc(db('bob'), 'groups/g1/members/m-sara'), { active: false }),
+    );
+  });
+
+  test('cannot remove a real member, or bring a placeholder back as yours', async () => {
+    await createGroup();
+    await joinAsNew('bob', 'm-bob');
+    await assertFails(
+      updateDoc(doc(db('bob'), 'groups/g1/members/m-alice'), { active: false }),
+    );
+    await addPlaceholder('alice', 'm-alice', 'm-sara', 'Sara');
+    await assertFails(
+      updateDoc(doc(db('bob'), 'groups/g1/members/m-sara'), {
+        active: false,
+        uid: 'bob',
+      }),
+    );
+  });
+
   test('non-members cannot add placeholders; members are never deleted', async () => {
     await createGroup();
     await assertFails(addPlaceholder('bob', 'm-alice', 'm-x', 'X'));
+    await joinAsNew('bob', 'm-bob'); // deletes are only for a sole member
     await assertFails(deleteDoc(doc(db('alice'), 'groups/g1/members/m-alice')));
   });
 });
@@ -388,8 +413,9 @@ describe('expenses', () => {
     );
   });
 
-  test('never hard-deleted', async () => {
+  test('never hard-deleted while the group is shared', async () => {
     await createGroup();
+    await joinAsNew('bob', 'm-bob');
     const ref = doc(db('alice'), 'groups/g1/expenses/e1');
     await setDoc(ref, expense('alice'));
     await assertFails(deleteDoc(ref));
@@ -510,6 +536,47 @@ describe('activity log', () => {
       updateDoc(doc(db('alice'), 'groups/g1/activity/a1'), { summary: 'edited' }),
     );
     await assertFails(deleteDoc(doc(db('alice'), 'groups/g1/activity/a1')));
+  });
+});
+
+describe('deleting a group', () => {
+  async function deleteAll(uid) {
+    const d = db(uid);
+    const batch = writeBatch(d);
+    for (const sub of ['expenses', 'settlements', 'activity', 'members']) {
+      const snap = await getDocs(collection(d, `groups/g1/${sub}`));
+      snap.docs.forEach((x) => batch.delete(x.ref));
+    }
+    await batch.commit();
+    const last = writeBatch(d);
+    last.delete(doc(d, 'joinCodes/CHAI-7KQ2M'));
+    last.delete(doc(d, 'groups/g1'));
+    await last.commit();
+  }
+
+  test('the last real member can delete it with everything in it', async () => {
+    await createGroup();
+    await addPlaceholder('alice', 'm-alice', 'm-sara', 'Sara');
+    await setDoc(doc(db('alice'), 'groups/g1/expenses/e1'), expense('alice'));
+    await assertSucceeds(deleteAll('alice'));
+    await assertSucceeds(getDoc(doc(db('alice'), 'joinCodes/CHAI-7KQ2M')));
+    const gone = await getDoc(doc(db('alice'), 'joinCodes/CHAI-7KQ2M'));
+    if (gone.exists()) throw new Error('join code should be gone');
+  });
+
+  test('not while someone else is still in it', async () => {
+    await createGroup();
+    await joinAsNew('bob', 'm-bob');
+    await setDoc(doc(db('alice'), 'groups/g1/expenses/e1'), expense('alice'));
+    await assertFails(deleteDoc(doc(db('alice'), 'groups/g1/expenses/e1')));
+    await assertFails(deleteDoc(doc(db('alice'), 'groups/g1')));
+    await assertFails(deleteDoc(doc(db('bob'), 'groups/g1/activity/a1')));
+  });
+
+  test("a non-member can't delete it", async () => {
+    await createGroup();
+    await assertFails(deleteDoc(doc(db('mallory'), 'groups/g1')));
+    await assertFails(deleteDoc(doc(db('mallory'), 'joinCodes/CHAI-7KQ2M')));
   });
 });
 

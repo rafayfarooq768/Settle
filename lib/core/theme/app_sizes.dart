@@ -23,4 +23,13 @@ class AppSizes {
 
   /// Width of the placeholder avatar's outline.
   static const double avatarOutline = 1;
+
+  /// Small avatars in a group's member row (DESIGN.md §6).
+  static const double avatarSmall = 28;
+
+  /// How much small avatars overlap in the member row.
+  static const double avatarOverlap = 8;
+
+  /// Lockup size in Settings (BRAND.md §6: T = 32, no tagline).
+  static const double settingsLogo = 32;
 }

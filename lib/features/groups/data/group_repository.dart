@@ -122,6 +122,27 @@ class GroupRepository {
     await commitOrQueue(batch);
   }
 
+  /// Hides an unclaimed placeholder (owner's decision, PLAN.md §6). It stays
+  /// in the database so past expenses keep its name. The caller checks the
+  /// balance is zero first.
+  Future<void> removePlaceholder({
+    required String groupId,
+    required String actorMemberId,
+    required Member placeholder,
+  }) async {
+    final batch = _db.batch()
+      ..update(_members(groupId).doc(placeholder.id), {'active': false});
+    logActivity(
+      batch,
+      _group(groupId),
+      type: ActivityType.placeholderRemoved,
+      actorMemberId: actorMemberId,
+      targetId: placeholder.id,
+      summary: placeholder.displayName,
+    );
+    await commitOrQueue(batch);
+  }
+
   /// The group id for what the user typed or scanned, or null if the code
   /// doesn't exist (wrong, or regenerated). Needs a connection.
   Future<String?> findGroupByCode(String input) async {
@@ -275,6 +296,37 @@ class GroupRepository {
       'memberUids': FieldValue.arrayRemove([uid]),
     });
     await commitOrQueue(batch);
+  }
+
+  /// Deletes the group and everything in it. Only allowed (by the rules)
+  /// when the caller is the group's last real member (PLAN.md §6). Needs a
+  /// connection: it reads every doc to delete it, since Spark has no Cloud
+  /// Functions to delete subcollections server-side.
+  Future<void> deleteGroup(Group group) async {
+    final ref = _group(group.id);
+    const server = GetOptions(source: Source.server);
+    final docs = <DocumentReference<Json>>[];
+    for (final sub in [
+      Col.expenses,
+      Col.settlements,
+      Col.activity,
+      Col.members,
+    ]) {
+      final snap = await ref.collection(sub).get(server);
+      docs.addAll(snap.docs.map((d) => d.reference));
+    }
+    // Firestore batches hold at most 500 writes.
+    for (var i = 0; i < docs.length; i += 450) {
+      final batch = _db.batch();
+      for (final doc in docs.skip(i).take(450)) {
+        batch.delete(doc);
+      }
+      await batch.commit();
+    }
+    final last = _db.batch()
+      ..delete(_code(group.joinCode))
+      ..delete(ref);
+    await last.commit();
   }
 
   /// Copies the user's name and payment methods onto their member doc in

@@ -1,0 +1,130 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../core/errors/error_text.dart';
+import '../../../core/theme/app_sizes.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/panel.dart';
+import '../../../core/widgets/section_label.dart';
+import '../../../core/widgets/settle_logo.dart';
+import '../../../core/widgets/text_input_sheet.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../auth/ui/auth_providers.dart';
+import '../../groups/ui/groups_providers.dart';
+import 'profile_providers.dart';
+import '../../../core/widgets/loading_button.dart';
+import '../../../core/widgets/screen_layout.dart';
+
+/// Settings (PLAN.md §8 screen 11, DESIGN.md §11). Payment methods arrive in
+/// step 10, language in step 12.
+class SettingsScreen extends ConsumerWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final me = ref.watch(myIdentityProvider);
+    final user = ref.watch(userChangesProvider).valueOrNull;
+    final auth = ref.read(authRepositoryProvider);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
+      body: ScreenLayout(
+        padded: false,
+        body: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenHorizontal,
+              vertical: AppSpacing.sm,
+            ),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: SettleLogo(
+                size: AppSizes.settingsLogo,
+                variant: isDark
+                    ? SettleLogoVariant.night
+                    : SettleLogoVariant.light,
+              ),
+            ),
+          ),
+          SectionLabel(l10n.accountSection),
+          Panel(
+            dividerIndent: AppSpacing.lg,
+            children: [
+              ListTile(
+                minTileHeight: AppSpacing.rowHeight,
+                title: Text(l10n.nameRow),
+                subtitle: Text(me?.name ?? ''),
+                trailing: const Icon(Icons.edit_outlined),
+                onTap: () => _changeName(context, ref, me?.name ?? ''),
+              ),
+              ListTile(
+                minTileHeight: AppSpacing.rowHeight,
+                title: Text(l10n.emailRow),
+                subtitle: Text(user?.email ?? ''),
+              ),
+              if (auth.hasPassword)
+                ListTile(
+                  minTileHeight: AppSpacing.rowHeight,
+                  title: Text(l10n.passwordRow),
+                  subtitle: Text(l10n.changePasswordTitle),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/settings/password'),
+                )
+              else
+                ListTile(
+                  minTileHeight: AppSpacing.rowHeight,
+                  title: Text(l10n.passwordRow),
+                  subtitle: Text(l10n.googleOnlyAccount),
+                ),
+            ],
+          ),
+        ],
+        actions: [
+          LoadingButton(
+            label: l10n.signOutButton,
+            onPressed: () => auth.signOut(),
+            style: LoadingButtonStyle.outlined,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Updates the sign-in name, the profile doc, and your member doc in every
+  /// group, so friends see the new name.
+  Future<void> _changeName(
+    BuildContext context,
+    WidgetRef ref,
+    String current,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final name = await showTextInputSheet(
+      context,
+      title: l10n.changeNameTitle,
+      label: l10n.signUpNameLabel,
+      helper: l10n.signUpNameHelper,
+      action: l10n.saveButton,
+      initial: current,
+      emptyError: l10n.errorNameRequired,
+    );
+    final uid = ref.read(myIdentityProvider)?.uid;
+    if (name == null || name == current || uid == null) return;
+    try {
+      await ref
+          .read(userRepositoryProvider)
+          .update(uid: uid, displayName: name);
+      await ref.read(authRepositoryProvider).updateDisplayName(name);
+      await ref
+          .read(groupRepositoryProvider)
+          .syncMyProfile(uid: uid, displayName: name);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.nameUpdated)));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(errorText(l10n, e))));
+    }
+  }
+}

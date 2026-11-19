@@ -6,6 +6,7 @@ enum ActivityType {
   joinCodeRegenerated,
   placeholderAdded,
   memberRenamed,
+  placeholderRemoved,
   memberJoined,
   placeholderClaimed,
   memberLeft,

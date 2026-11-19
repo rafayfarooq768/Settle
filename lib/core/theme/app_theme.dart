@@ -20,7 +20,8 @@ class AppTheme {
           primary: AppColors.primary,
           onPrimary: AppColors.white,
           secondary: AppColors.secondary,
-          tertiary: AppColors.tertiary,
+          // No purple: brand palette only (DESIGN.md §2, owner 2026-11-19).
+          tertiary: AppColors.deepTeal,
           surface: AppColors.surface,
           onSurface: AppColors.text,
           onSurfaceVariant: AppColors.textMuted,

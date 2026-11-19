@@ -13,6 +13,7 @@ import 'auth_error_text.dart';
 import 'auth_fields.dart';
 import 'auth_providers.dart';
 import 'google_sign_in_button.dart';
+import '../../../core/widgets/screen_layout.dart';
 
 enum _Action { email, google }
 
@@ -84,74 +85,66 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         : SettleLogoVariant.light;
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenHorizontal,
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Form(
+        key: _formKey,
+        child: ScreenLayout(
+          body: [
+            const SizedBox(height: AppSpacing.xxl + AppSpacing.xxl),
+            Center(
+              child: SettleLogo(
+                size: AppSizes.signInLogo,
+                variant: logoVariant,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xxl + AppSpacing.xl),
+            Text(l10n.signInTitle, style: theme.textTheme.titleLarge),
+            const SizedBox(height: AppSpacing.lg),
+            GoogleSignInButton(
+              isLoading: _running == _Action.google,
+              onPressed: busy ? null : _signInWithGoogle,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            const OrLabel(),
+            const SizedBox(height: AppSpacing.lg),
+            EmailField(controller: _emailController),
+            const SizedBox(height: AppSpacing.lg),
+            PasswordField(
+              controller: _passwordController,
+              isNewPassword: false,
+              onSubmitted: busy ? null : _signInWithEmail,
+            ),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: LoadingButton(
+                label: l10n.forgotPasswordButton,
+                onPressed: busy ? null : () => context.push('/reset-password'),
+                style: LoadingButtonStyle.text,
+              ),
+            ),
+          ],
+          actions: [
+            if (_errorMessage != null) ...[
+              FormMessage(_errorMessage!),
+              const SizedBox(height: AppSpacing.md),
+            ],
+            LoadingButton(
+              label: l10n.signInButton,
+              isLoading: _running == _Action.email,
+              onPressed: busy ? null : _signInWithEmail,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: AppSpacing.xl),
-                Center(
-                  child: SettleLogo(
-                    size: AppSizes.signInLogo,
-                    variant: logoVariant,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                Text(l10n.signInTitle, style: theme.textTheme.titleLarge),
-                const SizedBox(height: AppSpacing.lg),
-                GoogleSignInButton(
-                  isLoading: _running == _Action.google,
-                  onPressed: busy ? null : _signInWithGoogle,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                const OrLabel(),
-                const SizedBox(height: AppSpacing.lg),
-                EmailField(controller: _emailController),
-                const SizedBox(height: AppSpacing.lg),
-                PasswordField(
-                  controller: _passwordController,
-                  isNewPassword: false,
-                  onSubmitted: busy ? null : _signInWithEmail,
-                ),
-                Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: TextButton(
-                    onPressed: busy
-                        ? null
-                        : () => context.push('/reset-password'),
-                    child: Text(l10n.forgotPasswordButton),
-                  ),
-                ),
-                if (_errorMessage != null) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  FormMessage(_errorMessage!),
-                ],
-                const SizedBox(height: AppSpacing.lg),
+                Text(l10n.signUpPrompt, style: theme.textTheme.bodyMedium),
                 LoadingButton(
-                  label: l10n.signInButton,
-                  isLoading: _running == _Action.email,
-                  onPressed: busy ? null : _signInWithEmail,
+                  label: l10n.signUpButton,
+                  onPressed: busy ? null : () => context.push('/sign-up'),
+                  style: LoadingButtonStyle.text,
                 ),
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(l10n.signUpPrompt, style: theme.textTheme.bodyMedium),
-                    TextButton(
-                      onPressed: busy ? null : () => context.push('/sign-up'),
-                      child: Text(l10n.signUpButton),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.lg),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );

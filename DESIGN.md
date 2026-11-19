@@ -26,9 +26,8 @@ Flat colours only. Material 3 `ColorScheme.fromSeed` with overrides.
 | Night | `#0A3A42` | Dark surfaces, dark-mode base. Use instead of black. |
 | Mist | `#A7D9E2` | Second bar shade in the logo; light teal tints. |
 | Secondary | `#4E8C85` | Secondary/tonal buttons, selected chips. |
-| Tertiary | `#7B6FD6` | Used rarely: one accent, e.g. "All settled" state. Never as a gradient. |
 | Background | `#F7F8F8` | Screen background. |
-| Surface | `#FFFFFF` | Sheets, list sections that need separation. |
+| Surface | `#FFFFFF` | Panels (see §4), sheets. Dark mode: `#104852`, one step lighter than Night. |
 | Text (Ink) | `#14272B` | Main text. |
 | Text muted | `#5F6B6D` | Secondary text, dates, labels. |
 | Outline | `#D5DBDC` | Input borders, the few dividers we use. |
@@ -40,6 +39,8 @@ Rules:
 - Owed/owe colours are for money only. Don't reuse red for decoration or green for "success" toasts.
 - No gradients. No glow. No translucent/frosted layers.
 - Dark mode: generate from the same seed; keep owed/owe hues, adjusted for contrast.
+- **Brand colours only** (owner's decision, 2026-11-19): no purple, no extra tints. The
+  "settled" state uses Deep teal (Mist on dark), never a money colour.
 
 ---
 
@@ -71,13 +72,18 @@ Rules:
 - List row height: min 56, 16 horizontal padding.
 - Tap targets: min 48×48.
 - Layout is mostly **lists**, not grids of cards. A list row is not a card.
-- Group related content with spacing and a section label, not with boxes and borders.
+- **Panels** (revised 2026-11-19, owner asked for more structure): related rows sit together
+  on one Surface panel on the Background, with 16 side margin and a section label above it.
+  Rows inside a panel are separated by a divider inset to the text (not full width).
+  A panel has no border and no shadow; contrast with the background is enough.
+- One level only: never a panel inside a panel, and no card per row.
+- Section labels: `labelLarge`, muted, 24 above and 8 below, aligned with the panel's text.
 
 ---
 
 ## 5. Shape and elevation
 
-- Corner radius: **8** for buttons, inputs, chips, sheets' top corners **16**. Nothing fully rounded except avatars and the FAB.
+- Corner radius: **8** for buttons, inputs, chips and group tiles; **12** for panels; sheets' top corners **16**. Nothing fully rounded except avatars and the FAB.
 - Elevation: **0** by default. Only the bottom sheet and FAB may cast a shadow (Material default, not custom).
 - No cards inside cards. At most one level of container on any screen.
 - Dividers only between list rows where rows would otherwise blur together (e.g. expense list). No decorative borders.
@@ -107,8 +113,13 @@ One primary button per screen. Full-width only at the bottom of forms.
 - Date headers group expenses (Today, Yesterday, 12 Nov).
 
 ### Avatars
-- Initials on a flat tinted circle (tint from a fixed set of 6 muted colours, chosen by name hash). No photos.
+- Initials on a flat **Mist** circle with Deep teal initials (dark: Deep teal with Mist). No photos.
 - Placeholder members: same avatar with an outline instead of fill, and "not joined yet" muted text.
+- Groups: initials in white on a **Teal rounded square** (radius 8), like the app icon, so groups and people
+  are told apart at a glance.
+- A row of up to 5 small member avatars (28dp, overlapping by 8) may show who is in a group,
+  followed by "+N" if there are more. Never decorative; it opens the member list.
+- The signed-in user's avatar sits at the end of the Home app bar and opens Settings.
 
 ### Icons
 - Material Symbols (Outlined), one weight, 24dp.
@@ -123,18 +134,29 @@ One primary button per screen. Full-width only at the bottom of forms.
 
 ## 7. Motion
 
-- Use Flutter/Material defaults for page transitions and ripples. Nothing custom.
+- Use Flutter/Material defaults for page transitions and ripples.
 - No load-in animations, no staggered list entrances, no bouncing.
-- Allowed: the standard progress indicator while a real network action runs, and a brief
-  `SnackBar` after save ("Expense added" with Undo).
+- Allowed, all defined once in `lib/core/theme/app_motion.dart`:
+  - **Press feedback:** buttons scale to 0.97 while pressed, 120 ms, strong ease-out
+    (`Cubic(0.23, 1, 0.32, 1)`), so a tap feels heard.
+  - **Bottom sheets:** drawer curve (`Cubic(0.32, 0.72, 0, 1)`), 300 ms in, 200 ms out
+    (exit is faster than entry). Always opened through `showAppSheet`.
+  - The standard progress indicator while a real network action runs, and a brief
+    `SnackBar` after save ("Expense added" with Undo).
+- When the phone has "Remove animations" on, press feedback and sheet motion are off.
 - Never fake loading. If data is cached, show it immediately.
 
----
+### Whole-screen layout
+Forms and single-purpose screens (sign in, sign up, reset, create group, join, change
+password, invite, settings, group settings) use `ScreenLayout`: content from the top,
+actions pinned to the bottom in the thumb zone, scrolling together when the keyboard is up.
+No floating blocks of content in the middle of an empty screen.
 
 ## 8. Feedback and dialogs
 
 - Prefer **Undo** over confirmation. Deleting an expense: delete, show SnackBar with Undo.
-- Confirmation dialogs only for irreversible, high-impact actions: leaving a group, regenerating join code.
+- Confirmation dialogs only for irreversible, high-impact actions: leaving a group, deleting a group,
+  regenerating join code.
 - Bottom sheets for small pickers (paid by, split mode). Full screens for forms.
 
 ---
@@ -144,7 +166,7 @@ One primary button per screen. Full-width only at the bottom of forms.
 Plain text and one action. No illustrations.
 - No groups: "No groups yet. Create one or join with a code." [Create group] [Join]
 - No expenses: "No expenses yet." [Add expense]
-- All settled: "Everyone is settled up." (tertiary colour text, once)
+- All settled: "Everyone is settled up." (Deep teal text, once)
 
 ---
 
@@ -187,13 +209,18 @@ Rules:
 ## 11. Key screens
 
 **Home**
-- Top: overall balance in one line of large text ("You are owed Rs 900") + small muted line
+- App bar: "Salam, Ali" (the screen's one Roman Urdu phrase); your avatar at the end opens Settings.
+- Summary panel: muted label "Overall", then the overall balance in one line of large text
+  ("You are owed Rs 900", or "You're all settled up" in tertiary) + small muted line
   ("You owe Rs 300 · You are owed Rs 1,200") only if both are non-zero.
-- List of groups: name, type (muted), your balance in that group on the right.
-- FAB: Add expense.
+- "Groups" label, then one panel of group rows: group tile, name, "Friends · 4 members" (muted),
+  your balance in that group on the right ("you owe Rs 300" / "you are owed Rs 700" / "settled up").
+  The last row is "New group or join" (add icon), opening a sheet with both choices.
+- FAB: Add expense (from step 5).
 
 **Group**
 - App bar: group name, settings icon.
+- Header panel: your balance in this group (large) and the member avatar row ("4 members").
 - Tabs: Expenses | Balances | Settle up.
 - Balances: list of members with net, sorted largest owed → largest owes.
 - Settle up: list of "Bilal → Ali Rs 300" rows; rows involving you are on top with an action
@@ -210,6 +237,22 @@ Rules:
 
 **Join**
 - Code field + "Scan QR" text button. Then "Which one are you?" list of placeholders + "I'm not listed".
+
+**Group settings**
+- Panels: Group (name and type), Members (avatars; placeholders show "not joined yet"),
+  Invite (join code). "Leave group" in owe-red text at the bottom; when you are the only real
+  member left it becomes "Delete group" (owe-red, confirmed by dialog).
+- Tapping a placeholder opens a sheet: Change name, Remove (owe-red). Remove works only at a
+  zero balance and keeps their history; it isn't confirmed by dialog (nothing is lost).
+
+**Invite**
+- One panel holding the code (large, LTR) and its QR. Primary: Share on WhatsApp. Secondary: Copy code.
+
+**Settings**
+- Small lockup (T = 32, no tagline) at the top (BRAND.md §6).
+- Account panel: Name (opens a sheet), Email (read-only), Password (opens Change password;
+  Google-only accounts see "You sign in with Google" instead).
+- Sign out as a text button below the panel.
 
 ---
 

@@ -20,9 +20,11 @@ class AppColors {
   // Interface (DESIGN.md §2)
   static const primary = teal;
   static const secondary = Color(0xFF4E8C85);
-  static const tertiary = Color(0xFF7B6FD6);
   static const background = Color(0xFFF7F8F8);
   static const surface = white;
+
+  /// Panel fill in dark mode: one step lighter than Night (DESIGN.md §2).
+  static const nightPanel = Color(0xFF104852);
   static const text = ink;
   static const textMuted = Color(0xFF5F6B6D);
   static const outline = Color(0xFFD5DBDC);

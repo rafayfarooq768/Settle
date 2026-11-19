@@ -10,6 +10,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../profile/ui/profile_providers.dart';
 import '../domain/join_code.dart';
 import 'groups_providers.dart';
+import '../../../core/widgets/screen_layout.dart';
 
 /// Join (DESIGN.md §11): code field + "Scan QR". After joining, the Group
 /// screen asks "Which one are you?". Needs a connection.
@@ -71,44 +72,44 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.joinTitle)),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-          children: [
-            TextField(
-              controller: _code,
-              autofocus: true,
-              textCapitalization: TextCapitalization.characters,
-              autocorrect: false,
-              enableSuggestions: false,
-              textInputAction: TextInputAction.go,
-              textDirection: TextDirection.ltr,
-              onSubmitted: (_) => _join(),
-              decoration: InputDecoration(
-                labelText: l10n.joinCodeLabel,
-                hintText: l10n.joinCodeHint,
-                errorText: _codeError,
-              ),
+      body: ScreenLayout(
+        body: [
+          const SizedBox(height: AppSpacing.lg),
+          TextField(
+            controller: _code,
+            autofocus: true,
+            textCapitalization: TextCapitalization.characters,
+            autocorrect: false,
+            enableSuggestions: false,
+            textInputAction: TextInputAction.go,
+            textDirection: TextDirection.ltr,
+            onSubmitted: (_) => _join(),
+            decoration: InputDecoration(
+              labelText: l10n.joinCodeLabel,
+              hintText: l10n.joinCodeHint,
+              errorText: _codeError,
             ),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: TextButton(
-                onPressed: _joining ? null : _scan,
-                child: Text(l10n.scanQrButton),
-              ),
+          ),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: LoadingButton(
+              label: l10n.scanQrButton,
+              onPressed: _joining ? null : _scan,
+              style: LoadingButtonStyle.text,
             ),
-            const SizedBox(height: AppSpacing.lg),
-            if (_error != null) ...[
-              FormMessage(_error!),
-              const SizedBox(height: AppSpacing.md),
-            ],
-            LoadingButton(
-              label: l10n.joinButton,
-              isLoading: _joining,
-              onPressed: _join,
-            ),
+          ),
+        ],
+        actions: [
+          if (_error != null) ...[
+            FormMessage(_error!),
+            const SizedBox(height: AppSpacing.md),
           ],
-        ),
+          LoadingButton(
+            label: l10n.joinButton,
+            isLoading: _joining,
+            onPressed: _join,
+          ),
+        ],
       ),
     );
   }

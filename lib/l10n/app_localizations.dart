@@ -711,6 +711,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Khush aamdeed! You\'re in {group}.'**
   String joinedGroup(String group);
+
+  /// No description provided for @overallLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall'**
+  String get overallLabel;
+
+  /// No description provided for @groupsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get groupsLabel;
+
+  /// No description provided for @balanceYouOwe.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe {amount}'**
+  String balanceYouOwe(String amount);
+
+  /// No description provided for @balanceYouAreOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'You are owed {amount}'**
+  String balanceYouAreOwed(String amount);
+
+  /// No description provided for @balanceAllSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all settled up'**
+  String get balanceAllSettled;
+
+  /// No description provided for @balanceSettledHere.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re settled up here'**
+  String get balanceSettledHere;
+
+  /// No description provided for @balanceBothLine.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe {owe} · You are owed {owed}'**
+  String balanceBothLine(String owe, String owed);
+
+  /// No description provided for @rowYouOwe.
+  ///
+  /// In en, this message translates to:
+  /// **'you owe {amount}'**
+  String rowYouOwe(String amount);
+
+  /// No description provided for @rowYouAreOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'you are owed {amount}'**
+  String rowYouAreOwed(String amount);
+
+  /// No description provided for @rowSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'settled up'**
+  String get rowSettled;
+
+  /// No description provided for @memberOwes.
+  ///
+  /// In en, this message translates to:
+  /// **'owes {amount}'**
+  String memberOwes(String amount);
+
+  /// No description provided for @memberIsOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'is owed {amount}'**
+  String memberIsOwed(String amount);
+
+  /// No description provided for @membersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member} other{{count} members}}'**
+  String membersCount(int count);
+
+  /// No description provided for @groupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{type} · {members}'**
+  String groupSubtitle(String type, String members);
+
+  /// No description provided for @newGroupOrJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'New group or join'**
+  String get newGroupOrJoin;
+
+  /// No description provided for @tabExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get tabExpenses;
+
+  /// No description provided for @tabBalances.
+  ///
+  /// In en, this message translates to:
+  /// **'Balances'**
+  String get tabBalances;
+
+  /// No description provided for @tabSettleUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Settle up'**
+  String get tabSettleUp;
+
+  /// No description provided for @settleEveryoneSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone is settled up.'**
+  String get settleEveryoneSettled;
+
+  /// No description provided for @transferPays.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} pays {to}'**
+  String transferPays(String from, String to);
+
+  /// No description provided for @youLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get youLabel;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTooltip;
+
+  /// No description provided for @accountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountSection;
+
+  /// No description provided for @nameRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get nameRow;
+
+  /// No description provided for @emailRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailRow;
+
+  /// No description provided for @passwordRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordRow;
+
+  /// No description provided for @googleOnlyAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'You sign in with Google'**
+  String get googleOnlyAccount;
+
+  /// No description provided for @changeNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get changeNameTitle;
+
+  /// No description provided for @nameUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Name updated'**
+  String get nameUpdated;
+
+  /// No description provided for @changePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePasswordTitle;
+
+  /// No description provided for @currentPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get currentPasswordLabel;
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPasswordLabel;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed'**
+  String get passwordChanged;
+
+  /// No description provided for @errorCurrentPasswordWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'That isn\'t your current password.'**
+  String get errorCurrentPasswordWrong;
+
+  /// No description provided for @placeholderRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get placeholderRemove;
+
+  /// No description provided for @placeholderRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} removed'**
+  String placeholderRemoved(String name);
+
+  /// No description provided for @placeholderNotSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has a balance of {amount}. Settle up before removing them.'**
+  String placeholderNotSettled(String name, String amount);
+
+  /// No description provided for @deleteGroupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group'**
+  String get deleteGroupButton;
+
+  /// No description provided for @deleteGroupDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {group}?'**
+  String deleteGroupDialogTitle(String group);
+
+  /// No description provided for @deleteGroupDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re the only member left. This deletes the group, its expenses and its history. It can\'t be undone.'**
+  String get deleteGroupDialogBody;
+
+  /// No description provided for @deleteGroupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteGroupConfirm;
+
+  /// No description provided for @groupDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{group} deleted'**
+  String groupDeleted(String group);
 }
 
 class _AppLocalizationsDelegate

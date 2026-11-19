@@ -4,15 +4,16 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/group.dart';
 import 'group_type_field.dart';
+import '../../../core/widgets/loading_button.dart';
+import '../../../core/widgets/app_sheet.dart';
 
 typedef GroupEdit = ({String name, String type});
 
 /// Edit name and type in a bottom sheet. Returns null if cancelled.
 Future<GroupEdit?> showEditGroupSheet(BuildContext context, Group group) =>
-    showModalBottomSheet<GroupEdit>(
+    showAppSheet<GroupEdit>(
       context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
+      scrollControlled: true,
       builder: (context) => _EditGroupSheet(group: group),
     );
 
@@ -80,7 +81,7 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
             const SizedBox(height: AppSpacing.lg),
             GroupTypeField(controller: _type),
             const SizedBox(height: AppSpacing.xl),
-            FilledButton(onPressed: _save, child: Text(l10n.saveButton)),
+            LoadingButton(label: l10n.saveButton, onPressed: _save),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(l10n.cancelButton),

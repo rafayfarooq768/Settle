@@ -10,6 +10,7 @@ import '../domain/auth_repository.dart';
 import 'auth_error_text.dart';
 import 'auth_fields.dart';
 import 'auth_providers.dart';
+import '../../../core/widgets/screen_layout.dart';
 
 /// Two states: the email form, then "Check your email" once the link is sent.
 /// The new password itself is chosen on the page the emailed link opens.
@@ -57,23 +58,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.resetPasswordTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenHorizontal,
-          ),
-          child: _sentTo == null ? _buildForm(l10n) : _buildSent(l10n),
-        ),
-      ),
+      body: _sentTo == null ? _buildForm(l10n) : _buildSent(l10n),
     );
   }
 
   Widget _buildForm(AppLocalizations l10n) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+      child: ScreenLayout(
+        body: [
           const SizedBox(height: AppSpacing.lg),
           Text(
             l10n.resetPasswordInstructions,
@@ -81,11 +74,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           ),
           const SizedBox(height: AppSpacing.xl),
           EmailField(controller: _emailController),
+        ],
+        actions: [
           if (_errorMessage != null) ...[
-            const SizedBox(height: AppSpacing.sm),
             FormMessage(_errorMessage!),
+            const SizedBox(height: AppSpacing.md),
           ],
-          const SizedBox(height: AppSpacing.xl),
           LoadingButton(
             label: l10n.resetPasswordButton,
             isLoading: _isLoading,
@@ -98,10 +92,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
   Widget _buildSent(AppLocalizations l10n) {
     final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: AppSpacing.lg),
+    return ScreenLayout(
+      body: [
+        const SizedBox(height: AppSpacing.xl),
         Text(
           l10n.resetPasswordCheckEmailTitle,
           style: theme.textTheme.titleLarge,
@@ -118,19 +111,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
+      ],
+      actions: [
         if (_errorMessage != null) ...[
-          const SizedBox(height: AppSpacing.sm),
           FormMessage(_errorMessage!),
+          const SizedBox(height: AppSpacing.md),
         ],
-        const SizedBox(height: AppSpacing.xl),
-        FilledButton(
-          onPressed: () => context.pop(),
-          child: Text(l10n.backToSignIn),
-        ),
+        LoadingButton(label: l10n.backToSignIn, onPressed: () => context.pop()),
         const SizedBox(height: AppSpacing.sm),
-        TextButton(
+        LoadingButton(
+          label: l10n.resetPasswordResend,
           onPressed: _isLoading ? null : _send,
-          child: Text(l10n.resetPasswordResend),
+          style: LoadingButtonStyle.text,
         ),
       ],
     );

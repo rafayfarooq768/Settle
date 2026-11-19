@@ -11,6 +11,7 @@ import 'auth_error_text.dart';
 import 'auth_fields.dart';
 import 'auth_providers.dart';
 import 'google_sign_in_button.dart';
+import '../../../core/widgets/screen_layout.dart';
 
 enum _Action { email, google }
 
@@ -83,61 +84,54 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.signUpTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenHorizontal,
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Form(
+        key: _formKey,
+        child: ScreenLayout(
+          body: [
+            const SizedBox(height: AppSpacing.lg),
+            GoogleSignInButton(
+              isLoading: _running == _Action.google,
+              onPressed: busy ? null : _continueWithGoogle,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            const OrLabel(),
+            const SizedBox(height: AppSpacing.lg),
+            NameField(controller: _nameController),
+            const SizedBox(height: AppSpacing.lg),
+            EmailField(controller: _emailController),
+            const SizedBox(height: AppSpacing.lg),
+            PasswordField(
+              controller: _passwordController,
+              isNewPassword: true,
+              onSubmitted: busy ? null : _signUpWithEmail,
+            ),
+          ],
+          actions: [
+            if (_errorMessage != null) ...[
+              FormMessage(_errorMessage!),
+              const SizedBox(height: AppSpacing.md),
+            ],
+            LoadingButton(
+              label: l10n.signUpButton,
+              isLoading: _running == _Action.email,
+              onPressed: busy ? null : _signUpWithEmail,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: AppSpacing.lg),
-                GoogleSignInButton(
-                  isLoading: _running == _Action.google,
-                  onPressed: busy ? null : _continueWithGoogle,
+                Text(
+                  l10n.signInPrompt,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                const SizedBox(height: AppSpacing.lg),
-                const OrLabel(),
-                const SizedBox(height: AppSpacing.lg),
-                NameField(controller: _nameController),
-                const SizedBox(height: AppSpacing.lg),
-                EmailField(controller: _emailController),
-                const SizedBox(height: AppSpacing.lg),
-                PasswordField(
-                  controller: _passwordController,
-                  isNewPassword: true,
-                  onSubmitted: busy ? null : _signUpWithEmail,
-                ),
-                if (_errorMessage != null) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  FormMessage(_errorMessage!),
-                ],
-                const SizedBox(height: AppSpacing.xl),
                 LoadingButton(
-                  label: l10n.signUpButton,
-                  isLoading: _running == _Action.email,
-                  onPressed: busy ? null : _signUpWithEmail,
+                  label: l10n.signInButton,
+                  onPressed: busy ? null : () => context.pop(),
+                  style: LoadingButtonStyle.text,
                 ),
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      l10n.signInPrompt,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    TextButton(
-                      onPressed: busy ? null : () => context.pop(),
-                      child: Text(l10n.signInButton),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.lg),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );
