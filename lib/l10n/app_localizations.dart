@@ -823,7 +823,7 @@ abstract class AppLocalizations {
   /// No description provided for @settleEveryoneSettled.
   ///
   /// In en, this message translates to:
-  /// **'Everyone is settled up.'**
+  /// **'Hisaab barabar. Everyone is settled up.'**
   String get settleEveryoneSettled;
 
   /// No description provided for @transferPays.
@@ -1149,6 +1149,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'you are owed'**
   String get stackYouAreOwed;
+
+  /// No description provided for @transferYouPay.
+  ///
+  /// In en, this message translates to:
+  /// **'You pay {name}'**
+  String transferYouPay(String name);
+
+  /// No description provided for @transferPaysYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} pays you'**
+  String transferPaysYou(String name);
+
+  /// No description provided for @settleYoursLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payments'**
+  String get settleYoursLabel;
+
+  /// No description provided for @settleOthersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Others in the group'**
+  String get settleOthersLabel;
+
+  /// No description provided for @stackOwes.
+  ///
+  /// In en, this message translates to:
+  /// **'owes'**
+  String get stackOwes;
+
+  /// No description provided for @stackIsOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'is owed'**
+  String get stackIsOwed;
 }
 
 class _AppLocalizationsDelegate

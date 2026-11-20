@@ -300,7 +300,7 @@
   "tabExpenses": "Expenses",
   "tabBalances": "Balances",
   "tabSettleUp": "Settle up",
-  "settleEveryoneSettled": "Everyone is settled up.",
+  "settleEveryoneSettled": "Hisaab barabar. Everyone is settled up.",
   "transferPays": "{from} pays {to}",
   "@transferPays": {
     "placeholders": {
@@ -433,5 +433,25 @@
   "pickGroupTitle": "Add to which group?",
   "doneButton": "Done",
   "stackYouOwe": "you owe",
-  "stackYouAreOwed": "you are owed"
+  "stackYouAreOwed": "you are owed",
+  "transferYouPay": "You pay {name}",
+  "@transferYouPay": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "transferPaysYou": "{name} pays you",
+  "@transferPaysYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "settleYoursLabel": "Your payments",
+  "settleOthersLabel": "Others in the group",
+  "stackOwes": "owes",
+  "stackIsOwed": "is owed"
 }

@@ -431,7 +431,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabSettleUp => 'Settle up';
 
   @override
-  String get settleEveryoneSettled => 'Everyone is settled up.';
+  String get settleEveryoneSettled => 'Hisaab barabar. Everyone is settled up.';
 
   @override
   String transferPays(String from, String to) {
@@ -621,4 +621,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stackYouAreOwed => 'you are owed';
+
+  @override
+  String transferYouPay(String name) {
+    return 'You pay $name';
+  }
+
+  @override
+  String transferPaysYou(String name) {
+    return '$name pays you';
+  }
+
+  @override
+  String get settleYoursLabel => 'Your payments';
+
+  @override
+  String get settleOthersLabel => 'Others in the group';
+
+  @override
+  String get stackOwes => 'owes';
+
+  @override
+  String get stackIsOwed => 'is owed';
 }

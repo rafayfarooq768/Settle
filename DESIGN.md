@@ -234,9 +234,11 @@ Rules:
 - FAB "Add expense" (brand Teal, both modes) only once someone besides you is in the group;
   before that, "Invite friends" in the empty state is the one primary action.
 - Expenses tab: one panel per day under a date label (Today, Yesterday, 12 Nov).
-- Balances: list of members with net, sorted largest owed → largest owes.
-- Settle up: list of "Bilal → Ali Rs 300" rows; rows involving you are on top with an action
-  (Pay / Remind / Record).
+- Balances: list of members with net, sorted largest owed → largest owes, stacked like Home
+  ("owes" over "Rs 300"; your own row says "you owe").
+- Settle up: "Your payments" panel first ("You pay Ali" in owe-red / "Ali pays you" in owed-green,
+  amount at the end), then "Others in the group" ("Bilal pays Ali", plain). Labels only for
+  non-empty sections. Your rows get an action (Pay / Remind / Record) in step 7.
 
 **Add expense**
 - Amount (autofocus) → Title → Paid by (row, opens sheet) → Split (row: "Equally between 5", opens split screen) → Save.

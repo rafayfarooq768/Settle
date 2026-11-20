@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/errors/error_text.dart';
-import '../../../core/money/money.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../core/widgets/panel.dart';
+import '../../../core/widgets/tab_message.dart';
+import '../../balances/ui/balances_tab.dart';
+import '../../settlements/ui/settle_up_tab.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../balances/ui/balances_providers.dart';
 import '../domain/group.dart';
@@ -63,12 +64,12 @@ class GroupScreen extends ConsumerWidget {
       body: SafeArea(
         child: switch ((group, me)) {
           (AsyncError(:final error), _) ||
-          (_, AsyncError(:final error)) => _Centered(errorText(l10n, error)),
+          (_, AsyncError(:final error)) => TabMessage(errorText(l10n, error)),
           (AsyncData(value: final Group g), AsyncData(value: null)) =>
             ClaimMemberView(group: g),
           (AsyncData(value: final Group g), AsyncData(value: final m?)) =>
             _GroupTabs(group: g, me: m),
-          (AsyncData(value: null), _) => _Centered(l10n.errorGeneric),
+          (AsyncData(value: null), _) => TabMessage(l10n.errorGeneric),
           _ => const Center(child: CircularProgressIndicator()),
         },
       ),
@@ -104,8 +105,8 @@ class _GroupTabs extends StatelessWidget {
             child: TabBarView(
               children: [
                 _ExpensesTab(group: group, me: me),
-                _BalancesTab(group: group, me: me),
-                _SettleUpTab(group: group, me: me),
+                BalancesTab(groupId: group.id, me: me),
+                SettleUpTab(groupId: group.id, me: me),
               ],
             ),
           ),
@@ -171,7 +172,7 @@ class _ExpensesTab extends ConsumerWidget {
     final expenses = ref.watch(expensesProvider(group.id));
     return expenses.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _Centered(errorText(l10n, e)),
+      error: (e, _) => TabMessage(errorText(l10n, e)),
       data: (list) => list.any((e) => !e.deleted)
           ? ExpenseList(expenses: list, members: all, meId: me.id)
           : _NoExpenses(group: group, me: me, members: all),
@@ -231,136 +232,4 @@ class _NoExpenses extends ConsumerWidget {
       ],
     );
   }
-}
-
-/// Members with their net, largest owed → largest owes (DESIGN.md §11).
-class _BalancesTab extends ConsumerWidget {
-  const _BalancesTab({required this.group, required this.me});
-
-  final Group group;
-  final Member me;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final nets = ref.watch(groupNetsProvider(group.id));
-    final members = ref.watch(membersProvider(group.id)).valueOrNull ?? [];
-    return nets.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _Centered(errorText(l10n, e)),
-      data: (nets) {
-        final rows =
-            members.where((m) => m.active || (nets[m.id] ?? 0) != 0).toList()
-              ..sort((a, b) => (nets[b.id] ?? 0).compareTo(nets[a.id] ?? 0));
-        return ListView(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-          children: [
-            Panel(
-              dividerIndent: avatarRowDividerIndent,
-              children: [
-                for (final m in rows)
-                  ListTile(
-                    minTileHeight: AppSpacing.rowHeight,
-                    leading: MemberAvatar(
-                      name: m.displayName,
-                      placeholder: m.isPlaceholder,
-                    ),
-                    title: Text(
-                      m.id == me.id
-                          ? l10n.memberYou(m.displayName)
-                          : m.displayName,
-                    ),
-                    trailing: BalanceText(
-                      net: nets[m.id] ?? 0,
-                      wording: BalanceWording.member,
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-/// The simplified payment list (PLAN.md §4). Pay / Remind / Record
-/// actions arrive with the settle flow in step 7.
-class _SettleUpTab extends ConsumerWidget {
-  const _SettleUpTab({required this.group, required this.me});
-
-  final Group group;
-  final Member me;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final nets = ref.watch(groupNetsProvider(group.id));
-    final members = ref.watch(membersProvider(group.id)).valueOrNull ?? [];
-    final names = {for (final m in members) m.id: m.displayName};
-    String nameOf(String id) => id == me.id ? l10n.youLabel : names[id] ?? '';
-
-    return nets.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _Centered(errorText(l10n, e)),
-      data: (nets) {
-        final transfers = simplifyDebts(
-          nets,
-          order: [for (final m in members) m.id],
-        );
-        if (transfers.isEmpty) {
-          return _Centered(
-            l10n.settleEveryoneSettled,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: context.extraColors.settled,
-            ),
-          );
-        }
-        // Rows involving you first (DESIGN.md §11).
-        final mineFirst = [
-          ...transfers.where((t) => t.from == me.id || t.to == me.id),
-          ...transfers.where((t) => t.from != me.id && t.to != me.id),
-        ];
-        return ListView(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-          children: [
-            Panel(
-              dividerIndent: AppSpacing.lg,
-              children: [
-                for (final t in mineFirst)
-                  ListTile(
-                    minTileHeight: AppSpacing.rowHeight,
-                    title: Text(
-                      l10n.transferPays(nameOf(t.from), nameOf(t.to)),
-                    ),
-                    trailing: Text(
-                      formatRupees(t.amount),
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _Centered extends StatelessWidget {
-  const _Centered(this.text, {this.style});
-
-  final String text;
-  final TextStyle? style;
-
-  /// Near the top, not floating mid-screen (DESIGN.md §12 item 15).
-  @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-    children: [
-      const SizedBox(height: AppSpacing.xl),
-      Text(text, textAlign: TextAlign.center, style: style),
-    ],
-  );
 }

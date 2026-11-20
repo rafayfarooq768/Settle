@@ -94,9 +94,16 @@ class BalanceHeadline extends StatelessWidget {
 /// name: a small "you owe" over the amount in bold (DESIGN.md §11 Home).
 /// Settled is one muted line.
 class BalanceStack extends StatelessWidget {
-  const BalanceStack({super.key, required this.net});
+  const BalanceStack({
+    super.key,
+    required this.net,
+    this.wording = BalanceWording.you,
+  });
 
   final int net;
+
+  /// "you owe" (your own balance) or "owes" (someone else's).
+  final BalanceWording wording;
 
   @override
   Widget build(BuildContext context) {
@@ -116,10 +123,12 @@ class BalanceStack extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(
-          net > 0 ? l10n.stackYouAreOwed : l10n.stackYouOwe,
-          style: theme.textTheme.bodySmall?.copyWith(color: color),
-        ),
+        Text(switch ((net > 0, wording)) {
+          (true, BalanceWording.you) => l10n.stackYouAreOwed,
+          (false, BalanceWording.you) => l10n.stackYouOwe,
+          (true, _) => l10n.stackIsOwed,
+          (false, _) => l10n.stackOwes,
+        }, style: theme.textTheme.bodySmall?.copyWith(color: color)),
         Text(
           formatRupees(net.abs()),
           style: theme.textTheme.titleSmall?.copyWith(
