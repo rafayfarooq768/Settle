@@ -1737,6 +1737,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You lent'**
   String get stackYouLent;
+
+  /// No description provided for @editExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit expense'**
+  String get editExpenseTitle;
+
+  /// No description provided for @editTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editTooltip;
+
+  /// No description provided for @deleteExpenseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete expense'**
+  String get deleteExpenseButton;
+
+  /// No description provided for @restoreExpenseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore expense'**
+  String get restoreExpenseButton;
+
+  /// No description provided for @expenseDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense deleted'**
+  String get expenseDeleted;
+
+  /// No description provided for @expenseRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense restored'**
+  String get expenseRestored;
+
+  /// Success SnackBar after editing (DESIGN.md §10 Roman Urdu touch).
+  ///
+  /// In en, this message translates to:
+  /// **'Done! Expense update ho gaya'**
+  String get expenseUpdated;
+
+  /// No description provided for @detailAddedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · added by {name}'**
+  String detailAddedBy(String date, String name);
+
+  /// No description provided for @detailYouOwe.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe {amount}'**
+  String detailYouOwe(String amount);
+
+  /// No description provided for @detailYouLent.
+  ///
+  /// In en, this message translates to:
+  /// **'You lent {amount}'**
+  String detailYouLent(String amount);
+
+  /// No description provided for @detailPaidShare.
+  ///
+  /// In en, this message translates to:
+  /// **'You paid your share'**
+  String get detailPaidShare;
+
+  /// No description provided for @detailNotInvolved.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not part of this one'**
+  String get detailNotInvolved;
+
+  /// No description provided for @detailDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted. It doesn\'t count in balances.'**
+  String get detailDeleted;
+
+  /// No description provided for @detailPaidBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid by'**
+  String get detailPaidBy;
+
+  /// No description provided for @detailSplitEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Split equally'**
+  String get detailSplitEqual;
+
+  /// No description provided for @detailSplitExact.
+  ///
+  /// In en, this message translates to:
+  /// **'Split by exact amounts'**
+  String get detailSplitExact;
+
+  /// No description provided for @detailSplitPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Split by percentage'**
+  String get detailSplitPercent;
+
+  /// No description provided for @detailSplitItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Split by items'**
+  String get detailSplitItems;
+
+  /// No description provided for @detailHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get detailHistory;
+
+  /// No description provided for @expenseNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This expense isn\'t here any more.'**
+  String get expenseNotFound;
+
+  /// No description provided for @activityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityTitle;
+
+  /// No description provided for @activityTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityTooltip;
+
+  /// No description provided for @activityEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing has happened here yet.'**
+  String get activityEmpty;
+
+  /// No description provided for @activitySomeone.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get activitySomeone;
+
+  /// No description provided for @activityGroupCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} created the group'**
+  String activityGroupCreated(String actor);
+
+  /// No description provided for @activityGroupRenamed.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} renamed the group to {name}'**
+  String activityGroupRenamed(String actor, String name);
+
+  /// No description provided for @activityJoinCodeRegenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} made a new join code'**
+  String activityJoinCodeRegenerated(String actor);
+
+  /// No description provided for @activityPlaceholderAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} added {name}'**
+  String activityPlaceholderAdded(String actor, String name);
+
+  /// No description provided for @activityMemberRenamed.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} changed a name to {name}'**
+  String activityMemberRenamed(String actor, String name);
+
+  /// No description provided for @activityPlaceholderRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} removed {name}'**
+  String activityPlaceholderRemoved(String actor, String name);
+
+  /// No description provided for @activityMemberJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} joined'**
+  String activityMemberJoined(String name);
+
+  /// No description provided for @activityPlaceholderClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} joined as {name}'**
+  String activityPlaceholderClaimed(String actor, String name);
+
+  /// No description provided for @activityMemberLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} left'**
+  String activityMemberLeft(String name);
+
+  /// No description provided for @activityExpenseAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} added {title}'**
+  String activityExpenseAdded(String actor, String title);
+
+  /// No description provided for @activityExpenseEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} edited {title}'**
+  String activityExpenseEdited(String actor, String title);
+
+  /// No description provided for @activityExpenseDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} deleted {title}'**
+  String activityExpenseDeleted(String actor, String title);
+
+  /// No description provided for @activityExpenseRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} restored {title}'**
+  String activityExpenseRestored(String actor, String title);
+
+  /// No description provided for @activityPaymentSent.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} said they sent a payment'**
+  String activityPaymentSent(String actor);
+
+  /// No description provided for @activityPaymentRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} recorded a payment'**
+  String activityPaymentRecorded(String actor);
+
+  /// No description provided for @activityPaymentConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} confirmed a payment'**
+  String activityPaymentConfirmed(String actor);
+
+  /// No description provided for @activityPaymentCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} cancelled a payment'**
+  String activityPaymentCancelled(String actor);
+
+  /// No description provided for @activityPaymentNotReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} said a payment was not received'**
+  String activityPaymentNotReceived(String actor);
+
+  /// No description provided for @activityPaymentRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{actor} removed a payment'**
+  String activityPaymentRemoved(String actor);
+
+  /// No description provided for @activityPaymentLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} paid {to} {amount}'**
+  String activityPaymentLine(String from, String to, String amount);
+
+  /// No description provided for @activityAmountChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'{before} → {after}'**
+  String activityAmountChanged(String before, String after);
+
+  /// No description provided for @activityDetailsChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Details changed'**
+  String get activityDetailsChanged;
+
+  /// Duplicate guard title (DESIGN.md §10 gentle nudge).
+  ///
+  /// In en, this message translates to:
+  /// **'Kuch bhool to nahi gaye?'**
+  String get duplicateTitle;
+
+  /// No description provided for @duplicateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{{title}, {amount} with the same people, was added just now.} =1{{title}, {amount} with the same people, was added 1 minute ago.} other{{title}, {amount} with the same people, was added {minutes} minutes ago.}}'**
+  String duplicateBody(int minutes, String title, String amount);
+
+  /// No description provided for @duplicateAddAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get duplicateAddAnyway;
 }
 
 class _AppLocalizationsDelegate

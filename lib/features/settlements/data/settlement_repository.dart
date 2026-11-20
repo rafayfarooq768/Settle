@@ -62,7 +62,15 @@ class SettlementRepository {
       type: ActivityType.settlementRecorded,
       actorMemberId: actorMemberId,
       targetId: doc.id,
-      after: {'from': from, 'to': to, 'amount': amount},
+      // Status too, so the activity log can say "sent" or "recorded".
+      after: {
+        'from': from,
+        'to': to,
+        'amount': amount,
+        'status':
+            (confirmed ? SettlementStatus.confirmed : SettlementStatus.pending)
+                .name,
+      },
     );
     await commitOrQueue(batch);
     return doc.id;

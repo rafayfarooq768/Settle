@@ -27,4 +27,21 @@ class ActivityRepository {
           for (final doc in snap.docs) ?activityFromMap(doc.id, doc.data()),
         ],
       );
+
+  /// The history of one expense (or payment), oldest first. One equality
+  /// filter and no orderBy, so Firestore's automatic index covers it;
+  /// sorted here instead.
+  Stream<List<Activity>> watchFor(String groupId, String targetId) =>
+      retryWhenDenied(
+        () => _db
+            .collection(Col.groups)
+            .doc(groupId)
+            .collection(Col.activity)
+            .where('targetId', isEqualTo: targetId)
+            .snapshots(),
+      ).map(
+        (snap) =>
+            [for (final doc in snap.docs) ?activityFromMap(doc.id, doc.data())]
+              ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+      );
 }

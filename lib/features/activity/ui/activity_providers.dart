@@ -13,3 +13,11 @@ final activityProvider = StreamProvider.autoDispose
     .family<List<Activity>, String>(
       (ref, groupId) => ref.watch(activityRepositoryProvider).watch(groupId),
     );
+
+/// One expense's history, while its detail screen is open.
+final targetActivityProvider = StreamProvider.autoDispose
+    .family<List<Activity>, ({String groupId, String targetId})>(
+      (ref, key) => ref
+          .watch(activityRepositoryProvider)
+          .watchFor(key.groupId, key.targetId),
+    );

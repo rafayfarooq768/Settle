@@ -737,5 +737,280 @@
       }
     }
   },
-  "stackYouLent": "You lent"
+  "stackYouLent": "You lent",
+  "editExpenseTitle": "Edit expense",
+  "editTooltip": "Edit",
+  "deleteExpenseButton": "Delete expense",
+  "restoreExpenseButton": "Restore expense",
+  "expenseDeleted": "Expense deleted",
+  "expenseRestored": "Expense restored",
+  "expenseUpdated": "Done! Expense update ho gaya",
+  "@expenseUpdated": {
+    "description": "Success SnackBar after editing (DESIGN.md §10 Roman Urdu touch)."
+  },
+  "detailAddedBy": "{date} · added by {name}",
+  "@detailAddedBy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "detailYouOwe": "You owe {amount}",
+  "@detailYouOwe": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "detailYouLent": "You lent {amount}",
+  "@detailYouLent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "detailPaidShare": "You paid your share",
+  "detailNotInvolved": "You're not part of this one",
+  "detailDeleted": "Deleted. It doesn't count in balances.",
+  "detailPaidBy": "Paid by",
+  "detailSplitEqual": "Split equally",
+  "detailSplitExact": "Split by exact amounts",
+  "detailSplitPercent": "Split by percentage",
+  "detailSplitItems": "Split by items",
+  "detailHistory": "History",
+  "expenseNotFound": "This expense isn't here any more.",
+  "activityTitle": "Activity",
+  "activityTooltip": "Activity",
+  "activityEmpty": "Nothing has happened here yet.",
+  "activitySomeone": "Someone",
+  "activityGroupCreated": "{actor} created the group",
+  "@activityGroupCreated": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
+  "activityGroupRenamed": "{actor} renamed the group to {name}",
+  "@activityGroupRenamed": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityJoinCodeRegenerated": "{actor} made a new join code",
+  "@activityJoinCodeRegenerated": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPlaceholderAdded": "{actor} added {name}",
+  "@activityPlaceholderAdded": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityMemberRenamed": "{actor} changed a name to {name}",
+  "@activityMemberRenamed": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPlaceholderRemoved": "{actor} removed {name}",
+  "@activityPlaceholderRemoved": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityMemberJoined": "{name} joined",
+  "@activityMemberJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPlaceholderClaimed": "{actor} joined as {name}",
+  "@activityPlaceholderClaimed": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityMemberLeft": "{name} left",
+  "@activityMemberLeft": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityExpenseAdded": "{actor} added {title}",
+  "@activityExpenseAdded": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "activityExpenseEdited": "{actor} edited {title}",
+  "@activityExpenseEdited": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "activityExpenseDeleted": "{actor} deleted {title}",
+  "@activityExpenseDeleted": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "activityExpenseRestored": "{actor} restored {title}",
+  "@activityExpenseRestored": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPaymentSent": "{actor} said they sent a payment",
+  "@activityPaymentSent": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPaymentRecorded": "{actor} recorded a payment",
+  "@activityPaymentRecorded": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPaymentConfirmed": "{actor} confirmed a payment",
+  "@activityPaymentConfirmed": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPaymentCancelled": "{actor} cancelled a payment",
+  "@activityPaymentCancelled": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPaymentNotReceived": "{actor} said a payment was not received",
+  "@activityPaymentNotReceived": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPaymentRemoved": "{actor} removed a payment",
+  "@activityPaymentRemoved": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPaymentLine": "{from} paid {to} {amount}",
+  "@activityPaymentLine": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "activityAmountChanged": "{before} → {after}",
+  "@activityAmountChanged": {
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "activityDetailsChanged": "Details changed",
+  "duplicateTitle": "Kuch bhool to nahi gaye?",
+  "@duplicateTitle": {
+    "description": "Duplicate guard title (DESIGN.md §10 gentle nudge)."
+  },
+  "duplicateBody": "{minutes, plural, =0{{title}, {amount} with the same people, was added just now.} =1{{title}, {amount} with the same people, was added 1 minute ago.} other{{title}, {amount} with the same people, was added {minutes} minutes ago.}}",
+  "@duplicateBody": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateAddAnyway": "Add anyway"
 }

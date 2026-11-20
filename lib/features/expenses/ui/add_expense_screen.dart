@@ -13,6 +13,7 @@ import '../../groups/domain/group.dart';
 import '../../groups/ui/groups_providers.dart';
 import '../../profile/ui/profile_providers.dart';
 import '../domain/expense.dart';
+import '../domain/duplicate_guard.dart';
 import '../domain/expense_summary.dart';
 import 'day_label.dart';
 import 'expense_pickers.dart';
@@ -25,16 +26,21 @@ import '../../../core/widgets/amount_field.dart';
 import '../../../core/widgets/select_field.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../core/theme/app_sizes.dart';
+import '../../../core/widgets/app_sheet.dart';
 import '../../../core/widgets/app_snack_bar.dart';
 
 /// Add expense (DESIGN.md §11): amount → title → paid by → split → Save.
 /// The common case is 3 taps (PLAN.md §2): paid by defaults to you and
 /// everyone is ticked, split equally. Split opens the split screen
 /// (Equal / Exact / %, or a bill by items). Works offline.
+/// With [expenseId] it edits that expense in the same mode it was added.
 class AddExpenseScreen extends ConsumerStatefulWidget {
-  const AddExpenseScreen({super.key, required this.groupId});
+  const AddExpenseScreen({super.key, required this.groupId, this.expenseId});
 
   final String groupId;
+
+  /// Set when editing.
+  final String? expenseId;
 
   @override
   ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -59,11 +65,46 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   String? _error;
   bool _saving = false;
 
+  /// The expense being edited, once loaded.
+  Expense? _original;
+
+  bool get _editing => widget.expenseId != null;
+
   @override
   void initState() {
     super.initState();
+    if (_editing) {
+      // Fill the form once the expense is there (instantly when cached).
+      var inInit = true;
+      ref.listenManual(expensesProvider(widget.groupId), (_, next) {
+        if (_original != null) return;
+        final e = next.valueOrNull
+            ?.where((e) => e.id == widget.expenseId)
+            .firstOrNull;
+        if (e == null) return;
+        _fill(e);
+        if (!inInit) setState(() {});
+      }, fireImmediately: true);
+      inInit = false;
+    }
     // Keeps "Rs X each" up to date while typing.
     _amount.addListener(() => setState(() {}));
+  }
+
+  /// The form as the expense was saved: same payers, same split mode.
+  void _fill(Expense e) {
+    _original = e;
+    _amount.text = RupeeInputFormatter.textFor(e.amount);
+    _title.text = e.title;
+    _day = e.date;
+    if (e.payers.length == 1) {
+      _payerId = e.payers.keys.single;
+    } else {
+      _payers = Map.of(e.payers);
+    }
+    // Old or unreadable input: edit the stored shares as exact amounts.
+    _split =
+        SplitSpec.fromJson(e.splitMode, e.splitInput) ?? ExactSpec(e.shares);
   }
 
   @override
@@ -187,15 +228,16 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final identity = ref.read(myIdentityProvider);
     if (identity == null) return;
     final now = DateTime.now();
-    // The picked day, at the current time, so same-day expenses stay in
-    // the order they were added.
+    // The picked day, at the current time (or the original time when
+    // editing), so same-day expenses stay in the order they were added.
+    final time = _original?.date ?? now;
     final date = DateTime(
       _day.year,
       _day.month,
       _day.day,
-      now.hour,
-      now.minute,
-      now.second,
+      time.hour,
+      time.minute,
+      time.second,
     );
     final draft = splitDraft(
       title: title,
@@ -205,6 +247,21 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       split: split,
       order: [for (final m in members) m.id],
     );
+
+    final original = _original;
+    if (original != null) return _saveEdit(original, draft, me);
+
+    // Duplicate guard (PLAN.md §3 item 7): same amount and people a few
+    // minutes ago is usually the same bill added twice.
+    final duplicate = findDuplicate(
+      ref.read(expensesProvider(widget.groupId)).valueOrNull ?? const [],
+      draft,
+      now: now,
+    );
+    if (duplicate != null) {
+      final addAnyway = await _confirmDuplicate(duplicate, now);
+      if (addAnyway != true || !mounted) return;
+    }
 
     setState(() => _saving = true);
     final repo = ref.read(expenseRepositoryProvider);
@@ -248,19 +305,91 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     }
   }
 
+  Future<bool?> _confirmDuplicate(Expense duplicate, DateTime now) {
+    final l10n = AppLocalizations.of(context)!;
+    final minutes = now.difference(duplicate.createdAt).inMinutes.clamp(0, 99);
+    return showAppSheet<bool>(
+      context: context,
+      builder: (sheet) => _DuplicateSheet(
+        title: l10n.duplicateTitle,
+        body: l10n.duplicateBody(
+          minutes,
+          duplicate.title,
+          formatRupees(duplicate.amount),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _saveEdit(
+    Expense original,
+    ExpenseDraft draft,
+    Member me,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    setState(() => _saving = true);
+    final repo = ref.read(expenseRepositoryProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await repo.edit(
+        groupId: widget.groupId,
+        actorMemberId: me.id,
+        before: original,
+        draft: draft,
+      );
+      // Undo puts the old version back (and logs it as an edit).
+      final edited = Expense(
+        id: original.id,
+        title: draft.title,
+        amount: draft.amount,
+        date: draft.date,
+        createdBy: original.createdBy,
+        createdAt: original.createdAt,
+        updatedAt: DateTime.now(),
+        splitMode: draft.splitMode,
+        payers: draft.payers,
+        shares: draft.shares,
+        splitInput: draft.splitInput,
+      );
+      messenger.showMessage(
+        l10n.expenseUpdated,
+        undoLabel: l10n.undoButton,
+        onUndo: () => repo.edit(
+          groupId: widget.groupId,
+          actorMemberId: me.id,
+          before: edited,
+          draft: ExpenseDraft.of(original),
+        ),
+      );
+      if (mounted) context.pop();
+    } catch (e) {
+      if (mounted) setState(() => _error = errorText(l10n, e));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final me = ref.watch(myMemberProvider(widget.groupId)).valueOrNull;
+    // Keep the group's expenses loaded so the duplicate guard can see
+    // them, even when this was opened from Home (served from the cache).
+    ref.watch(expensesProvider(widget.groupId));
+    // Editing an old expense keeps people who were removed since.
+    final involved = {...?_original?.payers.keys, ...?_original?.shares.keys};
     final members =
         (ref.watch(membersProvider(widget.groupId)).valueOrNull ??
                 const <Member>[])
-            .where((m) => m.active)
+            .where((m) => m.active || involved.contains(m.id))
             .toList();
+    final waiting = me == null || (_editing && _original == null);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.addExpenseTitle)),
-      body: me == null
+      appBar: AppBar(
+        title: Text(_editing ? l10n.editExpenseTitle : l10n.addExpenseTitle),
+      ),
+      body: waiting
           ? const Center(child: CircularProgressIndicator())
           : ScreenLayout(
               body: [
@@ -433,6 +562,56 @@ class _Details extends StatelessWidget {
           onTap: onDay,
         ),
       ],
+    );
+  }
+}
+
+/// "Kuch bhool to nahi gaye?" with what was added, then Add anyway (the
+/// action the person came to do) and Cancel. A sheet, not a dialog: it's
+/// a nudge, nothing is lost either way (DESIGN.md §8).
+class _DuplicateSheet extends StatelessWidget {
+  const _DuplicateSheet({required this.title, required this.body});
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.screenHorizontal,
+          0,
+          AppSpacing.screenHorizontal,
+          AppSpacing.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SheetTitle(title, inset: false),
+            Text(
+              body,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            LoadingButton(
+              label: l10n.duplicateAddAnyway,
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            LoadingButton(
+              label: l10n.cancelButton,
+              style: LoadingButtonStyle.text,
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

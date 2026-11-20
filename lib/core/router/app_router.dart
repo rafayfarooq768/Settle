@@ -15,7 +15,9 @@ import '../../features/groups/ui/scan_code_screen.dart';
 import '../../features/home/ui/home_screen.dart';
 import '../../features/profile/ui/change_password_screen.dart';
 import '../../features/profile/ui/settings_screen.dart';
+import '../../features/activity/ui/activity_screen.dart';
 import '../../features/expenses/ui/add_expense_screen.dart';
+import '../../features/expenses/ui/expense_detail_screen.dart';
 import '../../features/expenses/ui/items_screen.dart';
 import '../../features/expenses/ui/payers_screen.dart';
 import '../../features/expenses/ui/split_screen.dart';
@@ -83,6 +85,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: 'expenses/new',
             builder: (context, state) =>
                 AddExpenseScreen(groupId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: 'expenses/:expenseId',
+            builder: (context, state) => ExpenseDetailScreen(
+              groupId: state.pathParameters['id']!,
+              expenseId: state.pathParameters['expenseId']!,
+            ),
+            routes: [
+              GoRoute(
+                path: 'edit',
+                builder: (context, state) => AddExpenseScreen(
+                  groupId: state.pathParameters['id']!,
+                  expenseId: state.pathParameters['expenseId'],
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: 'activity',
+            builder: (context, state) =>
+                ActivityScreen(groupId: state.pathParameters['id']!),
           ),
           GoRoute(
             path: 'split',

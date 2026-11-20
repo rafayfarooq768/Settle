@@ -24,7 +24,11 @@ class ExpenseList extends StatelessWidget {
     required this.settlements,
     required this.members,
     required this.meId,
+    this.onOpen,
   });
+
+  /// Opens an expense's detail screen.
+  final ValueChanged<Expense>? onOpen;
 
   final List<Expense> expenses;
   final List<Settlement> settlements;
@@ -51,6 +55,7 @@ class ExpenseList extends StatelessWidget {
                     names: names,
                     meId: meId,
                     settled: settled,
+                    onTap: onOpen == null ? null : () => onOpen!(expense),
                   ),
                   PaymentItem(:final settlement) => PaymentRow(
                     settlement: settlement,
@@ -76,8 +81,10 @@ class ExpenseRow extends StatelessWidget {
     required this.names,
     required this.meId,
     this.settled = false,
+    this.onTap,
   });
 
+  final VoidCallback? onTap;
   final Expense expense;
   final Map<String, String> names;
   final String meId;
@@ -114,6 +121,7 @@ class ExpenseRow extends StatelessWidget {
               color: context.extraColors.settled,
             )
           : _MyPart(part: myPart(expense, meId)),
+      onTap: onTap,
     );
   }
 

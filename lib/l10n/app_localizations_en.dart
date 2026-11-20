@@ -977,4 +977,209 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stackYouLent => 'You lent';
+
+  @override
+  String get editExpenseTitle => 'Edit expense';
+
+  @override
+  String get editTooltip => 'Edit';
+
+  @override
+  String get deleteExpenseButton => 'Delete expense';
+
+  @override
+  String get restoreExpenseButton => 'Restore expense';
+
+  @override
+  String get expenseDeleted => 'Expense deleted';
+
+  @override
+  String get expenseRestored => 'Expense restored';
+
+  @override
+  String get expenseUpdated => 'Done! Expense update ho gaya';
+
+  @override
+  String detailAddedBy(String date, String name) {
+    return '$date · added by $name';
+  }
+
+  @override
+  String detailYouOwe(String amount) {
+    return 'You owe $amount';
+  }
+
+  @override
+  String detailYouLent(String amount) {
+    return 'You lent $amount';
+  }
+
+  @override
+  String get detailPaidShare => 'You paid your share';
+
+  @override
+  String get detailNotInvolved => 'You\'re not part of this one';
+
+  @override
+  String get detailDeleted => 'Deleted. It doesn\'t count in balances.';
+
+  @override
+  String get detailPaidBy => 'Paid by';
+
+  @override
+  String get detailSplitEqual => 'Split equally';
+
+  @override
+  String get detailSplitExact => 'Split by exact amounts';
+
+  @override
+  String get detailSplitPercent => 'Split by percentage';
+
+  @override
+  String get detailSplitItems => 'Split by items';
+
+  @override
+  String get detailHistory => 'History';
+
+  @override
+  String get expenseNotFound => 'This expense isn\'t here any more.';
+
+  @override
+  String get activityTitle => 'Activity';
+
+  @override
+  String get activityTooltip => 'Activity';
+
+  @override
+  String get activityEmpty => 'Nothing has happened here yet.';
+
+  @override
+  String get activitySomeone => 'Someone';
+
+  @override
+  String activityGroupCreated(String actor) {
+    return '$actor created the group';
+  }
+
+  @override
+  String activityGroupRenamed(String actor, String name) {
+    return '$actor renamed the group to $name';
+  }
+
+  @override
+  String activityJoinCodeRegenerated(String actor) {
+    return '$actor made a new join code';
+  }
+
+  @override
+  String activityPlaceholderAdded(String actor, String name) {
+    return '$actor added $name';
+  }
+
+  @override
+  String activityMemberRenamed(String actor, String name) {
+    return '$actor changed a name to $name';
+  }
+
+  @override
+  String activityPlaceholderRemoved(String actor, String name) {
+    return '$actor removed $name';
+  }
+
+  @override
+  String activityMemberJoined(String name) {
+    return '$name joined';
+  }
+
+  @override
+  String activityPlaceholderClaimed(String actor, String name) {
+    return '$actor joined as $name';
+  }
+
+  @override
+  String activityMemberLeft(String name) {
+    return '$name left';
+  }
+
+  @override
+  String activityExpenseAdded(String actor, String title) {
+    return '$actor added $title';
+  }
+
+  @override
+  String activityExpenseEdited(String actor, String title) {
+    return '$actor edited $title';
+  }
+
+  @override
+  String activityExpenseDeleted(String actor, String title) {
+    return '$actor deleted $title';
+  }
+
+  @override
+  String activityExpenseRestored(String actor, String title) {
+    return '$actor restored $title';
+  }
+
+  @override
+  String activityPaymentSent(String actor) {
+    return '$actor said they sent a payment';
+  }
+
+  @override
+  String activityPaymentRecorded(String actor) {
+    return '$actor recorded a payment';
+  }
+
+  @override
+  String activityPaymentConfirmed(String actor) {
+    return '$actor confirmed a payment';
+  }
+
+  @override
+  String activityPaymentCancelled(String actor) {
+    return '$actor cancelled a payment';
+  }
+
+  @override
+  String activityPaymentNotReceived(String actor) {
+    return '$actor said a payment was not received';
+  }
+
+  @override
+  String activityPaymentRemoved(String actor) {
+    return '$actor removed a payment';
+  }
+
+  @override
+  String activityPaymentLine(String from, String to, String amount) {
+    return '$from paid $to $amount';
+  }
+
+  @override
+  String activityAmountChanged(String before, String after) {
+    return '$before → $after';
+  }
+
+  @override
+  String get activityDetailsChanged => 'Details changed';
+
+  @override
+  String get duplicateTitle => 'Kuch bhool to nahi gaye?';
+
+  @override
+  String duplicateBody(int minutes, String title, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other:
+          '$title, $amount with the same people, was added $minutes minutes ago.',
+      one: '$title, $amount with the same people, was added 1 minute ago.',
+      zero: '$title, $amount with the same people, was added just now.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get duplicateAddAnyway => 'Add anyway';
 }

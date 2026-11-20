@@ -59,7 +59,8 @@ Build order (§9) decides the sequence, not separate releases.
 7. Edit/delete expense; balances always recompute.
    Multiple payers on one expense.
    Recurring expenses (rent, internet), created by the app when opened on/after the due date.
-   Duplicate guard ("Same amount and people added 2 minutes ago. Add anyway?").
+   Duplicate guard ("Same amount and people added 2 minutes ago. Add anyway?"): same amount
+   and same people with a share, added in the last 10 minutes (2026-11-20).
    Search and filter expenses.
 
 ### Balances and settling

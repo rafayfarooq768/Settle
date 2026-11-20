@@ -152,7 +152,8 @@ One primary button per screen. Full-width only at the bottom of forms.
 
 ### Icons
 - Material Symbols (Outlined), one weight, 24dp.
-- Icons only where they help recognition: tab bar, FAB, back, settings, copy, share, QR.
+- Icons only where they help recognition: tab bar, FAB, back, settings, copy, share, QR,
+  edit (pencil) and activity (history clock) in app bars.
 - **No emoji as icons. No icon next to every heading.**
 
 ### Status indicators
@@ -256,7 +257,7 @@ Rules:
 - FAB: Add expense. With one group it opens Add expense directly; otherwise a sheet asks which group.
 
 **Group**
-- App bar: group name, settings icon.
+- App bar: group name, then Activity (history icon) and settings icons.
 - Header (owner's decision, 2026-11-20): **no panel**. Straight on the background, aligned with
   the panel text below: a small label in the balance colour ("You are owed" / "You owe"), the
   amount under it in headlineLarge, number first. Settled: muted "Your balance" over
@@ -320,6 +321,31 @@ Rules:
   An item is added or edited in a sheet: Item name, Price, "Who had it?" chips (nobody ticked for
   a new item, owner 2026-11-20), Save item, and Delete item (owe-red) when editing. The bill total becomes the
   expense amount.
+
+**Expense detail** (step 9, 2026-11-20)
+- Opened by tapping an expense row. App bar: the title, edit (pencil) at the end.
+- Header straight on the background like the Group header: the amount as the one big number
+  (headlineLarge, small muted "Rs"), a muted line "Today · added by Ali", then your part in
+  words and money colour ("You owe Rs 300" / "You lent Rs 700", or muted "You paid your share").
+- Panels: "Paid by", then the split ("Split equally", "Split by exact amounts", ... ) with an
+  avatar, name and amount per person, then "History" (the expense's activity rows).
+- "Delete expense" in owe-red text at the bottom. Delete goes back to the list with an Undo
+  SnackBar, no confirmation (§8). A deleted expense (opened from Activity) says so in the
+  header and offers "Restore expense" instead.
+- Edit reuses Add expense ("Edit expense"), filled in, same split mode. Save shows
+  "Done! Expense update ho gaya" with Undo, which puts the old version back.
+
+**Activity**
+- One panel per day under a date label, like the expense list. Row: the actor's avatar, the
+  sentence ("Ali added Chai", "You" for you), an optional muted detail ("Rs 1,000 →
+  Rs 1,200", "Ali paid you Rs 300"), the time at the end (bodySmall, muted). Expense entries
+  open the expense.
+
+**Duplicate guard**
+- On Save of a new expense, if one with the same amount and the same people (who has a share,
+  not who paid) was added in the last 10 minutes: a sheet titled "Kuch bhool to nahi gaye?",
+  a muted line saying what was added and when, "Add anyway" (primary) and Cancel. A sheet,
+  not a dialog: nothing is lost either way.
 
 **Pay screen**
 - "Pay Ali Rs 300" as the title. Ali's payment methods listed: name, account title, number, copy button.

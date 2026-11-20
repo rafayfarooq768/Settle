@@ -45,12 +45,19 @@ class GroupScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(loaded?.name ?? ''),
         actions: [
-          if (loaded != null && me.valueOrNull != null)
+          if (loaded != null && me.valueOrNull != null) ...[
+            // Who did what (PLAN.md §3 item 12).
+            IconButton(
+              tooltip: l10n.activityTooltip,
+              icon: const Icon(Icons.history),
+              onPressed: () => context.push('/groups/$groupId/activity'),
+            ),
             IconButton(
               tooltip: l10n.groupSettingsTooltip,
               icon: const Icon(Icons.settings_outlined),
               onPressed: () => context.push('/groups/$groupId/settings'),
             ),
+          ],
         ],
       ),
       // Only once you're a member (not while picking "Which one are you?")
@@ -201,6 +208,8 @@ class _ExpensesTab extends ConsumerWidget {
                   const [],
               members: all,
               meId: me.id,
+              onOpen: (e) =>
+                  context.push('/groups/${group.id}/expenses/${e.id}'),
             )
           : _NoExpenses(group: group, me: me, members: all),
     );
