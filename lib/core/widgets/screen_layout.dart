@@ -11,6 +11,7 @@ class ScreenLayout extends StatelessWidget {
     required this.body,
     this.actions = const [],
     this.padded = true,
+    this.pinned = false,
   });
 
   final List<Widget> body;
@@ -20,11 +21,46 @@ class ScreenLayout extends StatelessWidget {
   /// which bring their own margin.
   final bool padded;
 
+  /// Keeps [actions] fixed at the bottom while only [body] scrolls. For
+  /// screens whose list can be long and whose live line ("Rs 200 left to
+  /// assign") and Done must stay in view: split, payers, items.
+  final bool pinned;
+
   @override
   Widget build(BuildContext context) {
     const margin = EdgeInsets.symmetric(
       horizontal: AppSpacing.screenHorizontal,
     );
+    if (pinned) {
+      return SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              // Short lists (people, items): build them all at once.
+              child: SingleChildScrollView(
+                padding: padded ? margin : EdgeInsets.zero,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: body,
+                ),
+              ),
+            ),
+            Padding(
+              padding: margin.copyWith(
+                top: AppSpacing.sm,
+                bottom: AppSpacing.lg,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: actions,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     // SliverFillRemaining instead of IntrinsicHeight: some children (the QR
     // code) can't report an intrinsic height, which left the screen blank.
     return SafeArea(

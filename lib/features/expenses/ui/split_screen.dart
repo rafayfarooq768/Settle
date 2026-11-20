@@ -179,6 +179,7 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
       ),
       body: ScreenLayout(
         padded: false,
+        pinned: true,
         body: [
           const SizedBox(height: AppSpacing.lg),
           Padding(

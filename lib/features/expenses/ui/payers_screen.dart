@@ -92,6 +92,7 @@ class _PayersScreenState extends ConsumerState<PayersScreen> {
       ),
       body: ScreenLayout(
         padded: false,
+        pinned: true,
         body: [
           Padding(
             padding: const EdgeInsets.fromLTRB(

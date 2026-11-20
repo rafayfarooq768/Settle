@@ -193,6 +193,9 @@ Forms and single-purpose screens (sign in, sign up, reset, create group, join, c
 password, invite, settings, group settings) use `ScreenLayout`: content from the top,
 actions pinned to the bottom in the thumb zone, scrolling together when the keyboard is up.
 No floating blocks of content in the middle of an empty screen.
+Screens with a list that can be long and a live line above Done (Split, several payers,
+Split by items) pin the live line and Done; only the list scrolls (`ScreenLayout(pinned:
+true)`, final check 2026-11-20: with six people Done sat under the navigation bar).
 
 ## 8. Feedback and dialogs
 

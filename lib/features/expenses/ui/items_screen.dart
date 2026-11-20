@@ -184,6 +184,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
       appBar: AppBar(title: Text(l10n.itemsTitle)),
       body: ScreenLayout(
         padded: false,
+        pinned: true,
         body: [
           SectionLabel(l10n.itemsSection),
           Panel(

@@ -57,11 +57,10 @@ class SettingsScreen extends ConsumerWidget {
           ),
           SectionLabel(l10n.accountSection),
           Panel(
-            dividerIndent: iconRowDividerIndent,
+            dividerIndent: AppSpacing.lg,
             children: [
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,
-                leading: const Icon(Icons.person_outline),
                 title: Text(l10n.nameRow),
                 subtitle: Text(me?.name ?? ''),
                 trailing: const Icon(Icons.chevron_right),
@@ -69,7 +68,6 @@ class SettingsScreen extends ConsumerWidget {
               ),
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,
-                leading: const Icon(Icons.phone_outlined),
                 title: Text(l10n.phoneLabel),
                 subtitle: Text(
                   me == null || me.phone.isEmpty
@@ -82,7 +80,6 @@ class SettingsScreen extends ConsumerWidget {
               // Read-only: no chevron, nothing to tap.
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,
-                leading: const Icon(Icons.mail_outline),
                 title: Text(l10n.emailRow),
                 subtitle: Text(user?.email ?? ''),
               ),
@@ -91,7 +88,6 @@ class SettingsScreen extends ConsumerWidget {
               if (auth.hasPassword)
                 ListTile(
                   minTileHeight: AppSpacing.rowHeight,
-                  leading: const Icon(Icons.lock_outline),
                   title: Text(l10n.passwordRow),
                   subtitle: Text(l10n.changePasswordTitle),
                   trailing: const Icon(Icons.chevron_right),

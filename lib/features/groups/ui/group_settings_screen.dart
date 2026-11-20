@@ -103,6 +103,8 @@ class GroupSettingsScreen extends ConsumerWidget {
                   child: Icon(Icons.qr_code_2_outlined),
                 ),
                 title: Text(l10n.joinCodeRow(group.joinCode)),
+                // Opens Invite, so it ends with a chevron (DESIGN.md §6).
+                trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push('/groups/$groupId/invite'),
               ),
             ],
