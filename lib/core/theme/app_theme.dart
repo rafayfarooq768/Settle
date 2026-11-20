@@ -81,7 +81,9 @@ class AppTheme {
       MoneyColors.dark,
       ExtraColors.dark,
       background: AppColors.darkBackground,
-      linkColor: colorScheme.primary,
+      // Text links, text buttons and the selected tab label in Mist: teal
+      // text fails contrast on near-black (see ExtraColors.dark).
+      linkColor: AppColors.mist,
     );
   }
 

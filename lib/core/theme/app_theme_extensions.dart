@@ -83,7 +83,9 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
   static const dark = ExtraColors(
     avatar: AppColors.deepTeal,
     onAvatar: AppColors.mist,
-    link: AppColors.teal,
+    // Teal text is 3.3–4.2:1 on the dark surfaces, under the 4.5:1 text
+    // minimum; Mist (brand) is 9.7–12:1. Teal stays for filled buttons.
+    link: AppColors.mist,
     settled: AppColors.mist,
     qrDark: AppColors.ink,
     qrLight: AppColors.white,

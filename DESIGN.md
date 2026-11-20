@@ -42,6 +42,10 @@ Rules:
   `#0F1213`, panels `#1A1F21`, raised surfaces `#22282A`/`#2A3133`, outline `#3A4245`.
   Teal only for accents (buttons, FAB, selected tab, links). Keep owed/owe hues,
   adjusted for contrast.
+- Dark mode text in the link colour (links, text buttons, row actions, the selected tab
+  label) uses **Mist**, not Teal (dark mode pass, 2026-11-20): teal text is 3.3–4.2:1 on the
+  dark surfaces, under the 4.5:1 text minimum; Mist is 9.7–12:1. Filled buttons, the FAB,
+  cursors and underlines stay Teal (shapes need 3:1, teal is 4.2:1).
 - **Brand colours only** (owner's decision, 2026-11-19): no purple, no extra tints. The
   "settled" state uses Deep teal (Mist on dark), never a money colour.
 
