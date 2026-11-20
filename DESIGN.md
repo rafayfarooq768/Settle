@@ -275,6 +275,15 @@ Rules:
   opening a screen with an amount per person, the same live line and Done. Paid by then reads
   "You and Sara" / "You and 2 others" with small overlapping avatars. In the list:
   "2 people paid Rs 1,500".
+- Itemized (owner, 2026-11-20: its own screen, not a 5th tab): a teal "Split a bill by items ›"
+  link under the split screen's members opens "Split by items". Panels: Items (name, who had it
+  or "Everyone", price; last row "Add item" in teal with +), "Tax, service and tip" (Tax % and
+  Service charge % with the rupees under them, Tip in Rs, and a "Split these equally" switch;
+  off = by what each person had), then "Who owes what" once there's an item. Above Done:
+  "Bill total Rs 4,400" (and "The amount changes from Rs 4,000" if you typed something else).
+  An item is added or edited in a sheet: Item name, Price, "Who had it?" chips (all ticked for a
+  new item), Save item, and Delete item (owe-red) when editing. The bill total becomes the
+  expense amount.
 
 **Pay screen**
 - "Pay Ali Rs 300" as the title. Ali's payment methods listed: name, account title, number, copy button.

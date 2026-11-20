@@ -15,6 +15,9 @@ String splitProblemText(AppLocalizations l10n, SplitProblem problem) =>
         basisPoints > 0
             ? l10n.splitLeftToAssign(formatPercent(basisPoints))
             : l10n.splitTooMuch(formatPercent(-basisPoints)),
+      NoItems() => l10n.errorItemsNeeded,
+      ItemWithoutPeople() => l10n.errorItemNeedsPeople,
+      BillTotalDiffers(:final total) => l10n.billAddsUpTo(formatRupees(total)),
     };
 
 /// The line when it adds up: "Rs 200 each", "Adds up to Rs 1,000",
@@ -28,4 +31,5 @@ String splitStatusText(AppLocalizations l10n, SplitSpec spec, int? amount) =>
       ExactSpec() => l10n.splitAddsUp(formatRupees(amount ?? 0)),
       PercentSpec() => l10n.splitAddsUp(formatPercent(fullPercentBp)),
       SharesSpec(:final units) => l10n.splitSharesCount(sumOf(units)),
+      ItemizedSpec(:final total) => l10n.billTotal(formatRupees(total)),
     };

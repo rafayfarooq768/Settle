@@ -17,20 +17,23 @@ import '../../groups/domain/group.dart';
 import '../../groups/ui/groups_providers.dart';
 import '../domain/expense.dart';
 import '../domain/split_spec.dart';
+import 'items_screen.dart';
 import 'split_text.dart';
 
 /// What Add expense hands the split screen.
 class SplitArgs {
   const SplitArgs({
     required this.amount,
-    required this.payerId,
+    required this.payerIds,
     required this.meId,
     required this.spec,
   });
 
   /// Paisa, or null if the amount isn't entered yet.
   final int? amount;
-  final String payerId;
+
+  /// Who paid, in group order (leftover paisa go to them first).
+  final List<String> payerIds;
   final String meId;
   final SplitSpec spec;
 }
@@ -49,9 +52,15 @@ class SplitScreen extends ConsumerStatefulWidget {
 }
 
 class _SplitScreenState extends ConsumerState<SplitScreen> {
-  late SplitMode _mode = widget.args.spec.mode;
-  late final Set<String> _ticked = {
-    if (widget.args.spec case EqualSpec(:final participants)) ...participants,
+  /// An itemized bill has its own screen; here it starts on Equal.
+  late SplitMode _mode = widget.args.spec is ItemizedSpec
+      ? SplitMode.equal
+      : widget.args.spec.mode;
+
+  /// Who's ticked in Equal; null = everyone (set once members load).
+  late Set<String>? _ticked = switch (widget.args.spec) {
+    EqualSpec(:final participants) => {...participants},
+    _ => null,
   };
 
   /// One text field per person per mode, so switching modes keeps what
@@ -78,7 +87,7 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
         );
       case SharesSpec(:final units):
         units.forEach((id, u) => _field(SplitMode.shares, id, '$u'));
-      case EqualSpec():
+      case EqualSpec() || ItemizedSpec():
         break;
     }
   }
@@ -108,7 +117,7 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
       // equal split and you only change the people who differ.
       if (mode == SplitMode.shares && _fields[mode] == null) {
         for (final m in members) {
-          _field(mode, m.id, _ticked.contains(m.id) ? '1' : '');
+          _field(mode, m.id, _ticked!.contains(m.id) ? '1' : '');
         }
       }
       _mode = mode;
@@ -123,13 +132,30 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
     return switch (_mode) {
       SplitMode.equal => EqualSpec([
         for (final m in members)
-          if (_ticked.contains(m.id)) m.id,
+          if (_ticked!.contains(m.id)) m.id,
       ]),
       SplitMode.exact => ExactSpec(read(SplitMode.exact, parseRupees)),
       SplitMode.percent => PercentSpec(read(SplitMode.percent, parsePercent)),
       // itemized isn't on this screen.
       _ => SharesSpec(read(SplitMode.shares, int.tryParse)),
     };
+  }
+
+  /// The bill screen; its result is this screen's result too.
+  Future<void> _openItems() async {
+    final bill = await context.push<ItemizedSpec>(
+      '/groups/${widget.groupId}/items',
+      extra: ItemsArgs(
+        amount: widget.args.amount,
+        meId: widget.args.meId,
+        payerIds: widget.args.payerIds,
+        spec: switch (widget.args.spec) {
+          final ItemizedSpec bill => bill,
+          _ => null,
+        },
+      ),
+    );
+    if (bill != null && mounted) context.pop(bill);
   }
 
   @override
@@ -142,6 +168,10 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
                 const <Member>[])
             .where((m) => m.active)
             .toList();
+    if (_ticked == null && members.isNotEmpty) {
+      _ticked = {for (final m in members) m.id};
+    }
+    final ticked = _ticked ?? const <String>{};
     final spec = _spec(members);
     final problem = spec.problem(amount);
     // What each person ends up owing, shown under their name.
@@ -149,7 +179,7 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
         ? spec.shares(
             amount: amount,
             order: [for (final m in members) m.id],
-            payers: [widget.args.payerId],
+            payers: widget.args.payerIds,
           )
         : const <String, int>{};
 
@@ -220,10 +250,10 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
                     ? _TickRow(
                         member: m,
                         meId: widget.args.meId,
-                        ticked: _ticked.contains(m.id),
+                        ticked: ticked.contains(m.id),
                         owes: preview[m.id],
                         onChanged: (on) => setState(
-                          () => on ? _ticked.add(m.id) : _ticked.remove(m.id),
+                          () => on ? _ticked!.add(m.id) : _ticked!.remove(m.id),
                         ),
                       )
                     : SplitInputRow(
@@ -234,6 +264,12 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
                         owes: _mode == SplitMode.exact ? null : preview[m.id],
                       ),
             ],
+          ),
+          _ItemsLink(
+            label: widget.args.spec is ItemizedSpec
+                ? l10n.itemsEdit
+                : l10n.itemsOpen,
+            onTap: _openItems,
           ),
           const SizedBox(height: AppSpacing.lg),
         ],
@@ -415,5 +451,45 @@ class PercentInputFormatter extends TextInputFormatter {
     if (!RegExp(r'^\d{1,3}(\.\d{0,2})?$').hasMatch(text)) return oldValue;
     final bp = parsePercent(text);
     return bp == null ? oldValue : newValue;
+  }
+}
+
+/// "Split a bill by items ›" under the members: a quiet teal link to the
+/// itemized screen (owner, 2026-11-20: its own screen, not a 5th tab).
+class _ItemsLink extends StatelessWidget {
+  const _ItemsLink({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final link = context.extraColors.link;
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.screenHorizontal,
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppSizes.tapTarget),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    label,
+                    style: Theme.of(context).textTheme.labelLarge
+                        ?.copyWith(color: link),
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: link),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

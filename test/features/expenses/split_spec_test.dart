@@ -189,4 +189,94 @@ void main() {
       );
     });
   });
+
+  group('Itemized', () {
+    // PLAN.md §4 restaurant: a=Ali, b=Sara, c=Bilal, d=Hamza.
+    const restaurant = ItemizedSpec(
+      items: [
+        BillLine(name: 'Steak', amount: 150000, memberIds: ['a']),
+        BillLine(name: 'Karahi', amount: 60000, memberIds: ['b']),
+        BillLine(name: 'Biryani', amount: 60000, memberIds: ['c']),
+        BillLine(name: 'Burger', amount: 50000, memberIds: ['d']),
+        BillLine(
+          name: 'Drinks',
+          amount: 80000,
+          memberIds: ['a', 'b', 'c', 'd'],
+        ),
+      ],
+      taxBp: 1000,
+    );
+
+    test('PLAN.md §4 restaurant: Ali +2530, Sara -880, Bilal -880, '
+        'Hamza -770', () {
+      expect(restaurant.total, 440000);
+      final draft = splitDraft(
+        title: 'Dinner',
+        amount: restaurant.total,
+        date: DateTime(2026, 11, 20),
+        payers: {'a': restaurant.total},
+        split: restaurant,
+        order: _order,
+      );
+      expect(
+        netBalances(
+          expenses: [
+            LedgerExpense(
+              amount: draft.amount,
+              payers: draft.payers,
+              shares: draft.shares,
+            ),
+          ],
+        ),
+        {'a': 253000, 'b': -88000, 'c': -88000, 'd': -77000},
+      );
+    });
+
+    test('tax, service and tip all add to the total', () {
+      const bill = ItemizedSpec(
+        items: [
+          BillLine(name: '', amount: 100000, memberIds: ['a', 'b']),
+        ],
+        taxBp: 1600,
+        serviceBp: 500,
+        tip: 10000,
+      );
+      expect(bill.tax, 16000);
+      expect(bill.service, 5000);
+      expect(bill.total, 131000);
+      expect(sumOf(_shares(bill, 131000)), 131000);
+    });
+
+    test('extras can be split equally instead', () {
+      const bill = ItemizedSpec(
+        items: [
+          BillLine(name: '', amount: 30000, memberIds: ['a']),
+          BillLine(name: '', amount: 10000, memberIds: ['b']),
+        ],
+        tip: 2000,
+        spread: ExtrasSpread.equal,
+      );
+      expect(_shares(bill, 42000), {'a': 31000, 'b': 11000});
+    });
+
+    test('problems: no items, an item nobody had, a changed amount', () {
+      expect(const ItemizedSpec(items: []).problem(null), isA<NoItems>());
+      expect(
+        const ItemizedSpec(
+          items: [BillLine(name: '', amount: 100, memberIds: [])],
+        ).problem(null),
+        isA<ItemWithoutPeople>(),
+      );
+      expect((restaurant.problem(400000)! as BillTotalDiffers).total, 440000);
+      expect(restaurant.problem(440000), isNull);
+    });
+
+    test('reads back from splitInput the same', () {
+      final back =
+          SplitSpec.fromJson(SplitMode.itemized, restaurant.toJson())!
+              as ItemizedSpec;
+      expect(back.toJson(), restaurant.toJson());
+      expect(_shares(back, 440000), _shares(restaurant, 440000));
+    });
+  });
 }

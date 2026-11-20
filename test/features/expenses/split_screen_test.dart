@@ -32,7 +32,7 @@ void main() {
             groupId: 'g1',
             args: SplitArgs(
               amount: 100000,
-              payerId: 'm1',
+              payerIds: const ['m1'],
               meId: 'm1',
               spec: spec ?? const EqualSpec(['m1', 'm2']),
             ),

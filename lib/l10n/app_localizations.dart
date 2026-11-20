@@ -1539,6 +1539,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} people paid {amount}'**
   String expenseManyPaid(int count, String amount);
+
+  /// No description provided for @itemsOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Split a bill by items'**
+  String get itemsOpen;
+
+  /// No description provided for @itemsEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit items'**
+  String get itemsEdit;
+
+  /// No description provided for @itemsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Split by items'**
+  String get itemsTitle;
+
+  /// No description provided for @itemsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get itemsSection;
+
+  /// No description provided for @itemsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get itemsAdd;
+
+  /// No description provided for @itemAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get itemAddTitle;
+
+  /// No description provided for @itemEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit item'**
+  String get itemEditTitle;
+
+  /// No description provided for @itemNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get itemNameLabel;
+
+  /// No description provided for @itemNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Steak'**
+  String get itemNameHint;
+
+  /// No description provided for @itemPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get itemPriceLabel;
+
+  /// No description provided for @itemWhoHad.
+  ///
+  /// In en, this message translates to:
+  /// **'Who had it?'**
+  String get itemWhoHad;
+
+  /// No description provided for @itemEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get itemEveryone;
+
+  /// No description provided for @itemUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get itemUnnamed;
+
+  /// No description provided for @itemSaveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save item'**
+  String get itemSaveButton;
+
+  /// No description provided for @itemDeleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete item'**
+  String get itemDeleteButton;
+
+  /// No description provided for @extrasSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax, service and tip'**
+  String get extrasSection;
+
+  /// No description provided for @taxLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
+  String get taxLabel;
+
+  /// No description provided for @serviceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Service charge'**
+  String get serviceLabel;
+
+  /// No description provided for @tipLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip'**
+  String get tipLabel;
+
+  /// No description provided for @extrasEqually.
+  ///
+  /// In en, this message translates to:
+  /// **'Split these equally'**
+  String get extrasEqually;
+
+  /// No description provided for @extrasEquallyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: by what each person had'**
+  String get extrasEquallyHelp;
+
+  /// No description provided for @whoOwesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Who owes what'**
+  String get whoOwesSection;
+
+  /// No description provided for @billTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill total {amount}'**
+  String billTotal(String amount);
+
+  /// No description provided for @billTotalChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'The amount changes from {amount}'**
+  String billTotalChanges(String amount);
+
+  /// No description provided for @billAddsUpTo.
+  ///
+  /// In en, this message translates to:
+  /// **'The bill adds up to {amount}'**
+  String billAddsUpTo(String amount);
+
+  /// No description provided for @errorItemsNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one item.'**
+  String get errorItemsNeeded;
+
+  /// No description provided for @errorItemNeedsPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick who had each item.'**
+  String get errorItemNeedsPeople;
+
+  /// No description provided for @errorPickWhoHad.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick who had it.'**
+  String get errorPickWhoHad;
+
+  /// No description provided for @splitByItems.
+  ///
+  /// In en, this message translates to:
+  /// **'By items'**
+  String get splitByItems;
 }
 
 class _AppLocalizationsDelegate

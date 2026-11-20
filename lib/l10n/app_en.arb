@@ -718,5 +718,55 @@
         "type": "String"
       }
     }
-  }
+  },
+  "itemsOpen": "Split a bill by items",
+  "itemsEdit": "Edit items",
+  "itemsTitle": "Split by items",
+  "itemsSection": "Items",
+  "itemsAdd": "Add item",
+  "itemAddTitle": "Add item",
+  "itemEditTitle": "Edit item",
+  "itemNameLabel": "Item",
+  "itemNameHint": "e.g. Steak",
+  "itemPriceLabel": "Price",
+  "itemWhoHad": "Who had it?",
+  "itemEveryone": "Everyone",
+  "itemUnnamed": "Item",
+  "itemSaveButton": "Save item",
+  "itemDeleteButton": "Delete item",
+  "extrasSection": "Tax, service and tip",
+  "taxLabel": "Tax",
+  "serviceLabel": "Service charge",
+  "tipLabel": "Tip",
+  "extrasEqually": "Split these equally",
+  "extrasEquallyHelp": "Off: by what each person had",
+  "whoOwesSection": "Who owes what",
+  "billTotal": "Bill total {amount}",
+  "@billTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "billTotalChanges": "The amount changes from {amount}",
+  "@billTotalChanges": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "billAddsUpTo": "The bill adds up to {amount}",
+  "@billAddsUpTo": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "errorItemsNeeded": "Add at least one item.",
+  "errorItemNeedsPeople": "Pick who had each item.",
+  "errorPickWhoHad": "Pick who had it.",
+  "splitByItems": "By items"
 }

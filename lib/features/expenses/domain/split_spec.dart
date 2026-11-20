@@ -55,7 +55,7 @@ sealed class SplitSpec {
         final m = ints(json['units']);
         return m == null ? null : SharesSpec(m);
       case SplitMode.itemized:
-        return null;
+        return ItemizedSpec.fromJson(json);
     }
   }
 }
@@ -83,6 +83,22 @@ class RupeesLeft extends SplitProblem {
 class PercentLeft extends SplitProblem {
   const PercentLeft(this.basisPoints);
   final int basisPoints;
+}
+
+/// Itemized: no items yet.
+class NoItems extends SplitProblem {
+  const NoItems();
+}
+
+/// Itemized: an item nobody had.
+class ItemWithoutPeople extends SplitProblem {
+  const ItemWithoutPeople();
+}
+
+/// Itemized: the amount was changed and no longer matches the bill.
+class BillTotalDiffers extends SplitProblem {
+  const BillTotalDiffers(this.total);
+  final int total;
 }
 
 class EqualSpec extends SplitSpec {
@@ -213,3 +229,125 @@ Map<String, int> _nonZero(Map<String, int> m) => {
   for (final e in m.entries)
     if (e.value != 0) e.key: e.value,
 };
+
+/// One line on the bill: [name] (may be empty), its price, who had it.
+class BillLine {
+  const BillLine({
+    required this.name,
+    required this.amount,
+    required this.memberIds,
+  });
+
+  final String name;
+  final int amount;
+  final List<String> memberIds;
+
+  Json toJson() => {'name': name, 'amount': amount, 'members': memberIds};
+}
+
+/// Itemized (PLAN.md §4): items → people, plus tax and service charge as a
+/// percentage of the items and a tip in rupees. They're spread in
+/// proportion to what each person had, or equally. The bill total becomes
+/// the expense amount.
+class ItemizedSpec extends SplitSpec {
+  const ItemizedSpec({
+    required this.items,
+    this.taxBp = 0,
+    this.serviceBp = 0,
+    this.tip = 0,
+    this.spread = ExtrasSpread.proportional,
+  });
+
+  final List<BillLine> items;
+  final int taxBp;
+  final int serviceBp;
+
+  /// Paisa.
+  final int tip;
+  final ExtrasSpread spread;
+
+  int get itemsTotal => items.fold(0, (sum, i) => sum + i.amount);
+
+  int get tax => percentOf(amount: itemsTotal, basisPoints: taxBp);
+
+  int get service => percentOf(amount: itemsTotal, basisPoints: serviceBp);
+
+  int get extras => tax + service + tip;
+
+  int get total => itemsTotal + extras;
+
+  @override
+  SplitMode get mode => SplitMode.itemized;
+
+  @override
+  SplitProblem? problem(int? amount) {
+    if (items.isEmpty) return const NoItems();
+    if (items.any((i) => i.memberIds.isEmpty)) {
+      return const ItemWithoutPeople();
+    }
+    if (amount != null && amount != total) return BillTotalDiffers(total);
+    return null;
+  }
+
+  @override
+  Map<String, int> shares({
+    required int amount,
+    required List<String> order,
+    required Iterable<String> payers,
+  }) {
+    if (amount != total) {
+      throw const MoneyException('The amount must match the bill total.');
+    }
+    return _nonZero(
+      splitItemized(
+        items: [
+          for (final i in items)
+            BillItem(amount: i.amount, memberIds: i.memberIds),
+        ],
+        order: order,
+        extras: extras,
+        spread: spread,
+        payers: payers,
+      ),
+    );
+  }
+
+  @override
+  Json toJson() => {
+    'items': [for (final i in items) i.toJson()],
+    'taxBp': taxBp,
+    'serviceBp': serviceBp,
+    'tip': tip,
+    'spread': spread.name,
+  };
+
+  static ItemizedSpec? fromJson(Json json) {
+    final raw = json['items'];
+    if (raw is! List) return null;
+    final items = <BillLine>[];
+    for (final i in raw) {
+      if (i is! Map) return null;
+      final amount = i['amount'];
+      final members = i['members'];
+      if (amount is! int || members is! List) return null;
+      if (members.any((id) => id is! String)) return null;
+      items.add(
+        BillLine(
+          name: i['name'] is String ? i['name'] as String : '',
+          amount: amount,
+          memberIds: members.cast<String>(),
+        ),
+      );
+    }
+    int intOf(String key) => json[key] is int ? json[key] as int : 0;
+    return ItemizedSpec(
+      items: items,
+      taxBp: intOf('taxBp'),
+      serviceBp: intOf('serviceBp'),
+      tip: intOf('tip'),
+      spread: json['spread'] == ExtrasSpread.equal.name
+          ? ExtrasSpread.equal
+          : ExtrasSpread.proportional,
+    );
+  }
+}

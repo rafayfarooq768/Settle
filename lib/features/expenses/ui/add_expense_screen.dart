@@ -122,7 +122,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       '/groups/${widget.groupId}/split',
       extra: SplitArgs(
         amount: parseRupees(_amount.text),
-        payerId: _payerIds(members, meId).firstOrNull ?? meId,
+        payerIds: _payerIds(members, meId),
         meId: meId,
         spec: _splitOf(members),
       ),
@@ -131,6 +131,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       setState(() {
         _split = picked;
         _splitError = null;
+        // An itemized bill sets the amount to its total.
+        if (picked is ItemizedSpec) {
+          _amount.text = RupeeInputFormatter.textFor(picked.total);
+          _amountError = null;
+        }
       });
     }
   }
@@ -355,6 +360,7 @@ class _Details extends StatelessWidget {
       ExactSpec() => l10n.splitByExact,
       PercentSpec() => l10n.splitByPercent,
       SharesSpec() => l10n.splitByShares,
+      ItemizedSpec() => l10n.splitByItems,
     };
     if (amount == null || amount == 0) return (value, null);
     if (problem != null) return (value, splitProblemText(l10n, problem));

@@ -884,4 +884,97 @@ class AppLocalizationsEn extends AppLocalizations {
   String expenseManyPaid(int count, String amount) {
     return '$count people paid $amount';
   }
+
+  @override
+  String get itemsOpen => 'Split a bill by items';
+
+  @override
+  String get itemsEdit => 'Edit items';
+
+  @override
+  String get itemsTitle => 'Split by items';
+
+  @override
+  String get itemsSection => 'Items';
+
+  @override
+  String get itemsAdd => 'Add item';
+
+  @override
+  String get itemAddTitle => 'Add item';
+
+  @override
+  String get itemEditTitle => 'Edit item';
+
+  @override
+  String get itemNameLabel => 'Item';
+
+  @override
+  String get itemNameHint => 'e.g. Steak';
+
+  @override
+  String get itemPriceLabel => 'Price';
+
+  @override
+  String get itemWhoHad => 'Who had it?';
+
+  @override
+  String get itemEveryone => 'Everyone';
+
+  @override
+  String get itemUnnamed => 'Item';
+
+  @override
+  String get itemSaveButton => 'Save item';
+
+  @override
+  String get itemDeleteButton => 'Delete item';
+
+  @override
+  String get extrasSection => 'Tax, service and tip';
+
+  @override
+  String get taxLabel => 'Tax';
+
+  @override
+  String get serviceLabel => 'Service charge';
+
+  @override
+  String get tipLabel => 'Tip';
+
+  @override
+  String get extrasEqually => 'Split these equally';
+
+  @override
+  String get extrasEquallyHelp => 'Off: by what each person had';
+
+  @override
+  String get whoOwesSection => 'Who owes what';
+
+  @override
+  String billTotal(String amount) {
+    return 'Bill total $amount';
+  }
+
+  @override
+  String billTotalChanges(String amount) {
+    return 'The amount changes from $amount';
+  }
+
+  @override
+  String billAddsUpTo(String amount) {
+    return 'The bill adds up to $amount';
+  }
+
+  @override
+  String get errorItemsNeeded => 'Add at least one item.';
+
+  @override
+  String get errorItemNeedsPeople => 'Pick who had each item.';
+
+  @override
+  String get errorPickWhoHad => 'Pick who had it.';
+
+  @override
+  String get splitByItems => 'By items';
 }
