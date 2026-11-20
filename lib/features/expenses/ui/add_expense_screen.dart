@@ -17,6 +17,7 @@ import '../domain/expense_summary.dart';
 import 'day_label.dart';
 import 'expense_pickers.dart';
 import 'expenses_providers.dart';
+import 'payers_screen.dart';
 import 'split_screen.dart';
 import 'split_text.dart';
 import '../domain/split_spec.dart';
@@ -44,12 +45,17 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _title = TextEditingController();
   String? _payerId;
 
+  /// Set when several people paid (memberId → paisa); then [_payerId] is
+  /// ignored.
+  Map<String, int>? _payers;
+
   /// Null until changed: everyone, equally.
   SplitSpec? _split;
   DateTime _day = DateTime.now();
   String? _amountError;
   String? _titleError;
   String? _splitError;
+  String? _payerError;
   String? _error;
   bool _saving = false;
 
@@ -72,10 +78,41 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       context,
       members: members,
       meId: meId,
-      selected: _payerId ?? meId,
+      selected: _payers == null ? _payerId ?? meId : null,
     );
-    if (picked != null) setState(() => _payerId = picked);
+    if (picked == null || !mounted) return;
+    if (picked == morePayers) return _openPayers(meId);
+    setState(() {
+      _payerId = picked;
+      _payers = null;
+      _payerError = null;
+    });
   }
+
+  Future<void> _openPayers(String meId) async {
+    final amount = parseRupees(_amount.text);
+    final picked = await context.push<Map<String, int>>(
+      '/groups/${widget.groupId}/payers',
+      extra: PayersArgs(
+        amount: amount,
+        meId: meId,
+        payers: _payers ?? {_payerId ?? meId: amount ?? 0},
+      ),
+    );
+    if (picked == null || picked.isEmpty || !mounted) return;
+    setState(() {
+      // One person after all: back to the plain "Paid by Ali".
+      _payerId = picked.length == 1 ? picked.keys.single : _payerId;
+      _payers = picked.length == 1 ? null : picked;
+      _payerError = null;
+    });
+  }
+
+  /// Who paid, in group order.
+  List<String> _payerIds(List<Member> members, String meId) => [
+    for (final m in members)
+      if (_payers?.containsKey(m.id) ?? m.id == (_payerId ?? meId)) m.id,
+  ];
 
   SplitSpec _splitOf(List<Member> members) =>
       _split ?? SplitSpec.everyone(members.map((m) => m.id));
@@ -85,7 +122,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       '/groups/${widget.groupId}/split',
       extra: SplitArgs(
         amount: parseRupees(_amount.text),
-        payerId: _payerId ?? meId,
+        payerId: _payerIds(members, meId).firstOrNull ?? meId,
         meId: meId,
         spec: _splitOf(members),
       ),
@@ -115,6 +152,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final title = _title.text.trim();
     final split = _splitOf(members);
     final problem = split.problem(amount);
+    final payers = _payers;
+    final payersProblem = payers == null
+        ? null
+        : ExactSpec(payers).problem(amount);
     setState(() {
       _amountError = amount == null || amount == 0
           ? l10n.errorAmountRequired
@@ -126,9 +167,15 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       _splitError = problem == null || problem is AmountNeeded
           ? null
           : splitProblemText(l10n, problem);
+      _payerError = payersProblem == null || payersProblem is AmountNeeded
+          ? null
+          : splitProblemText(l10n, payersProblem);
       _error = null;
     });
-    if (_amountError != null || _titleError != null || _splitError != null) {
+    if (_amountError != null ||
+        _titleError != null ||
+        _splitError != null ||
+        _payerError != null) {
       return;
     }
 
@@ -149,7 +196,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       title: title,
       amount: amount!,
       date: date,
-      payerId: _payerId ?? me.id,
+      payers: payers ?? {_payerId ?? me.id: amount},
       split: split,
       order: [for (final m in members) m.id],
     );
@@ -236,7 +283,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 _Details(
                   members: members,
                   me: me,
-                  payerId: _payerId ?? me.id,
+                  payerIds: _payerIds(members, me.id),
+                  payers: _payers,
+                  payerError: _payerError,
                   split: _splitOf(members),
                   amount: parseRupees(_amount.text),
                   day: _day,
@@ -267,7 +316,9 @@ class _Details extends StatelessWidget {
   const _Details({
     required this.members,
     required this.me,
-    required this.payerId,
+    required this.payerIds,
+    required this.payers,
+    required this.payerError,
     required this.split,
     required this.amount,
     required this.day,
@@ -279,7 +330,13 @@ class _Details extends StatelessWidget {
 
   final List<Member> members;
   final Member me;
-  final String payerId;
+
+  /// Who paid, in group order (at least one).
+  final List<String> payerIds;
+
+  /// Several payers' amounts, or null for one payer.
+  final Map<String, int>? payers;
+  final String? payerError;
   final SplitSpec split;
   final int? amount;
   final DateTime day;
@@ -307,7 +364,7 @@ class _Details extends StatelessWidget {
     final mine = split.shares(
       amount: amount,
       order: [for (final m in members) m.id],
-      payers: [payerId],
+      payers: payerIds,
     )[me.id];
     return (
       value,
@@ -318,10 +375,17 @@ class _Details extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final payer = members.where((m) => m.id == payerId).firstOrNull;
-    final payerName = payerId == me.id
-        ? l10n.youLabel
-        : payer?.displayName ?? '';
+    final payerMembers = [
+      for (final id in payerIds) ?members.where((m) => m.id == id).firstOrNull,
+    ];
+    String nameOf(Member m) => m.id == me.id ? l10n.youLabel : m.displayName;
+    final payerName = switch (payerMembers) {
+      [] => l10n.youLabel,
+      [final one] => nameOf(one),
+      [final a, final b] => l10n.paidByTwo(nameOf(a), nameOf(b)),
+      [final a, ...final rest] => l10n.paidByMany(nameOf(a), rest.length),
+    };
+    final payer = payerMembers.firstOrNull;
     final (value, helper) = _splitSummary(l10n);
 
     return Column(
@@ -330,11 +394,21 @@ class _Details extends StatelessWidget {
         SelectField(
           label: l10n.paidByRow,
           value: payerName,
-          leading: MemberAvatar(
-            name: payer?.displayName ?? me.displayName,
-            placeholder: payer?.isPlaceholder ?? false,
-            size: AppSizes.avatarSmall,
-          ),
+          leading: payerMembers.length > 1
+              ? AvatarRow(
+                  max: 3,
+                  ring: Theme.of(context).scaffoldBackgroundColor,
+                  names: [
+                    for (final m in payerMembers)
+                      (name: m.displayName, placeholder: m.isPlaceholder),
+                  ],
+                )
+              : MemberAvatar(
+                  name: payer?.displayName ?? me.displayName,
+                  placeholder: payer?.isPlaceholder ?? false,
+                  size: AppSizes.avatarSmall,
+                ),
+          error: payerError,
           onTap: onPayer,
         ),
         const SizedBox(height: AppSpacing.lg),

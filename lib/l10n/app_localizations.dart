@@ -1503,6 +1503,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'%'**
   String get percentSuffix;
+
+  /// No description provided for @payersMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More than one person'**
+  String get payersMore;
+
+  /// No description provided for @payersTitleAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Who paid {amount}?'**
+  String payersTitleAmount(String amount);
+
+  /// No description provided for @payersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter what each person paid.'**
+  String get payersHint;
+
+  /// No description provided for @paidByTwo.
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second}'**
+  String paidByTwo(String first, String second);
+
+  /// No description provided for @paidByMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {count} others'**
+  String paidByMany(String first, int count);
+
+  /// No description provided for @expenseManyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} people paid {amount}'**
+  String expenseManyPaid(int count, String amount);
 }
 
 class _AppLocalizationsDelegate

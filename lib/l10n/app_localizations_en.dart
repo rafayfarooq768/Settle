@@ -858,4 +858,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get percentSuffix => '%';
+
+  @override
+  String get payersMore => 'More than one person';
+
+  @override
+  String payersTitleAmount(String amount) {
+    return 'Who paid $amount?';
+  }
+
+  @override
+  String get payersHint => 'Enter what each person paid.';
+
+  @override
+  String paidByTwo(String first, String second) {
+    return '$first and $second';
+  }
+
+  @override
+  String paidByMany(String first, int count) {
+    return '$first and $count others';
+  }
+
+  @override
+  String expenseManyPaid(int count, String amount) {
+    return '$count people paid $amount';
+  }
 }

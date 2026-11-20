@@ -271,6 +271,10 @@ Rules:
   Done is disabled until it adds up. Switching modes keeps what you typed; Shares start at 1 each.
   Nobody with 0 is part of the expense. Back on Add expense the Split field says "Exact amounts"
   / "By percentage" / "By shares" with "Your share Rs 300" (or what's left) under it.
+- Several payers (owner, 2026-11-20): the Paid by sheet's last row is "More than one person",
+  opening a screen with an amount per person, the same live line and Done. Paid by then reads
+  "You and Sara" / "You and 2 others" with small overlapping avatars. In the list:
+  "2 people paid Rs 1,500".
 
 **Pay screen**
 - "Pay Ali Rs 300" as the title. Ali's payment methods listed: name, account title, number, copy button.

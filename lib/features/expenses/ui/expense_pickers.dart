@@ -9,12 +9,17 @@ import '../../groups/domain/group.dart';
 String _name(AppLocalizations l10n, Member m, String meId) =>
     m.id == meId ? l10n.memberYou(m.displayName) : m.displayName;
 
-/// "Who paid?" sheet. One tap picks and closes (DESIGN.md §8).
+/// What [pickPayer] returns for "More than one person".
+const morePayers = '';
+
+/// "Who paid?" sheet. One tap picks and closes (DESIGN.md §8). The last
+/// row, "More than one person", returns [morePayers]. [selected] is null
+/// when several people paid.
 Future<String?> pickPayer(
   BuildContext context, {
   required List<Member> members,
   required String meId,
-  required String selected,
+  required String? selected,
 }) {
   final l10n = AppLocalizations.of(context)!;
   return showAppSheet<String>(
@@ -33,6 +38,16 @@ Future<String?> pickPayer(
             title: Text(_name(l10n, m, meId)),
             trailing: m.id == selected ? const Icon(Icons.check) : null,
             onTap: () => Navigator.of(sheet).pop(m.id),
+          ),
+        if (members.length > 1)
+          ListTile(
+            minTileHeight: AppSpacing.rowHeight,
+            leading: const Icon(Icons.group_outlined),
+            title: Text(l10n.payersMore),
+            trailing: selected == null
+                ? const Icon(Icons.check)
+                : const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(sheet).pop(morePayers),
           ),
       ],
     ),

@@ -16,7 +16,7 @@ void main() {
         title: 'Gaming zone',
         amount: 100000,
         date: DateTime(2026, 11, 20),
-        payerId: 'a',
+        payers: {'a': 100000},
         split: const ExactSpec({
           'a': 30000,
           'b': 50000,
@@ -136,5 +136,57 @@ void main() {
       expect(_shares(back, 1000), _shares(spec, 1000));
     }
     expect(SplitSpec.fromJson(SplitMode.exact, {'amounts': 'x'}), isNull);
+  });
+
+  group('Several payers', () {
+    test('PLAN.md §4 chai as one expense: A +700, B +200, C/D/E -300', () {
+      final draft = splitDraft(
+        title: 'Chai and fries',
+        amount: 150000,
+        date: DateTime(2026, 11, 20),
+        payers: {'a': 100000, 'b': 50000},
+        split: const EqualSpec(_order),
+        order: _order,
+      );
+      expect(
+        netBalances(
+          expenses: [
+            LedgerExpense(
+              amount: draft.amount,
+              payers: draft.payers,
+              shares: draft.shares,
+            ),
+          ],
+        ),
+        {'a': 70000, 'b': 20000, 'c': -30000, 'd': -30000, 'e': -30000},
+      );
+    });
+
+    test('leftover paisa go to the payers first', () {
+      // Rs 1 among three people; payers are b and c.
+      final draft = splitDraft(
+        title: 'x',
+        amount: 100,
+        date: DateTime(2026, 11, 20),
+        payers: {'c': 50, 'b': 50},
+        split: const EqualSpec(['a', 'b', 'c']),
+        order: const ['a', 'b', 'c'],
+      );
+      expect(draft.shares, {'a': 33, 'b': 34, 'c': 33});
+    });
+
+    test('paid amounts must add up to the total', () {
+      expect(
+        () => splitDraft(
+          title: 'x',
+          amount: 1000,
+          date: DateTime(2026, 11, 20),
+          payers: {'a': 600, 'b': 300},
+          split: const EqualSpec(['a', 'b']),
+          order: const ['a', 'b'],
+        ),
+        throwsA(isA<MoneyException>()),
+      );
+    });
   });
 }

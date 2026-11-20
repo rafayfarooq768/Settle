@@ -675,5 +675,48 @@
       }
     }
   },
-  "percentSuffix": "%"
+  "percentSuffix": "%",
+  "payersMore": "More than one person",
+  "payersTitleAmount": "Who paid {amount}?",
+  "@payersTitleAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payersHint": "Enter what each person paid.",
+  "paidByTwo": "{first} and {second}",
+  "@paidByTwo": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "paidByMany": "{first} and {count} others",
+  "@paidByMany": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expenseManyPaid": "{count} people paid {amount}",
+  "@expenseManyPaid": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
 }

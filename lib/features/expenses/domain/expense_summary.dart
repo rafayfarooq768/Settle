@@ -42,25 +42,36 @@ MyPart myPart(Expense e, String memberId) {
   };
 }
 
-/// An expense paid by one person, split as [split] says. Throws
-/// [MoneyException] if the split doesn't add up. [order] is the group's
-/// member order (leftover paisa go payer first, then in this order).
+/// An expense split as [split] says. [payers] is who paid what (one
+/// person: `{id: amount}`); it must add up to [amount] too. Throws
+/// [MoneyException] if either doesn't add up. [order] is the group's
+/// member order (leftover paisa go to payers first, then in this order).
 ExpenseDraft splitDraft({
   required String title,
   required int amount,
   required DateTime date,
-  required String payerId,
+  required Map<String, int> payers,
   required SplitSpec split,
   required List<String> order,
-}) => ExpenseDraft(
-  title: title.trim(),
-  amount: amount,
-  date: date,
-  splitMode: split.mode,
-  payers: {payerId: amount},
-  shares: split.shares(amount: amount, order: order, payers: [payerId]),
-  splitInput: split.toJson(),
-);
+}) {
+  final paid = ExactSpec(payers);
+  if (paid.problem(amount) != null) {
+    throw const MoneyException('Paid amounts must add up to the total.');
+  }
+  final payerIds = [
+    for (final id in order)
+      if (payers.containsKey(id)) id,
+  ];
+  return ExpenseDraft(
+    title: title.trim(),
+    amount: amount,
+    date: date,
+    splitMode: split.mode,
+    payers: paid.shares(amount: amount, order: order, payers: payerIds),
+    shares: split.shares(amount: amount, order: order, payers: payerIds),
+    splitInput: split.toJson(),
+  );
+}
 
 /// An Equal-split expense paid by one person. Throws [MoneyException] if
 /// nobody is ticked.
@@ -74,7 +85,7 @@ ExpenseDraft equalDraft({
   title: title,
   amount: amount,
   date: date,
-  payerId: payerId,
+  payers: {payerId: amount},
   split: EqualSpec(participants),
   order: participants,
 );

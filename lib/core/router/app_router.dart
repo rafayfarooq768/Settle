@@ -16,6 +16,7 @@ import '../../features/home/ui/home_screen.dart';
 import '../../features/profile/ui/change_password_screen.dart';
 import '../../features/profile/ui/settings_screen.dart';
 import '../../features/expenses/ui/add_expense_screen.dart';
+import '../../features/expenses/ui/payers_screen.dart';
 import '../../features/expenses/ui/split_screen.dart';
 
 const _authRoutes = {'/sign-in', '/sign-up', '/reset-password'};
@@ -91,6 +92,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
               // Opened without its arguments (e.g. restored after the app
               // was killed): go back to the group.
+              _ => GroupScreen(groupId: state.pathParameters['id']!),
+            },
+          ),
+          GoRoute(
+            path: 'payers',
+            builder: (context, state) => switch (state.extra) {
+              final PayersArgs args => PayersScreen(
+                groupId: state.pathParameters['id']!,
+                args: args,
+              ),
               _ => GroupScreen(groupId: state.pathParameters['id']!),
             },
           ),

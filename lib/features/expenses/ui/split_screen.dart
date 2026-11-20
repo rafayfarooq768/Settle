@@ -226,7 +226,7 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
                           () => on ? _ticked.add(m.id) : _ticked.remove(m.id),
                         ),
                       )
-                    : _InputRow(
+                    : SplitInputRow(
                         member: m,
                         meId: widget.args.meId,
                         mode: _mode,
@@ -238,7 +238,7 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
           const SizedBox(height: AppSpacing.lg),
         ],
         actions: [
-          _StatusLine(spec: spec, amount: amount, problem: problem),
+          SplitStatusLine(spec: spec, amount: amount, problem: problem),
           const SizedBox(height: AppSpacing.md),
           LoadingButton(
             label: l10n.doneButton,
@@ -250,7 +250,8 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
   }
 }
 
-String _name(AppLocalizations l10n, Member m, String meId) =>
+/// "Ali (you)" for you, the plain name for everyone else.
+String memberName(AppLocalizations l10n, Member m, String meId) =>
     m.id == meId ? l10n.memberYou(m.displayName) : m.displayName;
 
 /// Equal mode: tick who was there; their part shows under the name.
@@ -279,15 +280,15 @@ class _TickRow extends StatelessWidget {
         name: member.displayName,
         placeholder: member.isPlaceholder,
       ),
-      title: Text(_name(l10n, member, meId)),
+      title: Text(memberName(l10n, member, meId)),
       subtitle: owes == null ? null : Text(formatRupees(owes!)),
     );
   }
 }
 
 /// Exact / % / Shares: a number per person at the end of the row.
-class _InputRow extends StatelessWidget {
-  const _InputRow({
+class SplitInputRow extends StatelessWidget {
+  const SplitInputRow({
     required this.member,
     required this.meId,
     required this.mode,
@@ -336,7 +337,7 @@ class _InputRow extends StatelessWidget {
         name: member.displayName,
         placeholder: member.isPlaceholder,
       ),
-      title: Text(_name(l10n, member, meId)),
+      title: Text(memberName(l10n, member, meId)),
       subtitle: owes == null ? null : Text(formatRupees(owes!)),
       trailing: SizedBox(
         width: AppSizes.splitInputWidth,
@@ -363,8 +364,8 @@ class _InputRow extends StatelessWidget {
 
 /// The live line above Done: what's left, what's too much, or that it
 /// adds up (DESIGN.md §11). Over-assigning is the only error.
-class _StatusLine extends StatelessWidget {
-  const _StatusLine({
+class SplitStatusLine extends StatelessWidget {
+  const SplitStatusLine({
     required this.spec,
     required this.amount,
     required this.problem,

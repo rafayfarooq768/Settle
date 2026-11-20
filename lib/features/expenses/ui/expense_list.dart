@@ -121,8 +121,7 @@ class ExpenseRow extends StatelessWidget {
   String _paidLine(AppLocalizations l10n) {
     final amount = formatRupees(expense.amount);
     if (expense.payers.length != 1) {
-      // Multiple payers arrive in step 8; until then name the first.
-      return l10n.expensePaidBy(names[expense.payers.keys.first] ?? '', amount);
+      return l10n.expenseManyPaid(expense.payers.length, amount);
     }
     final payer = expense.payers.keys.single;
     return payer == meId
