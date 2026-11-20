@@ -16,6 +16,7 @@ import '../../features/home/ui/home_screen.dart';
 import '../../features/profile/ui/change_password_screen.dart';
 import '../../features/profile/ui/settings_screen.dart';
 import '../../features/expenses/ui/add_expense_screen.dart';
+import '../../features/expenses/ui/split_screen.dart';
 
 const _authRoutes = {'/sign-in', '/sign-up', '/reset-password'};
 
@@ -80,6 +81,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: 'expenses/new',
             builder: (context, state) =>
                 AddExpenseScreen(groupId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: 'split',
+            builder: (context, state) => switch (state.extra) {
+              final SplitArgs args => SplitScreen(
+                groupId: state.pathParameters['id']!,
+                args: args,
+              ),
+              // Opened without its arguments (e.g. restored after the app
+              // was killed): go back to the group.
+              _ => GroupScreen(groupId: state.pathParameters['id']!),
+            },
           ),
           GoRoute(
             path: 'invite',

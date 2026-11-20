@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_sheet.dart';
-import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../groups/domain/group.dart';
@@ -40,54 +39,12 @@ Future<String?> pickPayer(
   );
 }
 
-/// "Who was there?" sheet: tick people, then Done. Done stays disabled
-/// while nobody is ticked, since an equal split needs someone.
-Future<Set<String>?> pickParticipants(
-  BuildContext context, {
-  required List<Member> members,
-  required String meId,
-  required Set<String> selected,
-}) {
-  final l10n = AppLocalizations.of(context)!;
-  final ticked = {...selected};
-  return showAppSheet<Set<String>>(
-    context: context,
-    scrollControlled: true,
-    builder: (sheet) => StatefulBuilder(
-      builder: (context, setState) => _SheetList(
-        title: l10n.whoWasThereTitle,
-        action: LoadingButton(
-          label: l10n.doneButton,
-          onPressed: ticked.isEmpty
-              ? null
-              : () => Navigator.of(sheet).pop(ticked),
-        ),
-        children: [
-          for (final m in members)
-            CheckboxListTile(
-              value: ticked.contains(m.id),
-              onChanged: (on) => setState(
-                () => on == true ? ticked.add(m.id) : ticked.remove(m.id),
-              ),
-              secondary: MemberAvatar(
-                name: m.displayName,
-                placeholder: m.isPlaceholder,
-              ),
-              title: Text(_name(l10n, m, meId)),
-            ),
-        ],
-      ),
-    ),
-  );
-}
-
-/// Sheet body: title, a scrollable list, and an optional bottom action.
+/// Sheet body: title and a scrollable list.
 class _SheetList extends StatelessWidget {
-  const _SheetList({required this.title, required this.children, this.action});
+  const _SheetList({required this.title, required this.children});
 
   final String title;
   final List<Widget> children;
-  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -102,11 +59,6 @@ class _SheetList extends StatelessWidget {
           children: [
             SheetTitle(title),
             Flexible(child: ListView(shrinkWrap: true, children: children)),
-            if (action != null)
-              Padding(
-                padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-                child: action,
-              ),
           ],
         ),
       ),

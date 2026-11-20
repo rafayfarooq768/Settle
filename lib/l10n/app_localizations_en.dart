@@ -561,9 +561,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whoPaidTitle => 'Who paid?';
 
   @override
-  String get whoWasThereTitle => 'Who was there?';
-
-  @override
   String splitEach(String amount) {
     return '$amount each';
   }
@@ -780,4 +777,85 @@ class AppLocalizationsEn extends AppLocalizations {
   String pendingWaitingAmount(String name, String amount) {
     return '$amount sent, waiting for $name to confirm';
   }
+
+  @override
+  String get splitTitle => 'Split';
+
+  @override
+  String splitTitleAmount(String amount) {
+    return 'Split $amount';
+  }
+
+  @override
+  String get splitModeEqual => 'Equal';
+
+  @override
+  String get splitModeExact => 'Exact';
+
+  @override
+  String get splitModePercent => '%';
+
+  @override
+  String get splitModeShares => 'Shares';
+
+  @override
+  String get splitHintEqual => 'Tick who was there.';
+
+  @override
+  String get splitHintExact => 'Enter what each person owes.';
+
+  @override
+  String get splitHintPercent => 'Enter each person\'s percentage.';
+
+  @override
+  String get splitHintShares => 'Give each person shares, like nights stayed.';
+
+  @override
+  String splitLeftToAssign(String amount) {
+    return '$amount left to assign';
+  }
+
+  @override
+  String splitTooMuch(String amount) {
+    return '$amount too much';
+  }
+
+  @override
+  String splitAddsUp(String amount) {
+    return 'Adds up to $amount';
+  }
+
+  @override
+  String get splitAmountFirst => 'Enter the amount first.';
+
+  @override
+  String get splitNoShares => 'Give at least one share.';
+
+  @override
+  String get splitByExact => 'Exact amounts';
+
+  @override
+  String get splitByPercent => 'By percentage';
+
+  @override
+  String get splitByShares => 'By shares';
+
+  @override
+  String splitYourShare(String amount) {
+    return 'Your share $amount';
+  }
+
+  @override
+  String splitSharesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count shares',
+      one: '1 share',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get percentSuffix => '%';
 }

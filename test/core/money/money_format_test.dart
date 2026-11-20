@@ -63,4 +63,12 @@ void main() {
       }
     });
   });
+
+  test('formatPercent', () {
+    expect(formatPercent(3333), '33.33%');
+    expect(formatPercent(2000), '20%');
+    expect(formatPercent(250), '2.5%');
+    expect(formatPercent(5), '0.05%');
+    expect(formatPercent(-1000), '-10%');
+  });
 }

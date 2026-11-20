@@ -1,0 +1,140 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:settle/core/money/money.dart';
+import 'package:settle/features/expenses/domain/expense.dart';
+import 'package:settle/features/expenses/domain/expense_summary.dart';
+import 'package:settle/features/expenses/domain/split_spec.dart';
+
+const _order = ['a', 'b', 'c', 'd', 'e'];
+
+Map<String, int> _shares(SplitSpec s, int amount, {String payer = 'a'}) =>
+    s.shares(amount: amount, order: _order, payers: [payer]);
+
+void main() {
+  group('Exact', () {
+    test('PLAN.md §4 gaming zone: B pays A 500, C pays A 200', () {
+      final draft = splitDraft(
+        title: 'Gaming zone',
+        amount: 100000,
+        date: DateTime(2026, 11, 20),
+        payerId: 'a',
+        split: const ExactSpec({
+          'a': 30000,
+          'b': 50000,
+          'c': 20000,
+          'd': 0,
+          'e': 0,
+        }),
+        order: _order,
+      );
+      expect(draft.splitMode, SplitMode.exact);
+      // D and E had nothing: they're not part of the expense.
+      expect(draft.shares, {'a': 30000, 'b': 50000, 'c': 20000});
+      final nets = netBalances(
+        expenses: [
+          LedgerExpense(
+            amount: draft.amount,
+            payers: draft.payers,
+            shares: draft.shares,
+          ),
+        ],
+      );
+      expect(simplifyDebts(nets).toSet(), {
+        const Transfer(from: 'b', to: 'a', amount: 50000),
+        const Transfer(from: 'c', to: 'a', amount: 20000),
+      });
+    });
+
+    test('says how much is left, or too much', () {
+      const spec = ExactSpec({'a': 30000, 'b': 50000});
+      expect((spec.problem(100000)! as RupeesLeft).paisa, 20000);
+      expect((spec.problem(70000)! as RupeesLeft).paisa, -10000);
+      expect(spec.problem(80000), isNull);
+    });
+
+    test('needs the amount first', () {
+      expect(const ExactSpec({'a': 100}).problem(null), isA<AmountNeeded>());
+      expect(const ExactSpec({'a': 100}).problem(0), isA<AmountNeeded>());
+    });
+
+    test('refuses to save when it does not add up', () {
+      expect(
+        () => _shares(const ExactSpec({'a': 100}), 200),
+        throwsA(isA<MoneyException>()),
+      );
+    });
+  });
+
+  group('Percent', () {
+    test('33.34 / 33.33 / 33.33 of Rs 1000 sums exactly', () {
+      final s = _shares(
+        const PercentSpec({'a': 3334, 'b': 3333, 'c': 3333}),
+        100000,
+      );
+      expect(s, {'a': 33340, 'b': 33330, 'c': 33330});
+      expect(sumOf(s), 100000);
+    });
+
+    test('leftover paisa go to the payer first', () {
+      // Rs 1 split three ways by percent: 34 / 33 / 33 paisa.
+      final s = _shares(
+        const PercentSpec({'a': 3333, 'b': 3333, 'c': 3334}),
+        100,
+        payer: 'b',
+      );
+      expect(sumOf(s), 100);
+      expect(s['b'], greaterThanOrEqualTo(s['a']!));
+    });
+
+    test('must add up to 100%', () {
+      expect(
+        (const PercentSpec({'a': 5000}).problem(1000)! as PercentLeft)
+            .basisPoints,
+        5000,
+      );
+      expect(
+        (const PercentSpec({'a': 6000, 'b': 5000}).problem(1000)!
+                as PercentLeft)
+            .basisPoints,
+        -1000,
+      );
+      expect(const PercentSpec({'a': 10000}).problem(null), isNull);
+    });
+  });
+
+  group('Shares', () {
+    test('nights: 3 / 2 / 1 of Rs 6000', () {
+      final s = _shares(const SharesSpec({'a': 3, 'b': 2, 'c': 1}), 600000);
+      expect(s, {'a': 300000, 'b': 200000, 'c': 100000});
+    });
+
+    test('0 units means not involved', () {
+      final s = _shares(const SharesSpec({'a': 1, 'b': 0, 'c': 1}), 1000);
+      expect(s, {'a': 500, 'c': 500});
+    });
+
+    test('needs at least one unit', () {
+      expect(const SharesSpec({'a': 0}).problem(100), isA<NobodyPicked>());
+      expect(const SharesSpec({'a': 2}).problem(null), isNull);
+    });
+  });
+
+  test('Equal keeps group order and needs someone', () {
+    expect(_shares(const EqualSpec(['c', 'a']), 1000), {'a': 500, 'c': 500});
+    expect(const EqualSpec([]).problem(100), isA<NobodyPicked>());
+  });
+
+  test('every mode reads back from splitInput the same', () {
+    final specs = <SplitSpec>[
+      const EqualSpec(['a', 'b']),
+      const ExactSpec({'a': 300, 'b': 700}),
+      const PercentSpec({'a': 2500, 'b': 7500}),
+      const SharesSpec({'a': 1, 'b': 3}),
+    ];
+    for (final spec in specs) {
+      final back = SplitSpec.fromJson(spec.mode, spec.toJson())!;
+      expect(back.toJson(), spec.toJson());
+      expect(_shares(back, 1000), _shares(spec, 1000));
+    }
+    expect(SplitSpec.fromJson(SplitMode.exact, {'amounts': 'x'}), isNull);
+  });
+}

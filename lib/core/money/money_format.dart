@@ -57,3 +57,15 @@ int? parsePercent(String input) {
   final bp = whole * 100 + int.parse((match.group(2) ?? '').padRight(2, '0'));
   return bp > 10000 ? null : bp;
 }
+
+/// Basis points as a percentage for display: 3333 → "33.33%", 2000 → "20%",
+/// 250 → "2.5%".
+String formatPercent(int basisPoints) {
+  final sign = basisPoints < 0 ? '-' : '';
+  final bp = basisPoints.abs();
+  final whole = bp ~/ 100;
+  final cents = bp % 100;
+  if (cents == 0) return '$sign$whole%';
+  final fraction = '$cents'.padLeft(2, '0').replaceFirst(RegExp(r'0$'), '');
+  return '$sign$whole.$fraction%';
+}

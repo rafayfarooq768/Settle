@@ -1,6 +1,7 @@
 import '../../../core/money/money.dart';
 import '../../../core/firestore/firestore_fields.dart';
 import 'expense.dart';
+import 'split_spec.dart';
 
 /// Your part in one expense, for the list row (DESIGN.md §6 Lists).
 sealed class MyPart {
@@ -41,27 +42,41 @@ MyPart myPart(Expense e, String memberId) {
   };
 }
 
-/// An Equal-split expense paid by one person (PLAN.md step 5). Throws
-/// [MoneyException] if nobody is ticked. Participants are stored in
-/// `splitInput` so it can be edited in the same mode later.
+/// An expense paid by one person, split as [split] says. Throws
+/// [MoneyException] if the split doesn't add up. [order] is the group's
+/// member order (leftover paisa go payer first, then in this order).
+ExpenseDraft splitDraft({
+  required String title,
+  required int amount,
+  required DateTime date,
+  required String payerId,
+  required SplitSpec split,
+  required List<String> order,
+}) => ExpenseDraft(
+  title: title.trim(),
+  amount: amount,
+  date: date,
+  splitMode: split.mode,
+  payers: {payerId: amount},
+  shares: split.shares(amount: amount, order: order, payers: [payerId]),
+  splitInput: split.toJson(),
+);
+
+/// An Equal-split expense paid by one person. Throws [MoneyException] if
+/// nobody is ticked.
 ExpenseDraft equalDraft({
   required String title,
   required int amount,
   required DateTime date,
   required String payerId,
   required List<String> participants,
-}) => ExpenseDraft(
-  title: title.trim(),
+}) => splitDraft(
+  title: title,
   amount: amount,
   date: date,
-  splitMode: SplitMode.equal,
-  payers: {payerId: amount},
-  shares: splitEqual(
-    amount: amount,
-    participants: participants,
-    payers: [payerId],
-  ),
-  splitInput: <String, Object?>{'participants': participants},
+  payerId: payerId,
+  split: EqualSpec(participants),
+  order: participants,
 );
 
 /// What the add/edit form produces.

@@ -1,0 +1,418 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../core/money/money.dart';
+import '../../../core/theme/app_sizes.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_theme_extensions.dart';
+import '../../../core/widgets/amount_field.dart';
+import '../../../core/widgets/loading_button.dart';
+import '../../../core/widgets/member_avatar.dart';
+import '../../../core/widgets/panel.dart';
+import '../../../core/widgets/screen_layout.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../groups/domain/group.dart';
+import '../../groups/ui/groups_providers.dart';
+import '../domain/expense.dart';
+import '../domain/split_spec.dart';
+import 'split_text.dart';
+
+/// What Add expense hands the split screen.
+class SplitArgs {
+  const SplitArgs({
+    required this.amount,
+    required this.payerId,
+    required this.meId,
+    required this.spec,
+  });
+
+  /// Paisa, or null if the amount isn't entered yet.
+  final int? amount;
+  final String payerId;
+  final String meId;
+  final SplitSpec spec;
+}
+
+/// The split screen (DESIGN.md §11 Add expense): Equal / Exact / % / Shares
+/// as a SegmentedButton, the members below, a live "Rs X left" line, and
+/// Done only once it adds up. Pops with the new [SplitSpec].
+class SplitScreen extends ConsumerStatefulWidget {
+  const SplitScreen({super.key, required this.groupId, required this.args});
+
+  final String groupId;
+  final SplitArgs args;
+
+  @override
+  ConsumerState<SplitScreen> createState() => _SplitScreenState();
+}
+
+class _SplitScreenState extends ConsumerState<SplitScreen> {
+  late SplitMode _mode = widget.args.spec.mode;
+  late final Set<String> _ticked = {
+    if (widget.args.spec case EqualSpec(:final participants)) ...participants,
+  };
+
+  /// One text field per person per mode, so switching modes keeps what
+  /// was typed.
+  final _fields = <SplitMode, Map<String, TextEditingController>>{};
+
+  @override
+  void initState() {
+    super.initState();
+    final spec = widget.args.spec;
+    switch (spec) {
+      case ExactSpec(:final amounts):
+        amounts.forEach(
+          (id, p) =>
+              _field(SplitMode.exact, id, RupeeInputFormatter.textFor(p)),
+        );
+      case PercentSpec(:final basisPoints):
+        basisPoints.forEach(
+          (id, bp) => _field(
+            SplitMode.percent,
+            id,
+            formatPercent(bp).replaceAll('%', ''),
+          ),
+        );
+      case SharesSpec(:final units):
+        units.forEach((id, u) => _field(SplitMode.shares, id, '$u'));
+      case EqualSpec():
+        break;
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final byId in _fields.values) {
+      for (final c in byId.values) {
+        c.dispose();
+      }
+    }
+    super.dispose();
+  }
+
+  /// The field for [id] in [mode], made with [initial] the first time.
+  TextEditingController _field(
+    SplitMode mode,
+    String id, [
+    String initial = '',
+  ]) =>
+      (_fields[mode] ??= {})[id] ??= TextEditingController(text: initial)
+        ..addListener(() => setState(() {}));
+
+  void _switchTo(SplitMode mode, List<Member> members) {
+    setState(() {
+      // Shares start at 1 for whoever was ticked, so it starts as an
+      // equal split and you only change the people who differ.
+      if (mode == SplitMode.shares && _fields[mode] == null) {
+        for (final m in members) {
+          _field(mode, m.id, _ticked.contains(m.id) ? '1' : '');
+        }
+      }
+      _mode = mode;
+    });
+  }
+
+  SplitSpec _spec(List<Member> members) {
+    Map<String, int> read(SplitMode mode, int? Function(String) parse) => {
+      for (final m in members)
+        m.id: parse(_fields[mode]?[m.id]?.text ?? '') ?? 0,
+    };
+    return switch (_mode) {
+      SplitMode.equal => EqualSpec([
+        for (final m in members)
+          if (_ticked.contains(m.id)) m.id,
+      ]),
+      SplitMode.exact => ExactSpec(read(SplitMode.exact, parseRupees)),
+      SplitMode.percent => PercentSpec(read(SplitMode.percent, parsePercent)),
+      // itemized isn't on this screen.
+      _ => SharesSpec(read(SplitMode.shares, int.tryParse)),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final amount = widget.args.amount;
+    final members =
+        (ref.watch(membersProvider(widget.groupId)).valueOrNull ??
+                const <Member>[])
+            .where((m) => m.active)
+            .toList();
+    final spec = _spec(members);
+    final problem = spec.problem(amount);
+    // What each person ends up owing, shown under their name.
+    final preview = problem == null && amount != null && amount > 0
+        ? spec.shares(
+            amount: amount,
+            order: [for (final m in members) m.id],
+            payers: [widget.args.payerId],
+          )
+        : const <String, int>{};
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          amount == null || amount == 0
+              ? l10n.splitTitle
+              : l10n.splitTitleAmount(formatRupees(amount)),
+        ),
+      ),
+      body: ScreenLayout(
+        padded: false,
+        body: [
+          const SizedBox(height: AppSpacing.lg),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenHorizontal,
+            ),
+            child: SegmentedButton<SplitMode>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(
+                  value: SplitMode.equal,
+                  label: Text(l10n.splitModeEqual),
+                ),
+                ButtonSegment(
+                  value: SplitMode.exact,
+                  label: Text(l10n.splitModeExact),
+                ),
+                ButtonSegment(
+                  value: SplitMode.percent,
+                  label: Text(l10n.splitModePercent),
+                ),
+                ButtonSegment(
+                  value: SplitMode.shares,
+                  label: Text(l10n.splitModeShares),
+                ),
+              ],
+              selected: {_mode},
+              onSelectionChanged: (s) => _switchTo(s.first, members),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.screenHorizontal + AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.screenHorizontal + AppSpacing.lg,
+              AppSpacing.sm,
+            ),
+            child: Text(
+              switch (_mode) {
+                SplitMode.equal => l10n.splitHintEqual,
+                SplitMode.exact => l10n.splitHintExact,
+                SplitMode.percent => l10n.splitHintPercent,
+                _ => l10n.splitHintShares,
+              },
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Panel(
+            dividerIndent: avatarRowDividerIndent,
+            children: [
+              for (final m in members)
+                _mode == SplitMode.equal
+                    ? _TickRow(
+                        member: m,
+                        meId: widget.args.meId,
+                        ticked: _ticked.contains(m.id),
+                        owes: preview[m.id],
+                        onChanged: (on) => setState(
+                          () => on ? _ticked.add(m.id) : _ticked.remove(m.id),
+                        ),
+                      )
+                    : _InputRow(
+                        member: m,
+                        meId: widget.args.meId,
+                        mode: _mode,
+                        controller: _field(_mode, m.id),
+                        owes: _mode == SplitMode.exact ? null : preview[m.id],
+                      ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+        ],
+        actions: [
+          _StatusLine(spec: spec, amount: amount, problem: problem),
+          const SizedBox(height: AppSpacing.md),
+          LoadingButton(
+            label: l10n.doneButton,
+            onPressed: problem == null ? () => context.pop(spec) : null,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _name(AppLocalizations l10n, Member m, String meId) =>
+    m.id == meId ? l10n.memberYou(m.displayName) : m.displayName;
+
+/// Equal mode: tick who was there; their part shows under the name.
+class _TickRow extends StatelessWidget {
+  const _TickRow({
+    required this.member,
+    required this.meId,
+    required this.ticked,
+    required this.owes,
+    required this.onChanged,
+  });
+
+  final Member member;
+  final String meId;
+  final bool ticked;
+  final int? owes;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return CheckboxListTile(
+      value: ticked,
+      onChanged: (on) => onChanged(on ?? false),
+      secondary: MemberAvatar(
+        name: member.displayName,
+        placeholder: member.isPlaceholder,
+      ),
+      title: Text(_name(l10n, member, meId)),
+      subtitle: owes == null ? null : Text(formatRupees(owes!)),
+    );
+  }
+}
+
+/// Exact / % / Shares: a number per person at the end of the row.
+class _InputRow extends StatelessWidget {
+  const _InputRow({
+    required this.member,
+    required this.meId,
+    required this.mode,
+    required this.controller,
+    required this.owes,
+  });
+
+  final Member member;
+  final String meId;
+  final SplitMode mode;
+  final TextEditingController controller;
+
+  /// Rupees this works out to (% and Shares), or null.
+  final int? owes;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final (formatters, keyboard, prefix, suffix) = switch (mode) {
+      SplitMode.exact => (
+        <TextInputFormatter>[RupeeInputFormatter()],
+        const TextInputType.numberWithOptions(decimal: true),
+        l10n.currencyPrefix,
+        null,
+      ),
+      SplitMode.percent => (
+        <TextInputFormatter>[PercentInputFormatter()],
+        const TextInputType.numberWithOptions(decimal: true),
+        null,
+        l10n.percentSuffix,
+      ),
+      _ => (
+        <TextInputFormatter>[
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(3),
+        ],
+        TextInputType.number,
+        null,
+        null,
+      ),
+    };
+    return ListTile(
+      minTileHeight: AppSpacing.rowHeight,
+      leading: MemberAvatar(
+        name: member.displayName,
+        placeholder: member.isPlaceholder,
+      ),
+      title: Text(_name(l10n, member, meId)),
+      subtitle: owes == null ? null : Text(formatRupees(owes!)),
+      trailing: SizedBox(
+        width: AppSizes.splitInputWidth,
+        child: TextField(
+          controller: controller,
+          keyboardType: keyboard,
+          inputFormatters: formatters,
+          textAlign: TextAlign.end,
+          textInputAction: TextInputAction.next,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+          decoration: InputDecoration(
+            isDense: true,
+            hintText: '0',
+            prefixText: prefix == null ? null : '$prefix ',
+            suffixText: suffix,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The live line above Done: what's left, what's too much, or that it
+/// adds up (DESIGN.md §11). Over-assigning is the only error.
+class _StatusLine extends StatelessWidget {
+  const _StatusLine({
+    required this.spec,
+    required this.amount,
+    required this.problem,
+  });
+
+  final SplitSpec spec;
+  final int? amount;
+  final SplitProblem? problem;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+    final over = switch (problem) {
+      RupeesLeft(:final paisa) => paisa < 0,
+      PercentLeft(:final basisPoints) => basisPoints < 0,
+      _ => false,
+    };
+    final text = problem != null
+        ? splitProblemText(l10n, problem!)
+        : splitStatusText(l10n, spec, amount);
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: over
+            ? theme.colorScheme.error
+            : problem == null
+            ? context.extraColors.settled
+            : muted,
+        fontFeatures: const [FontFeature.tabularFigures()],
+      ),
+    );
+  }
+}
+
+/// Digits and one dot, at most 2 decimals, at most 100.
+class PercentInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final text = newValue.text;
+    if (text.isEmpty) return newValue;
+    if (!RegExp(r'^\d{1,3}(\.\d{0,2})?$').hasMatch(text)) return oldValue;
+    final bp = parsePercent(text);
+    return bp == null ? oldValue : newValue;
+  }
+}

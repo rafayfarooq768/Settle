@@ -17,6 +17,9 @@ import '../domain/expense_summary.dart';
 import 'day_label.dart';
 import 'expense_pickers.dart';
 import 'expenses_providers.dart';
+import 'split_screen.dart';
+import 'split_text.dart';
+import '../domain/split_spec.dart';
 import '../../../core/widgets/amount_field.dart';
 import '../../../core/widgets/select_field.dart';
 import '../../../core/widgets/member_avatar.dart';
@@ -25,7 +28,8 @@ import '../../../core/widgets/app_snack_bar.dart';
 
 /// Add expense (DESIGN.md §11): amount → title → paid by → split → Save.
 /// The common case is 3 taps (PLAN.md §2): paid by defaults to you and
-/// everyone is ticked. Equal split only for now (step 5). Works offline.
+/// everyone is ticked, split equally. Split opens the split screen
+/// (Equal / Exact / % / Shares). Works offline.
 class AddExpenseScreen extends ConsumerStatefulWidget {
   const AddExpenseScreen({super.key, required this.groupId});
 
@@ -39,7 +43,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _amount = TextEditingController();
   final _title = TextEditingController();
   String? _payerId;
-  Set<String>? _participants;
+
+  /// Null until changed: everyone, equally.
+  SplitSpec? _split;
   DateTime _day = DateTime.now();
   String? _amountError;
   String? _titleError;
@@ -71,16 +77,22 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     if (picked != null) setState(() => _payerId = picked);
   }
 
-  Future<void> _pickParticipants(List<Member> members, String meId) async {
-    final picked = await pickParticipants(
-      context,
-      members: members,
-      meId: meId,
-      selected: _participants ?? {for (final m in members) m.id},
+  SplitSpec _splitOf(List<Member> members) =>
+      _split ?? SplitSpec.everyone(members.map((m) => m.id));
+
+  Future<void> _openSplit(List<Member> members, String meId) async {
+    final picked = await context.push<SplitSpec>(
+      '/groups/${widget.groupId}/split',
+      extra: SplitArgs(
+        amount: parseRupees(_amount.text),
+        payerId: _payerId ?? meId,
+        meId: meId,
+        spec: _splitOf(members),
+      ),
     );
-    if (picked != null) {
+    if (picked != null && mounted) {
       setState(() {
-        _participants = picked;
+        _split = picked;
         _splitError = null;
       });
     }
@@ -101,11 +113,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final l10n = AppLocalizations.of(context)!;
     final amount = parseRupees(_amount.text);
     final title = _title.text.trim();
-    final participants = [
-      for (final m in members)
-        if ((_participants ?? {for (final m in members) m.id}).contains(m.id))
-          m.id,
-    ];
+    final split = _splitOf(members);
+    final problem = split.problem(amount);
     setState(() {
       _amountError = amount == null || amount == 0
           ? l10n.errorAmountRequired
@@ -113,7 +122,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           ? l10n.errorAmountTooLarge
           : null;
       _titleError = title.isEmpty ? l10n.errorExpenseTitleRequired : null;
-      _splitError = participants.isEmpty ? l10n.errorPickSomeone : null;
+      // The amount's own error covers a missing amount.
+      _splitError = problem == null || problem is AmountNeeded
+          ? null
+          : splitProblemText(l10n, problem);
       _error = null;
     });
     if (_amountError != null || _titleError != null || _splitError != null) {
@@ -133,12 +145,13 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       now.minute,
       now.second,
     );
-    final draft = equalDraft(
+    final draft = splitDraft(
       title: title,
       amount: amount!,
       date: date,
       payerId: _payerId ?? me.id,
-      participants: participants,
+      split: split,
+      order: [for (final m in members) m.id],
     );
 
     setState(() => _saving = true);
@@ -224,13 +237,12 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                   members: members,
                   me: me,
                   payerId: _payerId ?? me.id,
-                  participants:
-                      _participants ?? {for (final m in members) m.id},
+                  split: _splitOf(members),
                   amount: parseRupees(_amount.text),
                   day: _day,
                   splitError: _splitError,
                   onPayer: () => _pickPayer(members, me.id),
-                  onSplit: () => _pickParticipants(members, me.id),
+                  onSplit: () => _openSplit(members, me.id),
                   onDay: _pickDay,
                 ),
               ],
@@ -256,7 +268,7 @@ class _Details extends StatelessWidget {
     required this.members,
     required this.me,
     required this.payerId,
-    required this.participants,
+    required this.split,
     required this.amount,
     required this.day,
     required this.splitError,
@@ -268,13 +280,40 @@ class _Details extends StatelessWidget {
   final List<Member> members;
   final Member me;
   final String payerId;
-  final Set<String> participants;
+  final SplitSpec split;
   final int? amount;
   final DateTime day;
   final String? splitError;
   final VoidCallback onPayer;
   final VoidCallback onSplit;
   final VoidCallback onDay;
+
+  /// "Equally between 5" + "Rs 200 each"; "By shares" + "Your share
+  /// Rs 300"; or what's still left to assign.
+  (String, String?) _splitSummary(AppLocalizations l10n) {
+    final amount = this.amount;
+    final problem = split.problem(amount);
+    final value = switch (split) {
+      EqualSpec(:final participants) => l10n.splitEqually(participants.length),
+      ExactSpec() => l10n.splitByExact,
+      PercentSpec() => l10n.splitByPercent,
+      SharesSpec() => l10n.splitByShares,
+    };
+    if (amount == null || amount == 0) return (value, null);
+    if (problem != null) return (value, splitProblemText(l10n, problem));
+    if (split is EqualSpec) {
+      return (value, splitStatusText(l10n, split, amount));
+    }
+    final mine = split.shares(
+      amount: amount,
+      order: [for (final m in members) m.id],
+      payers: [payerId],
+    )[me.id];
+    return (
+      value,
+      mine == null ? null : l10n.splitYourShare(formatRupees(mine)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,10 +322,7 @@ class _Details extends StatelessWidget {
     final payerName = payerId == me.id
         ? l10n.youLabel
         : payer?.displayName ?? '';
-    final count = members.where((m) => participants.contains(m.id)).length;
-    final each = amount != null && amount! > 0 && count > 0
-        ? l10n.splitEach(formatRupees(amount! ~/ count))
-        : null;
+    final (value, helper) = _splitSummary(l10n);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -304,9 +340,9 @@ class _Details extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         SelectField(
           label: l10n.splitRow,
-          value: l10n.splitEqually(count),
+          value: value,
           leading: const Icon(Icons.group_outlined),
-          helper: each,
+          helper: helper,
           error: splitError,
           onTap: onSplit,
         ),

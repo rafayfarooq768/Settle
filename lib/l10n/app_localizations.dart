@@ -1042,12 +1042,6 @@ abstract class AppLocalizations {
   /// **'Who paid?'**
   String get whoPaidTitle;
 
-  /// No description provided for @whoWasThereTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Who was there?'**
-  String get whoWasThereTitle;
-
   /// No description provided for @splitEach.
   ///
   /// In en, this message translates to:
@@ -1383,6 +1377,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{amount} sent, waiting for {name} to confirm'**
   String pendingWaitingAmount(String name, String amount);
+
+  /// No description provided for @splitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Split'**
+  String get splitTitle;
+
+  /// No description provided for @splitTitleAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Split {amount}'**
+  String splitTitleAmount(String amount);
+
+  /// No description provided for @splitModeEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Equal'**
+  String get splitModeEqual;
+
+  /// No description provided for @splitModeExact.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact'**
+  String get splitModeExact;
+
+  /// No description provided for @splitModePercent.
+  ///
+  /// In en, this message translates to:
+  /// **'%'**
+  String get splitModePercent;
+
+  /// No description provided for @splitModeShares.
+  ///
+  /// In en, this message translates to:
+  /// **'Shares'**
+  String get splitModeShares;
+
+  /// No description provided for @splitHintEqual.
+  ///
+  /// In en, this message translates to:
+  /// **'Tick who was there.'**
+  String get splitHintEqual;
+
+  /// No description provided for @splitHintExact.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter what each person owes.'**
+  String get splitHintExact;
+
+  /// No description provided for @splitHintPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter each person\'s percentage.'**
+  String get splitHintPercent;
+
+  /// No description provided for @splitHintShares.
+  ///
+  /// In en, this message translates to:
+  /// **'Give each person shares, like nights stayed.'**
+  String get splitHintShares;
+
+  /// No description provided for @splitLeftToAssign.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} left to assign'**
+  String splitLeftToAssign(String amount);
+
+  /// No description provided for @splitTooMuch.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} too much'**
+  String splitTooMuch(String amount);
+
+  /// No description provided for @splitAddsUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds up to {amount}'**
+  String splitAddsUp(String amount);
+
+  /// No description provided for @splitAmountFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the amount first.'**
+  String get splitAmountFirst;
+
+  /// No description provided for @splitNoShares.
+  ///
+  /// In en, this message translates to:
+  /// **'Give at least one share.'**
+  String get splitNoShares;
+
+  /// No description provided for @splitByExact.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact amounts'**
+  String get splitByExact;
+
+  /// No description provided for @splitByPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'By percentage'**
+  String get splitByPercent;
+
+  /// No description provided for @splitByShares.
+  ///
+  /// In en, this message translates to:
+  /// **'By shares'**
+  String get splitByShares;
+
+  /// No description provided for @splitYourShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Your share {amount}'**
+  String splitYourShare(String amount);
+
+  /// No description provided for @splitSharesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 share} other{{count} shares}}'**
+  String splitSharesCount(int count);
+
+  /// No description provided for @percentSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'%'**
+  String get percentSuffix;
 }
 
 class _AppLocalizationsDelegate

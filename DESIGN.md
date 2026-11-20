@@ -263,8 +263,14 @@ Rules:
 
 **Add expense**
 - Amount (autofocus) → Title → Paid by (row, opens sheet) → Split (row: "Equally between 5", opens split screen) → Save.
-- Split screen: mode selector as a `SegmentedButton` (Equal / Exact / % / Shares), member list
-  below, live "Rs X left" line when not balanced, Save disabled until balanced.
+- Split screen (full screen, title "Split Rs 1,000"): mode selector as a `SegmentedButton`
+  (Equal / Exact / % / Shares), one muted line saying what to enter, then one panel of members:
+  Equal ticks people; Exact / % / Shares put a number field at the end of each row, and %/Shares
+  show the rupees it works out to under the name. Above Done, a live line: "Rs 200 left to
+  assign" (muted), "Rs 100 too much" (error colour), or "Adds up to Rs 1,000" (settled colour).
+  Done is disabled until it adds up. Switching modes keeps what you typed; Shares start at 1 each.
+  Nobody with 0 is part of the expense. Back on Add expense the Split field says "Exact amounts"
+  / "By percentage" / "By shares" with "Your share Rs 300" (or what's left) under it.
 
 **Pay screen**
 - "Pay Ali Rs 300" as the title. Ali's payment methods listed: name, account title, number, copy button.

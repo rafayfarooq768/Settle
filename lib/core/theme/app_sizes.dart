@@ -41,4 +41,7 @@ class AppSizes {
 
   /// Minimum touch target (DESIGN.md §4).
   static const double tapTarget = 48;
+
+  /// Per-person number field on the split screen.
+  static const double splitInputWidth = 120;
 }

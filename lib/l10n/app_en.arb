@@ -385,7 +385,6 @@
   "dateToday": "Today",
   "dateYesterday": "Yesterday",
   "whoPaidTitle": "Who paid?",
-  "whoWasThereTitle": "Who was there?",
   "splitEach": "{amount} each",
   "@splitEach": {
     "placeholders": {
@@ -613,5 +612,68 @@
         "type": "String"
       }
     }
-  }
+  },
+  "splitTitle": "Split",
+  "splitTitleAmount": "Split {amount}",
+  "@splitTitleAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "splitModeEqual": "Equal",
+  "splitModeExact": "Exact",
+  "splitModePercent": "%",
+  "splitModeShares": "Shares",
+  "splitHintEqual": "Tick who was there.",
+  "splitHintExact": "Enter what each person owes.",
+  "splitHintPercent": "Enter each person's percentage.",
+  "splitHintShares": "Give each person shares, like nights stayed.",
+  "splitLeftToAssign": "{amount} left to assign",
+  "@splitLeftToAssign": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "splitTooMuch": "{amount} too much",
+  "@splitTooMuch": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "splitAddsUp": "Adds up to {amount}",
+  "@splitAddsUp": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "splitAmountFirst": "Enter the amount first.",
+  "splitNoShares": "Give at least one share.",
+  "splitByExact": "Exact amounts",
+  "splitByPercent": "By percentage",
+  "splitByShares": "By shares",
+  "splitYourShare": "Your share {amount}",
+  "@splitYourShare": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "splitSharesCount": "{count, plural, =1{1 share} other{{count} shares}}",
+  "@splitSharesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "percentSuffix": "%"
 }
