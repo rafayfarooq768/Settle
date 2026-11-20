@@ -21,6 +21,7 @@ Member memberFromMap(String id, Json data) => Member(
   joinedAt: readDate(data['joinedAt']),
   active: readBool(data['active'], fallback: true),
   paymentMethods: PaymentMethod.listFrom(data['paymentMethods']),
+  phone: readString(data['phone']),
 );
 
 List<Json> paymentMethodsToList(List<PaymentMethod> methods) => [

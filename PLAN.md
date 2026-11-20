@@ -16,7 +16,8 @@ App name: **Settle**. Package id: `com.settleapp.settle` (change if you prefer, 
   - No Cloud Functions (needs paid plan). All logic runs in the app.
   - No Firebase Dynamic Links (shut down in 2025).
   - No Firebase Storage (no receipt photos).
-- **Auth:** Google sign-in + email/password. **No phone/SMS login.**
+- **Auth:** Google sign-in + email/password. **No phone/SMS login.** People may add an
+  optional phone number (typed, never verified, no SMS) for WhatsApp reminders (2026-11-20).
 - **Distribution:** release APK on **GitHub Releases** (no Google Play developer account).
 - Source code on GitHub from day one.
 
@@ -43,7 +44,8 @@ Build order (§9) decides the sequence, not separate releases.
 
 ### Accounts and groups
 1. Sign in with Google or email/password. Password reset by email.
-2. Profile: display name, optional payment methods (see §5).
+2. Profile: display name, optional phone number (asked on the sign-up form, editable in
+   Settings; not verified), optional payment methods (see §5).
 3. Groups: name, free-text type, members.
 4. Invite by **join code** + QR code, shared through WhatsApp.
 5. **Placeholder members**: add friends by name before they install. They claim their name later.
@@ -68,7 +70,9 @@ Build order (§9) decides the sequence, not separate releases.
     2026-11-20). Paying a placeholder counts straight away (nobody can confirm for them).
     One pending "I paid" per person at a time; the payer can cancel it, the creditor can
     say "Not received".
-11. WhatsApp reminder (prefilled `wa.me` message, no API).
+11. WhatsApp reminder (prefilled `wa.me` message, no API). Opens the person's chat when they
+    added a phone number; otherwise WhatsApp asks who to send it to. Placeholders have no
+    phone (owner's decision, 2026-11-20).
 12. Activity log: every add/edit/delete/settle, with who did it.
 13. Monthly summary per group (totals by month, computed in the app; no charts for decoration).
 
@@ -167,6 +171,7 @@ Positive = is owed. Negative = owes. Sum of all nets in a group = 0 (assert this
 ```
 users/{uid}
   displayName, email, createdAt
+  phone                           // optional, "+923001234567" or ""; not verified
   paymentMethods: [{ id, name, accountTitle, accountNumber, preferred }]
 
 groups/{groupId}
@@ -176,6 +181,7 @@ groups/{groupId}
 groups/{groupId}/members/{memberId}
   displayName, uid (null for placeholder), claimedAt, joinedAt, active
   paymentMethods: [...]           // copy of the user's own, for settle-up (§5)
+  phone                           // copy of the user's own, for reminders; "" for placeholders
 
 groups/{groupId}/expenses/{expenseId}
   title, amount (paisa), date, createdBy (uid), createdAt, updatedAt, deleted (soft delete)
@@ -218,6 +224,7 @@ top of `rules.test.js`). Decisions (2026-11-19):
   see them (the "store a copy on the member doc" option).
 - Members are never deleted. Placeholders: any member adds/renames; only you can claim one
   for yourself, and only while unclaimed.
+- Phone: you set it on your own profile and member docs only; placeholders never have one.
 - Expenses: soft delete only; `createdBy` must be you and can't change; amounts must be
   integer paisa.
 - Settlements: "I paid" only by the payer; confirm only by the person paid; the person paid
@@ -241,7 +248,7 @@ groups on the free plan; revisit if someone has many large groups.
 ## 8. Screens
 
 1. Sign in (Google, email/password, reset password)
-2. Profile setup (name, payment methods, skippable)
+2. Profile setup (name, phone, payment methods, skippable)
 3. Home: overall balance, group list with per-group balance, Add expense
 4. Group: Expenses | Balances | Settle up
 5. Add / edit expense (amount, title, paid by, split)

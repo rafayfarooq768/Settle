@@ -759,5 +759,22 @@
   "extrasByOrderNote": "Tax and service charge are shared by what each person ordered.",
   "tipGiverLabel": "Who gives the tip",
   "tipGiverTitle": "Who gives the tip?",
-  "tipEveryone": "Everyone, equally"
+  "tipEveryone": "Everyone, equally",
+  "phoneLabel": "Phone (optional)",
+  "phoneHint": "0300 1234567",
+  "phoneHelper": "For WhatsApp reminders from your groups. Not verified.",
+  "phoneTitle": "Phone number",
+  "phoneNotAdded": "Not added",
+  "phoneUpdated": "Phone number saved",
+  "phoneRemoved": "Phone number removed",
+  "errorInvalidPhone": "Enter a mobile number like 0300 1234567, or +country code.",
+  "remindPickChat": "They haven't added a phone number, so WhatsApp will ask who to send it to.",
+  "remindSendsTo": "Opens your WhatsApp chat with {phone}.",
+  "@remindSendsTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  }
 }

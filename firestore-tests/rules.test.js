@@ -47,6 +47,7 @@ const member = (name, uid = null) => ({
   joinedAt: serverTimestamp(),
   active: true,
   paymentMethods: [],
+  phone: '',
 });
 
 const activity = (type, actorMemberId) => ({
@@ -151,6 +152,7 @@ describe('users', () => {
     email: 'a@example.com',
     createdAt: serverTimestamp(),
     paymentMethods: [],
+    phone: '',
   });
 
   test('owner can create, read and update their profile', async () => {
@@ -158,6 +160,12 @@ describe('users', () => {
     await assertSucceeds(getDoc(doc(db('alice'), 'users/alice')));
     await assertSucceeds(
       updateDoc(doc(db('alice'), 'users/alice'), { displayName: 'Ali' }),
+    );
+    await assertSucceeds(
+      updateDoc(doc(db('alice'), 'users/alice'), { phone: '+923001234567' }),
+    );
+    await assertFails(
+      updateDoc(doc(db('alice'), 'users/alice'), { phone: 'x'.repeat(21) }),
     );
   });
 
@@ -397,6 +405,52 @@ describe('placeholders', () => {
     await assertFails(addPlaceholder('bob', 'm-alice', 'm-x', 'X'));
     await joinAsNew('bob', 'm-bob'); // deletes are only for a sole member
     await assertFails(deleteDoc(doc(db('alice'), 'groups/g1/members/m-alice')));
+  });
+});
+
+describe('phone numbers', () => {
+  test('you set your own phone; nobody sets yours', async () => {
+    await createGroup();
+    await joinAsNew('bob', 'm-bob');
+    await assertSucceeds(
+      updateDoc(doc(db('bob'), 'groups/g1/members/m-bob'), {
+        phone: '+923001234567',
+      }),
+    );
+    await assertFails(
+      updateDoc(doc(db('bob'), 'groups/g1/members/m-alice'), {
+        phone: '+923001234567',
+      }),
+    );
+  });
+
+  test('placeholders never get a phone', async () => {
+    await createGroup();
+    const d = db('alice');
+    await assertFails(
+      setDoc(doc(d, 'groups/g1/members/m-x'), {
+        ...member('X'),
+        phone: '+923001234567',
+      }),
+    );
+    await addPlaceholder('alice', 'm-alice', 'm-sara', 'Sara');
+    await assertFails(
+      updateDoc(doc(d, 'groups/g1/members/m-sara'), { phone: '+923001234567' }),
+    );
+  });
+
+  test('claiming a placeholder brings your phone along', async () => {
+    await createGroup();
+    await addPlaceholder('alice', 'm-alice', 'm-sara', 'Sara');
+    await join('sara');
+    await assertSucceeds(
+      updateDoc(doc(db('sara'), 'groups/g1/members/m-sara'), {
+        uid: 'sara',
+        claimedAt: serverTimestamp(),
+        paymentMethods: [],
+        phone: '+923001234567',
+      }),
+    );
   });
 });
 

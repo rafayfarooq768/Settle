@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/errors/error_text.dart';
+import '../../../core/phone/phone_number.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/panel.dart';
@@ -63,6 +64,18 @@ class SettingsScreen extends ConsumerWidget {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _changeName(context, ref, me?.name ?? ''),
               ),
+              ListTile(
+                minTileHeight: AppSpacing.rowHeight,
+                leading: const Icon(Icons.phone_outlined),
+                title: Text(l10n.phoneLabel),
+                subtitle: Text(
+                  me == null || me.phone.isEmpty
+                      ? l10n.phoneNotAdded
+                      : formatPhone(me.phone),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _changePhone(context, ref, me?.phone ?? ''),
+              ),
               // Read-only: no chevron, nothing to tap.
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,
@@ -98,6 +111,43 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Saves the phone (or removes it when emptied) on the profile and your
+  /// member doc in every group, for WhatsApp reminders.
+  Future<void> _changePhone(
+    BuildContext context,
+    WidgetRef ref,
+    String current,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final typed = await showTextInputSheet(
+      context,
+      title: l10n.phoneTitle,
+      label: l10n.phoneLabel,
+      helper: l10n.phoneHelper,
+      action: l10n.saveButton,
+      initial: current.isEmpty ? '' : formatPhone(current),
+      keyboardType: TextInputType.phone,
+      validate: (text) =>
+          normalizePhone(text) == null ? l10n.errorInvalidPhone : null,
+    );
+    final uid = ref.read(myIdentityProvider)?.uid;
+    if (typed == null || uid == null) return;
+    final phone = normalizePhone(typed) ?? '';
+    if (phone == current) return;
+    try {
+      await ref.read(userRepositoryProvider).update(uid: uid, phone: phone);
+      await ref
+          .read(groupRepositoryProvider)
+          .syncMyProfile(uid: uid, phone: phone);
+      messenger.showMessage(
+        phone.isEmpty ? l10n.phoneRemoved : l10n.phoneUpdated,
+      );
+    } catch (e) {
+      messenger.showMessage(errorText(l10n, e));
+    }
   }
 
   /// Updates the sign-in name, the profile doc, and your member doc in every

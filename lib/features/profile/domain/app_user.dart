@@ -9,6 +9,7 @@ class AppUser {
     required this.email,
     required this.createdAt,
     this.paymentMethods = const [],
+    this.phone = '',
   });
 
   final String uid;
@@ -16,4 +17,8 @@ class AppUser {
   final String email;
   final DateTime createdAt;
   final List<PaymentMethod> paymentMethods;
+
+  /// Optional, not verified ("+923001234567", or empty). Copied onto member
+  /// docs so group-mates' WhatsApp reminders open this chat.
+  final String phone;
 }

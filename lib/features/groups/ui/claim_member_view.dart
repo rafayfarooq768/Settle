@@ -96,6 +96,7 @@ class _ClaimMemberViewState extends ConsumerState<ClaimMemberView> {
                 placeholder: p,
                 uid: me.uid,
                 paymentMethods: me.paymentMethods,
+                phone: me.phone,
               ),
             ),
           ),
@@ -120,6 +121,7 @@ class _ClaimMemberViewState extends ConsumerState<ClaimMemberView> {
                           uid: me.uid,
                           displayName: me.name,
                           paymentMethods: me.paymentMethods,
+                          phone: me.phone,
                         )
                         .then((_) {}),
                   ),

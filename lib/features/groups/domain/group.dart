@@ -40,6 +40,7 @@ class Member {
     this.claimedAt,
     this.active = true,
     this.paymentMethods = const [],
+    this.phone = '',
   });
 
   final String id;
@@ -54,6 +55,10 @@ class Member {
   /// Copy of the member's own payment methods, so group-mates can see them
   /// at settle-up (PLAN.md §5) without reading their private users doc.
   final List<PaymentMethod> paymentMethods;
+
+  /// Copy of the member's own phone, for WhatsApp reminders. Empty for
+  /// placeholders (owner, 2026-11-20) and for people who didn't add one.
+  final String phone;
 
   bool get isPlaceholder => uid == null;
 }

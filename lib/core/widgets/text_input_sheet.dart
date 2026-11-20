@@ -6,6 +6,8 @@ import 'app_sheet.dart';
 
 /// A bottom sheet with one text field and a Save-style button
 /// (DESIGN.md §8: sheets for small inputs). Returns the trimmed text, or null.
+/// Without [emptyError] an empty field may be saved (e.g. to remove an
+/// optional phone). [validate] returns an error to show, or null.
 Future<String?> showTextInputSheet(
   BuildContext context, {
   required String title,
@@ -14,6 +16,8 @@ Future<String?> showTextInputSheet(
   String initial = '',
   String? helper,
   String? emptyError,
+  TextInputType? keyboardType,
+  String? Function(String text)? validate,
 }) {
   return showAppSheet<String>(
     context: context,
@@ -25,6 +29,8 @@ Future<String?> showTextInputSheet(
       initial: initial,
       helper: helper,
       emptyError: emptyError,
+      keyboardType: keyboardType,
+      validate: validate,
     ),
   );
 }
@@ -37,6 +43,8 @@ class _TextInputSheet extends StatefulWidget {
     required this.initial,
     this.helper,
     this.emptyError,
+    this.keyboardType,
+    this.validate,
   });
 
   final String title;
@@ -45,6 +53,8 @@ class _TextInputSheet extends StatefulWidget {
   final String initial;
   final String? helper;
   final String? emptyError;
+  final TextInputType? keyboardType;
+  final String? Function(String text)? validate;
 
   @override
   State<_TextInputSheet> createState() => _TextInputSheetState();
@@ -62,8 +72,11 @@ class _TextInputSheetState extends State<_TextInputSheet> {
 
   void _submit() {
     final text = _controller.text.trim();
-    if (text.isEmpty) {
-      setState(() => _error = widget.emptyError);
+    final error = text.isEmpty
+        ? widget.emptyError
+        : widget.validate?.call(text);
+    if (error != null) {
+      setState(() => _error = error);
       return;
     }
     Navigator.of(context).pop(text);

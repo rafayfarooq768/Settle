@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/phone/phone_number.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/form_message.dart';
 import '../../../core/widgets/loading_button.dart';
@@ -11,6 +12,7 @@ import 'auth_error_text.dart';
 import 'auth_fields.dart';
 import 'auth_providers.dart';
 import 'google_sign_in_button.dart';
+import '../../profile/ui/profile_providers.dart';
 import '../../../core/widgets/screen_layout.dart';
 
 enum _Action { email, google }
@@ -26,6 +28,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   _Action? _running;
   String? _errorMessage;
@@ -34,6 +37,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -57,6 +61,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   void _signUpWithEmail() {
     if (!_formKey.currentState!.validate()) return;
+    // Saved onto the profile once the account exists.
+    ref.read(signUpPhoneProvider.notifier).state =
+        normalizePhone(_phoneController.text) ?? '';
     _run(
       _Action.email,
       () => ref
@@ -99,6 +106,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             NameField(controller: _nameController),
             const SizedBox(height: AppSpacing.lg),
             EmailField(controller: _emailController),
+            const SizedBox(height: AppSpacing.lg),
+            PhoneField(controller: _phoneController),
             const SizedBox(height: AppSpacing.lg),
             PasswordField(
               controller: _passwordController,

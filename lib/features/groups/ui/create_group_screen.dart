@@ -57,6 +57,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
             type: _type.text.trim(),
             creatorName: me.name,
             paymentMethods: me.paymentMethods,
+            phone: me.phone,
           );
       messenger.showMessage(l10n.groupCreated);
       if (mounted) context.pushReplacement('/groups/$groupId');

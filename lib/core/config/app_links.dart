@@ -8,4 +8,8 @@ abstract final class AppLinks {
   /// WhatsApp share with prefilled text, no API (PLAN.md §3 item 11).
   static Uri whatsAppShare(String text) =>
       Uri.https('wa.me', '/', {'text': text});
+
+  /// The same, straight into a chat with [digits] ("923001234567").
+  static Uri whatsAppTo(String digits, String text) =>
+      Uri.https('wa.me', '/$digits', {'text': text});
 }

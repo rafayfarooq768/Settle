@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/phone/phone_number.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Plain muted "or" between the Google button and the email form. Text only,
@@ -41,6 +42,35 @@ class NameField extends StatelessWidget {
       validator: (value) {
         if ((value?.trim() ?? '').isEmpty) return l10n.errorNameRequired;
         return null;
+      },
+    );
+  }
+}
+
+/// Optional phone number (not verified, no SMS): group-mates' WhatsApp
+/// reminders open this chat (owner, 2026-11-20).
+class PhoneField extends StatelessWidget {
+  const PhoneField({super.key, required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.phone,
+      textInputAction: TextInputAction.next,
+      autofillHints: const [AutofillHints.telephoneNumber],
+      decoration: InputDecoration(
+        labelText: l10n.phoneLabel,
+        hintText: l10n.phoneHint,
+        helperText: l10n.phoneHelper,
+      ),
+      validator: (value) {
+        final text = value?.trim() ?? '';
+        if (text.isEmpty) return null;
+        return normalizePhone(text) == null ? l10n.errorInvalidPhone : null;
       },
     );
   }

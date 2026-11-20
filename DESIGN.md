@@ -259,7 +259,9 @@ Rules:
   line on the Home group row are the in-app notices (no push).
 - I paid / Record open a sheet: title "Pay Ali", the money line it settles, the amount
   (`AmountField`, prefilled, editable), primary action, Cancel. Remind opens a sheet with the
-  editable WhatsApp message and "Send on WhatsApp".
+  editable WhatsApp message and "Send on WhatsApp". A muted line under the title says where it
+  goes: "Opens your WhatsApp chat with +92 300 1234567", or that WhatsApp will ask who to send
+  it to when they have no number.
 
 **Add expense**
 - Amount (autofocus) → Title → Paid by (row, opens sheet) → Split (row: "Equally between 5", opens split screen) → Save.
@@ -311,7 +313,8 @@ Rules:
 
 **Settings**
 - Small lockup (T = 32, no tagline) at the top (BRAND.md §6).
-- Account panel: Name (opens a sheet), Email (read-only), Password (opens Change password;
+- Account panel: Name (opens a sheet), Phone (optional; "Not added" or "+92 300 1234567",
+  opens a sheet; saving it empty removes it), Email (read-only), Password (opens Change password;
   Google-only accounts see "You sign in with Google" instead).
 - Sign out as a text button below the panel.
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/config/app_links.dart';
+import '../../../core/phone/phone_number.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_sheet.dart';
 import '../../../core/widgets/loading_button.dart';
@@ -9,23 +10,29 @@ import '../../../l10n/app_localizations.dart';
 import '../../../core/widgets/app_snack_bar.dart';
 
 /// WhatsApp reminder (PLAN.md §3 item 11): a prefilled message you can
-/// edit, sent through a wa.me link. No API, no phone numbers stored:
-/// WhatsApp asks who to send it to.
+/// edit, sent through a wa.me link (no API). With the person's [phone] it
+/// opens their chat; without one, WhatsApp asks who to send it to.
 Future<void> showRemindSheet(
   BuildContext context, {
   required String title,
   required String message,
+  String phone = '',
 }) => showAppSheet<void>(
   context: context,
   scrollControlled: true,
-  builder: (_) => _RemindSheet(title: title, message: message),
+  builder: (_) => _RemindSheet(title: title, message: message, phone: phone),
 );
 
 class _RemindSheet extends StatefulWidget {
-  const _RemindSheet({required this.title, required this.message});
+  const _RemindSheet({
+    required this.title,
+    required this.message,
+    required this.phone,
+  });
 
   final String title;
   final String message;
+  final String phone;
 
   @override
   State<_RemindSheet> createState() => _RemindSheetState();
@@ -44,8 +51,12 @@ class _RemindSheetState extends State<_RemindSheet> {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
+    final text = _text.text.trim();
+    final digits = whatsAppDigits(widget.phone);
     final opened = await launchUrl(
-      AppLinks.whatsAppShare(_text.text.trim()),
+      digits == null
+          ? AppLinks.whatsAppShare(text)
+          : AppLinks.whatsAppTo(digits, text),
       mode: LaunchMode.externalApplication,
     );
     if (opened) {
@@ -70,7 +81,16 @@ class _RemindSheetState extends State<_RemindSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SheetTitle(widget.title, inset: false),
-            const SizedBox(height: AppSpacing.sm),
+            // Where it goes, so nobody is surprised by the chat that opens.
+            Text(
+              whatsAppDigits(widget.phone) == null
+                  ? l10n.remindPickChat
+                  : l10n.remindSendsTo(formatPhone(widget.phone)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
             TextField(
               controller: _text,
               minLines: 3,

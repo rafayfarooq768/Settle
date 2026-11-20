@@ -18,12 +18,14 @@ class UserRepository {
           .snapshots()
           .map((d) => d.exists ? appUserFromMap(d.id, d.data()!) : null);
 
-  /// Creates the profile on first sign-in, and fills in the name if it was
-  /// empty (email sign-up sets the name a moment after creating the account).
+  /// Creates the profile on first sign-in, and fills in the name (and the
+  /// phone typed at sign-up) if they were empty: email sign-up sets the name
+  /// a moment after creating the account.
   Future<void> ensureUser({
     required String uid,
     required String displayName,
     required String email,
+    String phone = '',
   }) async {
     final ref = _user(uid);
     final doc = await ref.get();
@@ -33,11 +35,17 @@ class UserRepository {
         'email': email,
         'createdAt': FieldValue.serverTimestamp(),
         'paymentMethods': <Json>[],
+        'phone': phone,
       });
-    } else if (readString(doc.data()!['displayName']).isEmpty &&
-        displayName.isNotEmpty) {
-      await ref.update({'displayName': displayName});
+      return;
     }
+    final data = doc.data()!;
+    final update = <String, Object?>{
+      if (readString(data['displayName']).isEmpty && displayName.isNotEmpty)
+        'displayName': displayName,
+      if (readString(data['phone']).isEmpty && phone.isNotEmpty) 'phone': phone,
+    };
+    if (update.isNotEmpty) await ref.update(update);
   }
 
   /// Saves the profile. Call GroupRepository.syncMyProfile afterwards so
@@ -46,8 +54,10 @@ class UserRepository {
     required String uid,
     String? displayName,
     List<PaymentMethod>? paymentMethods,
+    String? phone,
   }) => _user(uid).update({
     'displayName': ?displayName,
+    'phone': ?phone,
     if (paymentMethods != null)
       'paymentMethods': [for (final m in paymentMethods) m.toMap()],
   });
@@ -59,4 +69,5 @@ AppUser appUserFromMap(String uid, Json data) => AppUser(
   email: readString(data['email']),
   createdAt: readDate(data['createdAt']),
   paymentMethods: PaymentMethod.listFrom(data['paymentMethods']),
+  phone: readString(data['phone']),
 );

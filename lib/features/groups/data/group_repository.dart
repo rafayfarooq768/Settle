@@ -52,6 +52,7 @@ class GroupRepository {
     required String type,
     required String creatorName,
     List<PaymentMethod> paymentMethods = const [],
+    String phone = '',
   }) async {
     final group = _groups.doc();
     final me = _members(group.id).doc();
@@ -67,7 +68,15 @@ class GroupRepository {
         'currency': 'PKR',
         'memberUids': [uid],
       })
-      ..set(me, _newMember(creatorName, uid: uid, methods: paymentMethods))
+      ..set(
+        me,
+        _newMember(
+          creatorName,
+          uid: uid,
+          methods: paymentMethods,
+          phone: phone,
+        ),
+      )
       ..set(_code(code), {'groupId': group.id});
     logActivity(
       batch,
@@ -178,12 +187,14 @@ class GroupRepository {
     required Member placeholder,
     required String uid,
     List<PaymentMethod> paymentMethods = const [],
+    String phone = '',
   }) async {
     final batch = _db.batch()
       ..update(_members(groupId).doc(placeholder.id), {
         'uid': uid,
         'claimedAt': FieldValue.serverTimestamp(),
         'paymentMethods': paymentMethodsToList(paymentMethods),
+        'phone': phone,
       });
     logActivity(
       batch,
@@ -202,10 +213,19 @@ class GroupRepository {
     required String uid,
     required String displayName,
     List<PaymentMethod> paymentMethods = const [],
+    String phone = '',
   }) async {
     final member = _members(groupId).doc();
     final batch = _db.batch()
-      ..set(member, _newMember(displayName, uid: uid, methods: paymentMethods));
+      ..set(
+        member,
+        _newMember(
+          displayName,
+          uid: uid,
+          methods: paymentMethods,
+          phone: phone,
+        ),
+      );
     logActivity(
       batch,
       _group(groupId),
@@ -329,15 +349,17 @@ class GroupRepository {
     await last.commit();
   }
 
-  /// Copies the user's name and payment methods onto their member doc in
-  /// every group, so group-mates see current details (PLAN.md §5).
+  /// Copies the user's name, payment methods and phone onto their member
+  /// doc in every group, so group-mates see current details (PLAN.md §5).
   Future<void> syncMyProfile({
     required String uid,
     String? displayName,
     List<PaymentMethod>? paymentMethods,
+    String? phone,
   }) async {
     final update = <String, Object?>{
       'displayName': ?displayName,
+      'phone': ?phone,
       if (paymentMethods != null)
         'paymentMethods': paymentMethodsToList(paymentMethods),
     };
@@ -357,6 +379,7 @@ class GroupRepository {
     String name, {
     String? uid,
     List<PaymentMethod> methods = const [],
+    String phone = '',
   }) => {
     'displayName': name,
     'uid': uid,
@@ -364,6 +387,7 @@ class GroupRepository {
     'joinedAt': FieldValue.serverTimestamp(),
     'active': true,
     'paymentMethods': paymentMethodsToList(methods),
+    'phone': phone,
   };
 
   /// A code nobody uses yet. A clash is ~1 in 28 million, so when offline we

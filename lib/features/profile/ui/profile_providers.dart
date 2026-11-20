@@ -18,6 +18,10 @@ final myProfileProvider = StreamProvider<AppUser?>((ref) {
   return ref.watch(userRepositoryProvider).watch(uid);
 });
 
+/// The phone typed on the sign-up form, saved onto the profile once the
+/// account exists (the form runs before there is a users doc).
+final signUpPhoneProvider = StateProvider<String>((ref) => '');
+
 /// Creates `users/{uid}` after sign-in. Watched once by the app root.
 /// Failures (e.g. offline) are retried on the next auth change or launch.
 final ensureProfileProvider = Provider<void>((ref) {
@@ -30,6 +34,7 @@ final ensureProfileProvider = Provider<void>((ref) {
           uid: user.uid,
           displayName: user.displayName ?? '',
           email: user.email ?? '',
+          phone: ref.read(signUpPhoneProvider),
         )
         .catchError((Object e) => debugPrint('ensureUser failed: $e'));
   }, fireImmediately: true);
@@ -42,11 +47,13 @@ class MyIdentity {
     required this.uid,
     required this.name,
     this.paymentMethods = const [],
+    this.phone = '',
   });
 
   final String uid;
   final String name;
   final List<PaymentMethod> paymentMethods;
+  final String phone;
 }
 
 final myIdentityProvider = Provider<MyIdentity?>((ref) {
@@ -61,5 +68,6 @@ final myIdentityProvider = Provider<MyIdentity?>((ref) {
     uid: user.uid,
     name: name,
     paymentMethods: profile?.paymentMethods ?? const [],
+    phone: profile?.phone ?? '',
   );
 });

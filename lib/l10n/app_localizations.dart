@@ -1701,6 +1701,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Everyone, equally'**
   String get tipEveryone;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone (optional)'**
+  String get phoneLabel;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'0300 1234567'**
+  String get phoneHint;
+
+  /// No description provided for @phoneHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'For WhatsApp reminders from your groups. Not verified.'**
+  String get phoneHelper;
+
+  /// No description provided for @phoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phoneTitle;
+
+  /// No description provided for @phoneNotAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Not added'**
+  String get phoneNotAdded;
+
+  /// No description provided for @phoneUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number saved'**
+  String get phoneUpdated;
+
+  /// No description provided for @phoneRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number removed'**
+  String get phoneRemoved;
+
+  /// No description provided for @errorInvalidPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a mobile number like 0300 1234567, or +country code.'**
+  String get errorInvalidPhone;
+
+  /// No description provided for @remindPickChat.
+  ///
+  /// In en, this message translates to:
+  /// **'They haven\'t added a phone number, so WhatsApp will ask who to send it to.'**
+  String get remindPickChat;
+
+  /// No description provided for @remindSendsTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens your WhatsApp chat with {phone}.'**
+  String remindSendsTo(String phone);
 }
 
 class _AppLocalizationsDelegate

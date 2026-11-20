@@ -964,4 +964,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tipEveryone => 'Everyone, equally';
+
+  @override
+  String get phoneLabel => 'Phone (optional)';
+
+  @override
+  String get phoneHint => '0300 1234567';
+
+  @override
+  String get phoneHelper =>
+      'For WhatsApp reminders from your groups. Not verified.';
+
+  @override
+  String get phoneTitle => 'Phone number';
+
+  @override
+  String get phoneNotAdded => 'Not added';
+
+  @override
+  String get phoneUpdated => 'Phone number saved';
+
+  @override
+  String get phoneRemoved => 'Phone number removed';
+
+  @override
+  String get errorInvalidPhone =>
+      'Enter a mobile number like 0300 1234567, or +country code.';
+
+  @override
+  String get remindPickChat =>
+      'They haven\'t added a phone number, so WhatsApp will ask who to send it to.';
+
+  @override
+  String remindSendsTo(String phone) {
+    return 'Opens your WhatsApp chat with $phone.';
+  }
 }

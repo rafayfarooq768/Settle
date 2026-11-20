@@ -79,6 +79,7 @@ class SettleActions {
         context,
         title: _l10n.remindTitle(who.displayName),
         message: _l10n.remindMessage(formatRupees(owed), group.name),
+        phone: who.phone,
       );
 
   Future<void> confirm(Settlement s) => _run(

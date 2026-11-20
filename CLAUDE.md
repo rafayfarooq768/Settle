@@ -16,7 +16,8 @@ When a decision changes the plan, update PLAN.md in the same change.
 - Firebase **Spark (free) plan**: Auth + Firestore only.
   - No Cloud Functions, no Dynamic Links, no paid APIs, no Storage.
 - There is one release containing every feature in PLAN.md §3. No "v1/v2" split.
-- Auth: **Google + email/password only. No phone/SMS auth.**
+- Auth: **Google + email/password only. No phone/SMS auth.** An optional, unverified phone
+  number on the profile, used only to open WhatsApp reminders, is allowed (owner, 2026-11-20).
 - Distribution: APK via GitHub Releases. No Play Store assumptions.
 - Never suggest or add a dependency or service that costs money. If something needs a paid
   plan, say so and propose a free alternative.

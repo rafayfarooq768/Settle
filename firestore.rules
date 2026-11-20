@@ -16,6 +16,11 @@ service cloud.firestore {
     function changed() {
       return request.resource.data.diff(resource.data).affectedKeys();
     }
+    // Optional, unverified phone ("+923001234567") for WhatsApp reminders.
+    function optPhone(d) {
+      return !('phone' in d) || (d.phone is string && d.phone.size() <= 20);
+    }
+
     function str(v, min, max) {
       return v is string && v.size() >= min && v.size() <= max;
     }
@@ -55,17 +60,18 @@ service cloud.firestore {
     match /users/{userId} {
       function validUser(d) {
         return str(d.displayName, 0, 60)
-          && d.paymentMethods is list && d.paymentMethods.size() <= 20;
+          && d.paymentMethods is list && d.paymentMethods.size() <= 20
+          && optPhone(d);
       }
       allow read: if signedIn() && me() == userId;
       allow create: if signedIn() && me() == userId
         && request.resource.data.keys().hasOnly(
-             ['displayName', 'email', 'createdAt', 'paymentMethods'])
+             ['displayName', 'email', 'createdAt', 'paymentMethods', 'phone'])
         && request.resource.data.email is string
         && request.resource.data.createdAt == request.time
         && validUser(request.resource.data);
       allow update: if signedIn() && me() == userId
-        && changed().hasOnly(['displayName', 'paymentMethods'])
+        && changed().hasOnly(['displayName', 'paymentMethods', 'phone'])
         && validUser(request.resource.data);
       allow delete: if false;
     }
@@ -124,10 +130,13 @@ service cloud.firestore {
       match /members/{memberId} {
         function validMember(d) {
           return d.keys().hasOnly(['displayName', 'uid', 'claimedAt',
-                   'joinedAt', 'active', 'paymentMethods'])
+                   'joinedAt', 'active', 'paymentMethods', 'phone'])
             && str(d.displayName, 1, 60)
             && d.active is bool
-            && d.paymentMethods is list && d.paymentMethods.size() <= 20;
+            && d.paymentMethods is list && d.paymentMethods.size() <= 20
+            && optPhone(d)
+            // placeholders never carry a phone (owner, 2026-11-20)
+            && (d.uid != null || d.get('phone', '') == '');
         }
         allow read: if isMember(groupId);
         allow create: if canWrite(groupId)
@@ -145,7 +154,7 @@ service cloud.firestore {
           && validMember(request.resource.data) && (
             // "That's me": claim a placeholder for yourself
             (resource.data.uid == null && request.resource.data.uid == me()
-              && changed().hasOnly(['uid', 'claimedAt', 'paymentMethods'])
+              && changed().hasOnly(['uid', 'claimedAt', 'paymentMethods', 'phone'])
               && request.resource.data.claimedAt == request.time)
             // fix a placeholder's name
             || (resource.data.uid == null && changed().hasOnly(['displayName']))
@@ -156,7 +165,8 @@ service cloud.firestore {
               && request.resource.data.active == false)
             // your own: name, payment methods, leave / rejoin
             || (resource.data.uid == me()
-              && changed().hasOnly(['displayName', 'paymentMethods', 'active'])));
+              && changed().hasOnly(['displayName', 'paymentMethods', 'phone',
+                   'active'])));
         allow delete: if isSoleMember(groupId);
       }
 
