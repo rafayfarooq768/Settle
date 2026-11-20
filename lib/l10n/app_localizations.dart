@@ -1713,6 +1713,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Split equally between {count, plural, =1{1 person} other{{count} people}}'**
   String sharedSplitBetween(int count);
+
+  /// No description provided for @itemWhoShared.
+  ///
+  /// In en, this message translates to:
+  /// **'Who shared it?'**
+  String get itemWhoShared;
+
+  /// No description provided for @errorPickWhoShared.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick who shared it.'**
+  String get errorPickWhoShared;
 }
 
 class _AppLocalizationsDelegate

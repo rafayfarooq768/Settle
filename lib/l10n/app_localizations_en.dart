@@ -977,4 +977,10 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return 'Split equally between $_temp0';
   }
+
+  @override
+  String get itemWhoShared => 'Who shared it?';
+
+  @override
+  String get errorPickWhoShared => 'Pick who shared it.';
 }

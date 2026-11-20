@@ -280,6 +280,19 @@ void main() {
       });
     });
 
+    test('each shared item is split between its own people', () {
+      const bill = ItemizedSpec(
+        items: [
+          BillLine(name: '', amount: 1000, memberIds: ['a', 'b', 'c']),
+        ],
+        shared: [
+          BillLine(name: 'Drinks', amount: 600, memberIds: ['a', 'b']),
+        ],
+        sharedWith: ['a', 'b', 'c'],
+      );
+      expect(_shares(bill, 1600), {'a': 634, 'b': 633, 'c': 333});
+    });
+
     test('older bills without shared items still read back', () {
       final json = Map.of(restaurant.toJson())
         ..remove('shared')

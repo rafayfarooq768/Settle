@@ -768,5 +768,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "itemWhoShared": "Who shared it?",
+  "errorPickWhoShared": "Pick who shared it."
 }

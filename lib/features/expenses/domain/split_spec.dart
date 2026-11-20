@@ -229,13 +229,16 @@ class ItemizedSpec extends SplitSpec {
   /// Each person's own items (who had it is picked per item).
   final List<BillLine> items;
 
-  /// Shared items (drinks, starters): split equally between [sharedWith].
-  /// Their own `memberIds` aren't used.
+  /// Shared items (drinks, starters): each split equally between its own
+  /// `memberIds` ("Who shared it?").
   final List<BillLine> shared;
 
-  /// Who the shared items are split between: everyone who had an item, or
-  /// the whole group when nobody did (worked out by the screen).
+  /// Fallback for a shared item with no `memberIds`: everyone who had an
+  /// item, or the whole group (worked out by the screen).
   final List<String> sharedWith;
+
+  List<String> _sharers(BillLine line) =>
+      line.memberIds.isEmpty ? sharedWith : line.memberIds;
   final int taxBp;
   final int serviceBp;
 
@@ -262,7 +265,7 @@ class ItemizedSpec extends SplitSpec {
   SplitProblem? problem(int? amount) {
     if (items.isEmpty && shared.isEmpty) return const NoItems();
     if (items.any((i) => i.memberIds.isEmpty) ||
-        (shared.isNotEmpty && sharedWith.isEmpty)) {
+        shared.any((i) => _sharers(i).isEmpty)) {
       return const ItemWithoutPeople();
     }
     if (amount != null && amount != total) return BillTotalDiffers(total);
@@ -284,7 +287,7 @@ class ItemizedSpec extends SplitSpec {
           for (final i in items)
             BillItem(amount: i.amount, memberIds: i.memberIds),
           for (final i in shared)
-            BillItem(amount: i.amount, memberIds: sharedWith),
+            BillItem(amount: i.amount, memberIds: _sharers(i)),
         ],
         order: order,
         extras: extras,

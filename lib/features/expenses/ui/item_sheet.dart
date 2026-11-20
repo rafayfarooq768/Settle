@@ -19,19 +19,25 @@ class ItemSheetResult {
 }
 
 /// Add or edit one bill item: name, price, who had it (DESIGN.md §8: a
-/// sheet for a small form). New items start with everyone ticked. A
-/// [shared] item has no "Who had it?": it's split equally.
+/// sheet for a small form). New items start with [ticked] (default:
+/// everyone). A [shared] item asks "Who shared it?" instead.
 Future<ItemSheetResult?> showItemSheet(
   BuildContext context, {
   required List<Member> members,
   required String meId,
   BillLine? line,
   bool shared = false,
+  List<String>? ticked,
 }) => showAppSheet<ItemSheetResult>(
   context: context,
   scrollControlled: true,
-  builder: (_) =>
-      _ItemSheet(members: members, meId: meId, line: line, shared: shared),
+  builder: (_) => _ItemSheet(
+    members: members,
+    meId: meId,
+    line: line,
+    shared: shared,
+    ticked: ticked,
+  ),
 );
 
 class _ItemSheet extends StatefulWidget {
@@ -40,12 +46,14 @@ class _ItemSheet extends StatefulWidget {
     required this.meId,
     required this.shared,
     this.line,
+    this.ticked,
   });
 
   final List<Member> members;
   final String meId;
   final bool shared;
   final BillLine? line;
+  final List<String>? ticked;
 
   @override
   State<_ItemSheet> createState() => _ItemSheetState();
@@ -60,7 +68,8 @@ class _ItemSheetState extends State<_ItemSheet> {
   );
   late final Set<String> _who = {
     ...?widget.line?.memberIds,
-    if (widget.line == null) ...widget.members.map((m) => m.id),
+    if (widget.line == null)
+      ...(widget.ticked ?? widget.members.map((m) => m.id)),
   };
   String? _priceError;
   String? _whoError;
@@ -104,7 +113,9 @@ class _ItemSheetState extends State<_ItemSheet> {
       _priceError = price == null || price == 0
           ? l10n.errorAmountRequired
           : null;
-      _whoError = !widget.shared && _who.isEmpty ? l10n.errorPickWhoHad : null;
+      _whoError = _who.isEmpty
+          ? (widget.shared ? l10n.errorPickWhoShared : l10n.errorPickWhoHad)
+          : null;
     });
     if (_priceError != null || _whoError != null) return;
     Navigator.of(context).pop(
@@ -112,12 +123,10 @@ class _ItemSheetState extends State<_ItemSheet> {
         BillLine(
           name: _name.text.trim(),
           amount: price!,
-          memberIds: widget.shared
-              ? const []
-              : [
-                  for (final m in widget.members)
-                    if (_who.contains(m.id)) m.id,
-                ],
+          memberIds: [
+            for (final m in widget.members)
+              if (_who.contains(m.id)) m.id,
+          ],
         ),
       ),
     );
@@ -127,7 +136,7 @@ class _ItemSheetState extends State<_ItemSheet> {
   List<Widget> _whoHad(AppLocalizations l10n, ThemeData theme) => [
     const SizedBox(height: AppSpacing.lg),
     Text(
-      l10n.itemWhoHad,
+      widget.shared ? l10n.itemWhoShared : l10n.itemWhoHad,
       style: theme.textTheme.labelLarge?.copyWith(
         color: _whoError == null
             ? theme.colorScheme.onSurfaceVariant
@@ -211,7 +220,7 @@ class _ItemSheetState extends State<_ItemSheet> {
                   errorText: _priceError,
                 ),
               ),
-              if (!widget.shared) ..._whoHad(l10n, theme),
+              ..._whoHad(l10n, theme),
               const SizedBox(height: AppSpacing.xl),
               LoadingButton(label: l10n.itemSaveButton, onPressed: _save),
               if (widget.line != null) ...[

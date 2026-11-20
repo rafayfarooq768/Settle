@@ -99,6 +99,10 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
       meId: widget.args.meId,
       line: index == null ? null : list[index],
       shared: shared,
+      // A new shared item starts with everyone who had an item.
+      ticked: shared
+          ? sharedWithFor(_items, [for (final m in members) m.id])
+          : null,
     );
     if (result == null || !mounted) return;
     setState(() {
@@ -160,7 +164,11 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
               for (var i = 0; i < _shared.length; i++)
                 _ItemRow(
                   line: _shared[i],
-                  people: l10n.sharedSplitBetween(spec.sharedWith.length),
+                  people: l10n.sharedSplitBetween(
+                    _shared[i].memberIds.isEmpty
+                        ? spec.sharedWith.length
+                        : _shared[i].memberIds.length,
+                  ),
                   onTap: () => _edit(members, index: i, shared: true),
                 ),
               _AddRow(
