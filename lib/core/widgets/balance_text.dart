@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../money/money.dart';
+import '../theme/app_spacing.dart';
 import '../theme/app_theme_extensions.dart';
 
 /// Who the balance belongs to, which decides the words.
@@ -135,6 +136,46 @@ class BalanceStack extends StatelessWidget {
             color: color,
             fontFeatures: const [FontFeature.tabularFigures()],
           ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The Group screen's balance (DESIGN.md §11, owner 2026-11-20): a small
+/// label that says the direction, the amount big under it. Number first.
+/// Settled is "Your balance" over "All settled" in the settled colour.
+class BalanceHero extends StatelessWidget {
+  const BalanceHero({super.key, required this.net});
+
+  final int net;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final money = context.moneyColors;
+    final (label, value, color, labelColor) = switch (net) {
+      > 0 => (l10n.heroYouAreOwed, formatRupees(net), money.owed, money.owed),
+      < 0 => (l10n.heroYouOwe, formatRupees(-net), money.owe, money.owe),
+      _ => (
+        l10n.heroYourBalance,
+        l10n.heroAllSettled,
+        context.extraColors.settled,
+        theme.colorScheme.onSurfaceVariant,
+      ),
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.titleSmall?.copyWith(color: labelColor),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          value,
+          style: theme.textTheme.headlineLarge?.copyWith(color: color),
         ),
       ],
     );

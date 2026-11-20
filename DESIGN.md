@@ -229,7 +229,11 @@ Rules:
 
 **Group**
 - App bar: group name, settings icon.
-- Header panel: your balance in this group (large) and the member avatar row ("4 members").
+- Header (owner's decision, 2026-11-20): **no panel**. Straight on the background, aligned with
+  the panel text below: a small label in the balance colour ("You are owed" / "You owe"), the
+  amount under it in headlineLarge, number first. Settled: muted "Your balance" over
+  "All settled" in Deep teal (Mist on dark). Then one tappable line: member avatars,
+  "4 members" (muted) and a chevron, opening Group settings.
 - Tabs: Expenses | Balances | Settle up.
 - FAB "Add expense" (brand Teal, both modes) only once someone besides you is in the group;
   before that, "Invite friends" in the empty state is the one primary action.

@@ -232,7 +232,6 @@
     }
   },
   "balanceAllSettled": "You're all settled up",
-  "balanceSettledHere": "You're settled up here",
   "balanceBothLine": "You owe {owe} · You are owed {owed}",
   "@balanceBothLine": {
     "placeholders": {
@@ -591,5 +590,9 @@
     }
   },
   "paymentRowLabel": "Payment",
-  "rowSettledExpense": "settled"
+  "rowSettledExpense": "settled",
+  "heroYouAreOwed": "You are owed",
+  "heroYouOwe": "You owe",
+  "heroYourBalance": "Your balance",
+  "heroAllSettled": "All settled"
 }

@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/errors/error_text.dart';
+import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
-import '../../../core/widgets/panel.dart';
 import '../../../core/widgets/tab_message.dart';
 import '../../balances/ui/balances_tab.dart';
 import '../../settlements/domain/settle_up.dart';
@@ -93,7 +93,7 @@ class _GroupTabs extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.lg),
           _Header(group: group),
           const SizedBox(height: AppSpacing.sm),
           TabBar(
@@ -127,37 +127,54 @@ class _Header extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
     final net = ref.watch(myGroupNetProvider(group.id)).valueOrNull ?? 0;
     final members = (ref.watch(membersProvider(group.id)).valueOrNull ?? [])
         .where((m) => m.active)
         .toList();
-    return Panel(
+    // No panel: the balance is the screen's headline, straight on the
+    // background, aligned with the list text below.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: BalanceHeadline(net: net, settled: l10n.balanceSettledHere),
+          padding: const EdgeInsets.symmetric(horizontal: _headerInset),
+          child: BalanceHero(net: net),
         ),
-        const Divider(height: 1),
-        ListTile(
-          minTileHeight: AppSpacing.rowHeight,
-          title: Text(
-            l10n.membersCount(members.length),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+        const SizedBox(height: AppSpacing.md),
+        InkWell(
+          onTap: () => context.push('/groups/${group.id}/settings'),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: AppSizes.tapTarget),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: _headerInset),
+              child: Row(
+                children: [
+                  AvatarRow(
+                    ring: theme.scaffoldBackgroundColor,
+                    names: [
+                      for (final m in members)
+                        (name: m.displayName, placeholder: m.isPlaceholder),
+                    ],
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    l10n.membersCount(members.length),
+                    style: theme.textTheme.bodyMedium?.copyWith(color: muted),
+                  ),
+                  Icon(Icons.chevron_right, color: muted),
+                ],
+              ),
             ),
           ),
-          trailing: AvatarRow(
-            names: [
-              for (final m in members)
-                (name: m.displayName, placeholder: m.isPlaceholder),
-            ],
-          ),
-          onTap: () => context.push('/groups/${group.id}/settings'),
         ),
       ],
     );
   }
 }
+
+/// Lines the header up with the text inside the panels below.
+const _headerInset = AppSpacing.screenHorizontal + AppSpacing.lg;
 
 /// The group's expenses by day; when there are none, the empty state with
 /// the next useful step (DESIGN.md §9).

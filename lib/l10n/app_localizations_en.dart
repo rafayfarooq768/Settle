@@ -372,9 +372,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get balanceAllSettled => 'You\'re all settled up';
 
   @override
-  String get balanceSettledHere => 'You\'re settled up here';
-
-  @override
   String balanceBothLine(String owe, String owed) {
     return 'You owe $owe · You are owed $owed';
   }
@@ -761,4 +758,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rowSettledExpense => 'settled';
+
+  @override
+  String get heroYouAreOwed => 'You are owed';
+
+  @override
+  String get heroYouOwe => 'You owe';
+
+  @override
+  String get heroYourBalance => 'Your balance';
+
+  @override
+  String get heroAllSettled => 'All settled';
 }

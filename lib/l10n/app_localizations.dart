@@ -742,12 +742,6 @@ abstract class AppLocalizations {
   /// **'You\'re all settled up'**
   String get balanceAllSettled;
 
-  /// No description provided for @balanceSettledHere.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'re settled up here'**
-  String get balanceSettledHere;
-
   /// No description provided for @balanceBothLine.
   ///
   /// In en, this message translates to:
@@ -1353,6 +1347,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'settled'**
   String get rowSettledExpense;
+
+  /// No description provided for @heroYouAreOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'You are owed'**
+  String get heroYouAreOwed;
+
+  /// No description provided for @heroYouOwe.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe'**
+  String get heroYouOwe;
+
+  /// No description provided for @heroYourBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your balance'**
+  String get heroYourBalance;
+
+  /// No description provided for @heroAllSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'All settled'**
+  String get heroAllSettled;
 }
 
 class _AppLocalizationsDelegate

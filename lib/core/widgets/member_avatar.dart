@@ -58,17 +58,21 @@ class MemberAvatar extends StatelessWidget {
 
 /// Up to [max] small overlapping avatars, then "+N" (DESIGN.md §6).
 class AvatarRow extends StatelessWidget {
-  const AvatarRow({super.key, required this.names, this.max = 5});
+  const AvatarRow({super.key, required this.names, this.max = 5, this.ring});
 
   final List<({String name, bool placeholder})> names;
   final int max;
+
+  /// Colour behind the row, so the overlap ring blends in. Defaults to
+  /// the panel colour.
+  final Color? ring;
 
   @override
   Widget build(BuildContext context) {
     final shown = names.take(max).toList();
     final extra = names.length - shown.length;
     final step = AppSizes.avatarSmall - AppSizes.avatarOverlap;
-    final ring = context.extraColors.panel;
+    final ring = this.ring ?? context.extraColors.panel;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
