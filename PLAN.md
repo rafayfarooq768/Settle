@@ -58,7 +58,6 @@ Build order (§9) decides the sequence, not separate releases.
    expense amount. A shared item (drinks) is an item with several people ticked (2026-11-20).
 7. Edit/delete expense; balances always recompute.
    Multiple payers on one expense.
-   Recurring expenses (rent, internet), created by the app when opened on/after the due date.
    Duplicate guard ("Same amount and people added 2 minutes ago. Add anyway?"): same amount
    and same people with a share, added in the last 10 minutes (2026-11-20).
    Search and filter expenses.
@@ -95,6 +94,7 @@ Don't build these or suggest them back unless the owner asks.
 - Export group to CSV.
 - Shares split mode (units per person) — owner's decision, 2026-11-20. Equal, Exact and %
   cover it.
+- Recurring expenses (rent, internet) — owner's decision, 2026-11-20. Not for now.
 
 ---
 
@@ -280,7 +280,7 @@ See DESIGN.md for how each one should look.
 8. Exact / Percent splits, then Itemized and multiple payers.
 9. Edit/delete + activity log + duplicate guard.
 10. Payment methods + settle-up pay screen.
-11. Recurring expenses, search/filter, monthly summary.
+11. Search/filter, monthly summary.
 12. Full Urdu locale (RTL) and dark mode.
 13. Polish against DESIGN.md, test on a low-end phone, release APK on GitHub Releases.
 
