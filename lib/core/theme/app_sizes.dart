@@ -39,10 +39,6 @@ class AppSizes {
   /// Home group row: a bit taller than a plain row for the bolder name.
   static const double groupRowHeight = 72;
 
-  /// Compact buttons inside list rows (Pay / Remind / Record).
-  static const double rowButtonHeight = 40;
-  static const double rowButtonMinWidth = 64;
-
   /// Minimum touch target (DESIGN.md §4).
   static const double tapTarget = 48;
 }

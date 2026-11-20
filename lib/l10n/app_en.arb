@@ -594,5 +594,24 @@
   "heroYouAreOwed": "You are owed",
   "heroYouOwe": "You owe",
   "heroYourBalance": "Your balance",
-  "heroAllSettled": "All settled"
+  "heroAllSettled": "All settled",
+  "pendingSaysPaidAmount": "Says they paid {amount}",
+  "@pendingSaysPaidAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingWaitingAmount": "{amount} sent, waiting for {name} to confirm",
+  "@pendingWaitingAmount": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
 }

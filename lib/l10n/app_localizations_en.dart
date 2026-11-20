@@ -770,4 +770,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get heroAllSettled => 'All settled';
+
+  @override
+  String pendingSaysPaidAmount(String amount) {
+    return 'Says they paid $amount';
+  }
+
+  @override
+  String pendingWaitingAmount(String name, String amount) {
+    return '$amount sent, waiting for $name to confirm';
+  }
 }

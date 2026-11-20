@@ -225,13 +225,22 @@ void main() {
     expect(find.text(l10n.transferYouPay('Sara')), findsOneWidget);
     // Already waiting on Ali: only Sara's row offers I paid.
     expect(find.text(l10n.iPaidButton), findsOneWidget);
-    expect(find.text(l10n.pendingYouPaid('Ali')), findsOneWidget);
-    expect(find.text(l10n.pendingWaitingFor('Ali')), findsOneWidget);
+    // The waiting payment sits in Ali's own row, not a row of its own.
+    expect(find.text(l10n.transferYouPay('Ali')), findsOneWidget);
+    expect(find.text(l10n.pendingYouPaid('Ali')), findsNothing);
+    expect(
+      find.text(l10n.pendingWaitingAmount('Ali', 'Rs 100')),
+      findsOneWidget,
+    );
     expect(find.text(l10n.cancelPaymentButton), findsOneWidget);
 
     await openTab(tester, me: members[0], settlements: [pending]);
-    expect(find.text(l10n.pendingSaysPaidYou('Fatima')), findsOneWidget);
+    // Fatima's row swaps Record / Remind for Confirm / Not received.
+    expect(find.text(l10n.transferPaysYou('Fatima')), findsOneWidget);
+    expect(find.text(l10n.pendingSaysPaidAmount('Rs 100')), findsOneWidget);
     expect(find.text(l10n.confirmButton), findsOneWidget);
     expect(find.text(l10n.notReceivedButton), findsOneWidget);
+    expect(find.text(l10n.recordPaymentButton), findsNWidgets(2));
+    expect(find.text(l10n.remindButton), findsNWidgets(2));
   });
 }

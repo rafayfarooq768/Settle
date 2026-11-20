@@ -1,53 +1,56 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_sizes.dart';
+import '../theme/app_spacing.dart';
 import 'press_scale.dart';
 
-enum RowButtonKind { tonal, outlined, text }
+enum RowButtonKind {
+  /// The row's main action: teal, semibold.
+  primary,
 
-/// A compact button inside a list row (Pay / Remind / Record, DESIGN.md
-/// §11). Same shapes as the full-width buttons, sized to its label; the
-/// touch target stays 48dp through Material's padded tap target.
+  /// The quieter one next to it: muted.
+  secondary,
+}
+
+/// A text action inside a list row (I paid / Record payment / Remind,
+/// DESIGN.md §11). No fill or outline: the money line stays the strongest
+/// thing in the row, and the main action is set apart by colour and
+/// weight, not by a box. Tap target stays 48dp.
 class RowButton extends StatelessWidget {
   const RowButton({
     super.key,
     required this.label,
     required this.onPressed,
-    this.kind = RowButtonKind.tonal,
+    this.kind = RowButtonKind.primary,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final RowButtonKind kind;
 
-  static const _size = WidgetStatePropertyAll(
-    Size(AppSizes.rowButtonMinWidth, AppSizes.rowButtonHeight),
-  );
-  static const _style = ButtonStyle(
-    minimumSize: _size,
-    tapTargetSize: MaterialTapTargetSize.padded,
-  );
+  /// Horizontal padding inside the button; rows shift the actions back by
+  /// this much so the first label lines up with the text above.
+  static const inset = AppSpacing.sm;
 
   @override
   Widget build(BuildContext context) {
-    final text = Text(label);
-    final button = switch (kind) {
-      RowButtonKind.tonal => FilledButton.tonal(
+    final theme = Theme.of(context);
+    final primary = kind == RowButtonKind.primary;
+    return PressScale(
+      child: TextButton(
         onPressed: onPressed,
-        style: _style,
-        child: text,
+        style: TextButton.styleFrom(
+          foregroundColor: primary
+              ? theme.textButtonTheme.style?.foregroundColor?.resolve({})
+              : theme.colorScheme.onSurfaceVariant,
+          minimumSize: const Size(0, AppSizes.tapTarget),
+          padding: const EdgeInsets.symmetric(horizontal: inset),
+          textStyle: theme.textTheme.labelLarge?.copyWith(
+            fontWeight: primary ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
+        child: Text(label),
       ),
-      RowButtonKind.outlined => OutlinedButton(
-        onPressed: onPressed,
-        style: _style,
-        child: text,
-      ),
-      RowButtonKind.text => TextButton(
-        onPressed: onPressed,
-        style: _style,
-        child: text,
-      ),
-    };
-    return PressScale(child: button);
+    );
   }
 }

@@ -1371,6 +1371,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All settled'**
   String get heroAllSettled;
+
+  /// No description provided for @pendingSaysPaidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Says they paid {amount}'**
+  String pendingSaysPaidAmount(String amount);
+
+  /// No description provided for @pendingWaitingAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} sent, waiting for {name} to confirm'**
+  String pendingWaitingAmount(String name, String amount);
 }
 
 class _AppLocalizationsDelegate

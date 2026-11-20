@@ -247,11 +247,15 @@ Rules:
   ("owes" over "Rs 300"; your own row says "you owe").
 - Settle up: "Your payments" panel first ("You pay Ali" in owe-red / "Ali pays you" in owed-green,
   amount at the end), then "Others in the group" ("Bilal pays Ali", plain). Labels only for
-  non-empty sections. Your rows carry compact row buttons (`RowButton`) under the text:
-  "You pay Ali" → **I paid** (tonal); "Ali pays you" → **Record payment** (tonal) + **Remind**
-  (outlined). Pending ones sit at the top of "Your payments": "Ali says they paid you" →
-  **Confirm** / **Not received**; "You paid Ali" with muted "Waiting for Ali to confirm" →
-  **Cancel payment**. A count badge on the Settle up tab and a teal "1 payment to confirm"
+  non-empty sections. One row per person. Its actions are text buttons (`RowButton`)
+  under the money line: the main one teal and semibold, the other muted. No filled or
+  outlined boxes (owner, 2026-11-20).
+  "You pay Ali" → **I paid**; "Ali pays you" → **Record payment**, **Remind**.
+  A pending "I paid" sits in that person's row and replaces its actions: Ali's row shows
+  "Says they paid Rs 100" → **Confirm**, **Not received**; your row to Ali shows
+  "Rs 100 sent, waiting for Ali to confirm" → **Cancel payment**. When it's refused or
+  cancelled the row goes back to its usual actions. A pending payment with no matching row
+  gets a row of its own. A count badge on the Settle up tab and a teal "1 payment to confirm"
   line on the Home group row are the in-app notices (no push).
 - I paid / Record open a sheet: title "Pay Ali", the money line it settles, the amount
   (`AmountField`, prefilled, editable), primary action, Cancel. Remind opens a sheet with the

@@ -20,8 +20,9 @@ import 'settle_actions.dart';
 import 'settlements_providers.dart';
 
 /// Settle up (PLAN.md §3 items 9–11, DESIGN.md §11). "Your payments" on
-/// top: pending ones to confirm or waiting, then the simplified payments
-/// that involve you, each with its action. Then everyone else's.
+/// top, one row per person: a pending "I paid" sits in that person's row
+/// and replaces its actions until it's confirmed, refused or cancelled.
+/// Then everyone else's payments.
 class SettleUpTab extends ConsumerWidget {
   const SettleUpTab({super.key, required this.group, required this.me});
 
@@ -57,21 +58,39 @@ class SettleUpTab extends ConsumerWidget {
           );
         }
         final actions = SettleActions(context, ref, group: group, me: me);
-        final mine = [
-          for (final s in pending.toConfirm)
-            _ToConfirmRow(settlement: s, members: byId, actions: actions),
-          for (final s in pending.waiting)
-            _WaitingRow(settlement: s, members: byId, actions: actions),
+
+        // Pair each pending payment with that person's row; the ones with
+        // no row (balances moved on) get a row of their own.
+        final toConfirm = [...pending.toConfirm];
+        final waiting = [...pending.waiting];
+        Settlement? take(List<Settlement> from, bool Function(Settlement) f) {
+          final i = from.indexWhere(f);
+          return i < 0 ? null : from.removeAt(i);
+        }
+
+        final transferRows = [
           for (final t in list.mine)
             _TransferRow(
               transfer: t,
               meId: me.id,
               members: byId,
               actions: actions,
-              // One "I paid" at a time per person: wait, or cancel it.
-              waiting: pending.waiting.any((s) => s.to == t.to),
+              pending: t.to == me.id
+                  ? take(toConfirm, (s) => s.from == t.from)
+                  : take(waiting, (s) => s.to == t.to),
             ),
         ];
+        final mine = [
+          for (final s in [...toConfirm, ...waiting])
+            _PendingRow(
+              settlement: s,
+              meId: me.id,
+              members: byId,
+              actions: actions,
+            ),
+          ...transferRows,
+        ];
+
         return ListView(
           padding: const EdgeInsets.only(bottom: AppSpacing.xxl * 3),
           children: [
@@ -96,15 +115,15 @@ class SettleUpTab extends ConsumerWidget {
   }
 }
 
-/// A settle-up row: avatar, money line, amount, and the row's actions
-/// under the text.
+/// A settle-up row: avatar, money line (+ status), amount, and the row's
+/// text actions lined up under the money line.
 class _Row extends StatelessWidget {
   const _Row({
     required this.face,
     required this.title,
     required this.amount,
     this.amountColor,
-    this.subtitle,
+    this.status,
     this.actions = const [],
   });
 
@@ -112,7 +131,9 @@ class _Row extends StatelessWidget {
   final String title;
   final int amount;
   final Color? amountColor;
-  final String? subtitle;
+
+  /// Muted line under the money line, e.g. "Says they paid Rs 100".
+  final String? status;
   final List<Widget> actions;
 
   @override
@@ -128,7 +149,7 @@ class _Row extends StatelessWidget {
             placeholder: face?.isPlaceholder ?? false,
           ),
           title: Text(title),
-          subtitle: subtitle == null ? null : Text(subtitle!),
+          subtitle: status == null ? null : Text(status!),
           trailing: Text(
             formatRupees(amount),
             style: theme.textTheme.titleSmall?.copyWith(
@@ -140,36 +161,42 @@ class _Row extends StatelessWidget {
         if (actions.isNotEmpty)
           Padding(
             padding: const EdgeInsetsDirectional.only(
-              start: avatarRowDividerIndent,
+              start: avatarRowDividerIndent - RowButton.inset,
               end: AppSpacing.lg,
-              bottom: AppSpacing.sm,
             ),
-            child: Wrap(spacing: AppSpacing.sm, children: actions),
+            child: Transform.translate(
+              // Pull the actions up under the text they belong to.
+              offset: const Offset(0, -AppSpacing.sm),
+              child: Wrap(spacing: AppSpacing.xs, children: actions),
+            ),
           ),
       ],
     );
   }
 }
 
-/// "You pay Ali" [I paid] / "Ali pays you" [Record payment] [Remind] /
-/// "Bilal pays Ali" (no action). Words carry the direction; colour only
-/// backs them up (DESIGN.md §2).
+/// "You pay Ali" → I paid, or (waiting) Cancel payment.
+/// "Ali pays you" → Record payment, Remind; or (Ali says they paid)
+/// Confirm, Not received. "Bilal pays Ali" has no actions.
+/// Words carry the direction; colour only backs them up (DESIGN.md §2).
 class _TransferRow extends StatelessWidget {
   const _TransferRow({
     required this.transfer,
     required this.meId,
     required this.members,
     this.actions,
-    this.waiting = false,
+    this.pending,
   });
 
   final Transfer transfer;
-  final bool waiting;
   final String meId;
   final Map<String, Member> members;
 
   /// Null for other people's rows.
   final SettleActions? actions;
+
+  /// The pending "I paid" between the two, if any.
+  final Settlement? pending;
 
   @override
   Widget build(BuildContext context) {
@@ -179,14 +206,22 @@ class _TransferRow extends StatelessWidget {
     final from = members[t.from];
     final to = members[t.to];
     final act = actions;
+    final p = pending;
+
     if (t.from == meId) {
+      final name = to?.displayName ?? '';
       return _Row(
         face: to,
-        title: l10n.transferYouPay(to?.displayName ?? ''),
+        title: l10n.transferYouPay(name),
         amount: t.amount,
         amountColor: money.owe,
+        status: p == null
+            ? null
+            : l10n.pendingWaitingAmount(name, formatRupees(p.amount)),
         actions: [
-          if (act != null && to != null && !waiting)
+          if (act != null && p != null)
+            _cancel(l10n, act, p)
+          else if (act != null && to != null)
             RowButton(
               label: l10n.iPaidButton,
               onPressed: () => act.pay(to: to, owed: t.amount),
@@ -200,15 +235,20 @@ class _TransferRow extends StatelessWidget {
         title: l10n.transferPaysYou(from?.displayName ?? ''),
         amount: t.amount,
         amountColor: money.owed,
+        status: p == null
+            ? null
+            : l10n.pendingSaysPaidAmount(formatRupees(p.amount)),
         actions: [
-          if (act != null && from != null) ...[
+          if (act != null && p != null)
+            ..._confirmOrRefuse(l10n, act, p)
+          else if (act != null && from != null) ...[
             RowButton(
               label: l10n.recordPaymentButton,
               onPressed: () => act.record(from: from, owed: t.amount),
             ),
             RowButton(
               label: l10n.remindButton,
-              kind: RowButtonKind.outlined,
+              kind: RowButtonKind.secondary,
               onPressed: () => act.remind(who: from, owed: t.amount),
             ),
           ],
@@ -223,75 +263,63 @@ class _TransferRow extends StatelessWidget {
   }
 }
 
-/// Someone said "I paid" you: Confirm (counts it) or Not received.
-class _ToConfirmRow extends StatelessWidget {
-  const _ToConfirmRow({
+/// A pending "I paid" that no longer matches a row in the list.
+class _PendingRow extends StatelessWidget {
+  const _PendingRow({
     required this.settlement,
+    required this.meId,
     required this.members,
     required this.actions,
   });
 
   final Settlement settlement;
+  final String meId;
   final Map<String, Member> members;
   final SettleActions actions;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final from = members[settlement.from];
-    final name = from?.displayName ?? '';
-    return _Row(
-      face: from,
-      title: l10n.pendingSaysPaidYou(name),
-      amount: settlement.amount,
-      amountColor: context.moneyColors.owed,
-      actions: [
-        RowButton(
-          label: l10n.confirmButton,
-          onPressed: () => actions.confirm(settlement),
-        ),
-        RowButton(
-          label: l10n.notReceivedButton,
-          kind: RowButtonKind.text,
-          onPressed: () =>
-              actions.remove(settlement, done: l10n.paymentNotReceived),
-        ),
-      ],
-    );
-  }
-}
-
-/// You said "I paid": muted until they confirm (DESIGN.md §6 Status).
-class _WaitingRow extends StatelessWidget {
-  const _WaitingRow({
-    required this.settlement,
-    required this.members,
-    required this.actions,
-  });
-
-  final Settlement settlement;
-  final Map<String, Member> members;
-  final SettleActions actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final to = members[settlement.to];
+    final s = settlement;
+    if (s.to == meId) {
+      final from = members[s.from];
+      return _Row(
+        face: from,
+        title: l10n.pendingSaysPaidYou(from?.displayName ?? ''),
+        amount: s.amount,
+        amountColor: context.moneyColors.owed,
+        actions: _confirmOrRefuse(l10n, actions, s),
+      );
+    }
+    final to = members[s.to];
     final name = to?.displayName ?? '';
     return _Row(
       face: to,
       title: l10n.pendingYouPaid(name),
-      subtitle: l10n.pendingWaitingFor(name),
-      amount: settlement.amount,
+      status: l10n.pendingWaitingFor(name),
+      amount: s.amount,
       amountColor: Theme.of(context).colorScheme.onSurfaceVariant,
-      actions: [
-        RowButton(
-          label: l10n.cancelPaymentButton,
-          kind: RowButtonKind.text,
-          onPressed: () =>
-              actions.remove(settlement, done: l10n.paymentCancelled),
-        ),
-      ],
+      actions: [_cancel(l10n, actions, s)],
     );
   }
 }
+
+List<Widget> _confirmOrRefuse(
+  AppLocalizations l10n,
+  SettleActions actions,
+  Settlement s,
+) => [
+  RowButton(label: l10n.confirmButton, onPressed: () => actions.confirm(s)),
+  RowButton(
+    label: l10n.notReceivedButton,
+    kind: RowButtonKind.secondary,
+    onPressed: () => actions.remove(s, done: l10n.paymentNotReceived),
+  ),
+];
+
+Widget _cancel(AppLocalizations l10n, SettleActions actions, Settlement s) =>
+    RowButton(
+      label: l10n.cancelPaymentButton,
+      kind: RowButtonKind.secondary,
+      onPressed: () => actions.remove(s, done: l10n.paymentCancelled),
+    );
