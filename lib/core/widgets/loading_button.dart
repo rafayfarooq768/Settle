@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../theme/app_sizes.dart';
+import '../theme/app_spacing.dart';
 import 'press_scale.dart';
 
 enum LoadingButtonStyle { filled, outlined, text }
@@ -16,9 +17,13 @@ class LoadingButton extends StatelessWidget {
     this.isLoading = false,
     this.style = LoadingButtonStyle.filled,
     this.foregroundColor,
+    this.icon,
   });
 
   final String label;
+
+  /// Leading icon, e.g. + on Add expense.
+  final IconData? icon;
   final VoidCallback? onPressed;
   final bool isLoading;
   final LoadingButtonStyle style;
@@ -35,7 +40,16 @@ class LoadingButton extends StatelessWidget {
               strokeWidth: AppSizes.buttonProgressStroke,
             ),
           )
-        : Text(label);
+        : icon == null
+        ? Text(label)
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: AppSizes.buttonIcon),
+              const SizedBox(width: AppSpacing.sm),
+              Text(label),
+            ],
+          );
     final onTap = isLoading ? null : onPressed;
     final button = switch (style) {
       LoadingButtonStyle.filled => FilledButton(onPressed: onTap, child: child),

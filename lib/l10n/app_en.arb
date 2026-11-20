@@ -55,7 +55,6 @@
     }
   },
   "signOutButton": "Sign out",
-  "homeNoGroups": "No groups yet. Create one or join with a code.",
   "createGroupButton": "Create group",
   "joinWithCodeButton": "Join with a code",
   "moreOptions": "More options",
@@ -1012,5 +1011,11 @@
       }
     }
   },
-  "duplicateAddAnyway": "Add anyway"
+  "duplicateAddAnyway": "Add anyway",
+  "homeNoGroupsTitle": "No groups yet",
+  "homeNoGroupsLine": "Split bills with friends, family or roommates.",
+  "homeHowItWorks": "How it works",
+  "homeStep1": "Make a group, or join one with a code from a friend.",
+  "homeStep2": "Add what anyone paid. Settle works out each person's share.",
+  "homeStep3": "See who owes whom, then settle up by bank, Raast, JazzCash or cash."
 }

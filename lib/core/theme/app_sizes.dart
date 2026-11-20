@@ -42,6 +42,9 @@ class AppSizes {
   /// Minimum touch target (DESIGN.md §4).
   static const double tapTarget = 48;
 
+  /// Icon inside a button (Material's button icon size).
+  static const double buttonIcon = 18;
+
   /// Max width of an empty state's text (DESIGN (3).md §9).
   static const double emptyTextWidth = 280;
 

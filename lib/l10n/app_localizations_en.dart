@@ -115,9 +115,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOutButton => 'Sign out';
 
   @override
-  String get homeNoGroups => 'No groups yet. Create one or join with a code.';
-
-  @override
   String get createGroupButton => 'Create group';
 
   @override
@@ -1182,4 +1179,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duplicateAddAnyway => 'Add anyway';
+
+  @override
+  String get homeNoGroupsTitle => 'No groups yet';
+
+  @override
+  String get homeNoGroupsLine =>
+      'Split bills with friends, family or roommates.';
+
+  @override
+  String get homeHowItWorks => 'How it works';
+
+  @override
+  String get homeStep1 =>
+      'Make a group, or join one with a code from a friend.';
+
+  @override
+  String get homeStep2 =>
+      'Add what anyone paid. Settle works out each person\'s share.';
+
+  @override
+  String get homeStep3 =>
+      'See who owes whom, then settle up by bank, Raast, JazzCash or cash.';
 }

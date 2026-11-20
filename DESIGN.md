@@ -203,7 +203,10 @@ Plain text and one action. No illustrations.
   top, titleMedium 16/600 line (max 280 wide), optional muted line, actions 16 below, stacked
   with 8 between: primary `FilledButton`, then `OutlinedButton`. Tab messages (errors,
   "Everyone is settled up") use the same layout without actions.
-- No groups: "No groups yet. Create one or join with a code." [Create group] [Join]
+- No groups (owner, 2026-11-20): "No groups yet" (titleLarge) + muted "Split bills with friends,
+  family or roommates.", then a "How it works" panel of three numbered steps (a real sequence:
+  make or join a group; add what anyone paid; see who owes whom and settle up outside the app).
+  [Create group] (filled) and [Join with a code] (text) pinned at the bottom, like the forms.
 - No expenses: "No expenses yet." [Add expense]
 - All settled: "Everyone is settled up." (Deep teal text, once)
 
@@ -258,7 +261,10 @@ Rules:
   (muted), the money label on the right ("You are owed" over "Rs 700", or "Settled up"), then a
   chevron 8 after it.
   The last row is "New group or join" in teal text with a + at the end, opening a sheet with both choices.
-- FAB: Add expense. With one group it opens Add expense directly; otherwise a sheet asks which group.
+- Add expense (owner, 2026-11-20): a full-width primary button pinned at the bottom (16 sides,
+  8 above, 16 below), not a FAB, so the short Home screen doesn't end in empty space with one
+  corner button. With one group it opens Add expense directly; otherwise a sheet asks which
+  group. The Group screen keeps its FAB (its list scrolls under it).
 
 **Group**
 - App bar: group name, then Activity (history icon) and settings icons.

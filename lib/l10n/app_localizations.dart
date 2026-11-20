@@ -292,12 +292,6 @@ abstract class AppLocalizations {
   /// **'Sign out'**
   String get signOutButton;
 
-  /// No description provided for @homeNoGroups.
-  ///
-  /// In en, this message translates to:
-  /// **'No groups yet. Create one or join with a code.'**
-  String get homeNoGroups;
-
   /// No description provided for @createGroupButton.
   ///
   /// In en, this message translates to:
@@ -2031,6 +2025,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add anyway'**
   String get duplicateAddAnyway;
+
+  /// No description provided for @homeNoGroupsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups yet'**
+  String get homeNoGroupsTitle;
+
+  /// No description provided for @homeNoGroupsLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Split bills with friends, family or roommates.'**
+  String get homeNoGroupsLine;
+
+  /// No description provided for @homeHowItWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
+  String get homeHowItWorks;
+
+  /// No description provided for @homeStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a group, or join one with a code from a friend.'**
+  String get homeStep1;
+
+  /// No description provided for @homeStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Add what anyone paid. Settle works out each person\'s share.'**
+  String get homeStep2;
+
+  /// No description provided for @homeStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'See who owes whom, then settle up by bank, Raast, JazzCash or cash.'**
+  String get homeStep3;
 }
 
 class _AppLocalizationsDelegate

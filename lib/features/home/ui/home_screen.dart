@@ -11,9 +11,9 @@ import '../../settlements/ui/settlements_providers.dart';
 import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
-import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/panel.dart';
 import '../../../core/widgets/row_chevron.dart';
+import '../../../core/widgets/screen_layout.dart';
 import '../../../core/widgets/section_label.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../balances/ui/balances_providers.dart';
@@ -47,11 +47,16 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(width: AppSpacing.sm),
         ],
       ),
-      floatingActionButton: switch (groups.valueOrNull) {
-        final list? when list.isNotEmpty => FloatingActionButton.extended(
-          onPressed: () => _addExpense(context, list),
-          icon: const Icon(Icons.add),
-          label: Text(l10n.addExpenseButton),
+      // Add expense pinned at the bottom in the thumb zone, full width
+      // (owner, 2026-11-20): Home is short, so a corner FAB left the
+      // bottom of the screen looking empty.
+      bottomNavigationBar: switch (groups.valueOrNull) {
+        final list? when list.isNotEmpty => _BottomAction(
+          child: LoadingButton(
+            label: l10n.addExpenseButton,
+            icon: Icons.add,
+            onPressed: () => _addExpense(context, list),
+          ),
         ),
         _ => null,
       },
@@ -79,7 +84,7 @@ class _HomeBody extends ConsumerWidget {
     final sorted = [...groups]
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return ListView(
-      padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
+      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
       children: [
         const SizedBox(height: AppSpacing.sm),
         _OverallPanel(groups: sorted),
@@ -296,26 +301,110 @@ void _showNewOrJoin(BuildContext context) {
   );
 }
 
-/// DESIGN.md §9: plain text and the actions, no illustration.
+/// The bottom action bar: 16 at the sides, 8 above, 16 below.
+class _BottomAction extends StatelessWidget {
+  const _BottomAction({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.screenHorizontal,
+        AppSpacing.sm,
+        AppSpacing.screenHorizontal,
+        AppSpacing.lg,
+      ),
+      child: child,
+    ),
+  );
+}
+
+/// No groups yet (DESIGN.md §9, owner 2026-11-20): what Settle does in
+/// three real steps, then the two ways in, pinned at the bottom in the
+/// thumb zone like the other forms. No illustration.
 class _NoGroups extends StatelessWidget {
   const _NoGroups();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return EmptyState(
-      title: l10n.homeNoGroups,
+    final theme = Theme.of(context);
+    return ScreenLayout(
+      padded: false,
+      body: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenHorizontal,
+            AppSpacing.xl,
+            AppSpacing.screenHorizontal,
+            0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.homeNoGroupsTitle, style: theme.textTheme.titleLarge),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                l10n.homeNoGroupsLine,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SectionLabel(l10n.homeHowItWorks),
+        Panel(
+          dividerIndent: iconRowDividerIndent,
+          children: [
+            _Step(number: 1, text: l10n.homeStep1),
+            _Step(number: 2, text: l10n.homeStep2),
+            _Step(number: 3, text: l10n.homeStep3),
+          ],
+        ),
+      ],
       actions: [
         LoadingButton(
           label: l10n.createGroupButton,
           onPressed: () => context.push('/groups/new'),
         ),
+        const SizedBox(height: AppSpacing.sm),
         LoadingButton(
           label: l10n.joinWithCodeButton,
           onPressed: () => context.push('/join'),
-          style: LoadingButtonStyle.outlined,
+          style: LoadingButtonStyle.text,
         ),
       ],
+    );
+  }
+}
+
+/// One step: its number in brand teal (the steps really are a sequence),
+/// then the sentence.
+class _Step extends StatelessWidget {
+  const _Step({required this.number, required this.text});
+
+  final int number;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      minTileHeight: AppSpacing.rowHeight,
+      leading: SizedBox(
+        width: AppSizes.icon,
+        child: Text(
+          '$number',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: context.extraColors.link,
+          ),
+        ),
+      ),
+      title: Text(text, style: theme.textTheme.bodyLarge),
     );
   }
 }

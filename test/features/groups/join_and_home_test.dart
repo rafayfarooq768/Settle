@@ -50,13 +50,16 @@ void main() {
       ]),
     );
     await tester.pump();
-    expect(find.text(l10n.homeNoGroups), findsOneWidget);
+    expect(find.text(l10n.homeNoGroupsTitle), findsOneWidget);
+    // The three steps of how Settle works.
+    expect(find.text(l10n.homeStep1), findsOneWidget);
+    expect(find.text(l10n.homeStep3), findsOneWidget);
     expect(
       find.widgetWithText(FilledButton, l10n.createGroupButton),
       findsOneWidget,
     );
     expect(
-      find.widgetWithText(OutlinedButton, l10n.joinWithCodeButton),
+      find.widgetWithText(TextButton, l10n.joinWithCodeButton),
       findsOneWidget,
     );
   });
