@@ -35,4 +35,7 @@ class AppSizes {
 
   /// Material Symbols size (DESIGN.md §6 Icons).
   static const double icon = 24;
+
+  /// Home group row: a bit taller than a plain row for the bolder name.
+  static const double groupRowHeight = 72;
 }

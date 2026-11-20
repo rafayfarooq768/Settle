@@ -40,7 +40,7 @@ Rules:
 - No gradients. No glow. No translucent/frosted layers.
 - Dark mode (owner's decision, 2026-11-20): **neutral near-black**, not teal. Background
   `#0F1213`, panels `#1A1F21`, raised surfaces `#22282A`/`#2A3133`, outline `#3A4245`.
-  Teal only for accents (buttons, FAB, selected tab, group tiles). Keep owed/owe hues,
+  Teal only for accents (buttons, FAB, selected tab, links). Keep owed/owe hues,
   adjusted for contrast.
 - **Brand colours only** (owner's decision, 2026-11-19): no purple, no extra tints. The
   "settled" state uses Deep teal (Mist on dark), never a money colour.
@@ -88,7 +88,7 @@ Rules:
 
 ## 5. Shape and elevation
 
-- Corner radius: **8** for buttons, inputs, chips and group tiles; **12** for panels; sheets' top corners **16**. Nothing fully rounded except avatars and the FAB.
+- Corner radius: **8** for buttons, inputs and chips; **12** for panels; sheets' top corners **16**. Nothing fully rounded except avatars and the FAB.
 - Elevation: **0** by default. Only the bottom sheet and FAB may cast a shadow (Material default, not custom).
 - No cards inside cards. At most one level of container on any screen.
 - Dividers only between list rows where rows would otherwise blur together (e.g. expense list). No decorative borders.
@@ -124,8 +124,8 @@ One primary button per screen. Full-width only at the bottom of forms.
 ### Avatars
 - Initials on a flat **Mist** circle with Deep teal initials (dark: Deep teal with Mist). No photos.
 - Placeholder members: same avatar with an outline instead of fill, and "not joined yet" muted text.
-- Groups: initials in white on a **Teal rounded square** (radius 8), like the app icon, so groups and people
-  are told apart at a glance.
+- Groups have **no avatar or tile** (owner's decision, 2026-11-20). A group row leads with its name
+  in titleMedium and ends with a chevron so it reads as tappable.
 - A row of up to 5 small member avatars (28dp, overlapping by 8) may show who is in a group,
   followed by "+N" if there are more. Never decorative; it opens the member list.
 - The signed-in user's avatar sits at the end of the Home app bar and opens Settings.
@@ -222,9 +222,9 @@ Rules:
 - Summary panel: muted label "Overall", then the overall balance in one line of large text
   ("You are owed Rs 900", or "You're all settled up" in tertiary) + small muted line
   ("You owe Rs 300 · You are owed Rs 1,200") only if both are non-zero.
-- "Groups" label, then one panel of group rows: group tile, name, "Friends · 4 members" (muted),
-  your balance in that group on the right ("you owe Rs 300" / "you are owed Rs 700" / "settled up").
-  The last row is "New group or join" (add icon), opening a sheet with both choices.
+- "Groups" label, then one panel of group rows: name (titleMedium), "Friends · 4 members" (muted),
+  your balance on the right stacked as "you are owed" over "Rs 700" (or "settled up"), then a chevron.
+  The last row is "New group or join" in teal text with a + at the end, opening a sheet with both choices.
 - FAB: Add expense. With one group it opens Add expense directly; otherwise a sheet asks which group.
 
 **Group**

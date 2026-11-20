@@ -57,7 +57,6 @@ class GroupSettingsScreen extends ConsumerWidget {
             children: [
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,
-                leading: MemberAvatar.group(name: group.name),
                 title: Text(group.name),
                 subtitle: group.type.isEmpty ? null : Text(group.type),
                 trailing: const Icon(Icons.edit_outlined),

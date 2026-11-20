@@ -6,6 +6,7 @@ import '../../../core/errors/error_text.dart';
 import '../../../core/money/money.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../core/widgets/panel.dart';
@@ -80,18 +81,10 @@ class _HomeBody extends ConsumerWidget {
         _OverallPanel(groups: sorted),
         SectionLabel(l10n.groupsLabel),
         Panel(
-          dividerIndent: avatarRowDividerIndent,
+          dividerIndent: AppSpacing.lg,
           children: [
             for (final group in sorted) _GroupRow(group: group),
-            ListTile(
-              minTileHeight: AppSpacing.rowHeight,
-              leading: const SizedBox.square(
-                dimension: AppSizes.avatar,
-                child: Icon(Icons.add),
-              ),
-              title: Text(l10n.newGroupOrJoin),
-              onTap: () => _showNewOrJoin(context),
-            ),
+            _NewGroupRow(onTap: () => _showNewOrJoin(context)),
           ],
         ),
       ],
@@ -166,13 +159,57 @@ class _GroupRow extends ConsumerWidget {
       (false, null) => group.type,
       (false, final c?) => l10n.groupSubtitle(group.type, c),
     };
+    final theme = Theme.of(context);
+    // No tile: the name is the strongest thing in the row, and the
+    // chevron says the row opens the group.
+    return ListTile(
+      minTileHeight: AppSizes.groupRowHeight,
+      contentPadding: const EdgeInsetsDirectional.only(
+        start: AppSpacing.lg,
+        end: AppSpacing.sm,
+      ),
+      title: Text(
+        group.name,
+        style: theme.textTheme.titleMedium,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: subtitle == null ? null : Text(subtitle),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ?(net == null ? null : BalanceStack(net: net)),
+          const SizedBox(width: AppSpacing.xs),
+          Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+        ],
+      ),
+      onTap: () => context.push('/groups/${group.id}'),
+    );
+  }
+}
+
+/// Last row of the groups panel: teal text so it reads as an action,
+/// starting where the group names start.
+class _NewGroupRow extends StatelessWidget {
+  const _NewGroupRow({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final link = context.extraColors.link;
     return ListTile(
       minTileHeight: AppSpacing.rowHeight,
-      leading: MemberAvatar.group(name: group.name),
-      title: Text(group.name),
-      subtitle: subtitle == null ? null : Text(subtitle),
-      trailing: net == null ? null : BalanceStack(net: net),
-      onTap: () => context.push('/groups/${group.id}'),
+      contentPadding: const EdgeInsetsDirectional.only(
+        start: AppSpacing.lg,
+        end: AppSpacing.sm,
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.newGroupOrJoin,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: link),
+      ),
+      trailing: Icon(Icons.add, color: link),
+      onTap: onTap,
     );
   }
 }
@@ -200,8 +237,8 @@ void _addExpense(BuildContext context, List<Group> groups) {
             for (final g in groups)
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,
-                leading: MemberAvatar.group(name: g.name),
                 title: Text(g.name),
+                trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.of(sheet).pop();
                   context.push('/groups/${g.id}/expenses/new');

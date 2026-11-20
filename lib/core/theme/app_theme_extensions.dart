@@ -39,15 +39,13 @@ extension MoneyColorsContext on BuildContext {
       Theme.of(this).extension<MoneyColors>() ?? MoneyColors.light;
 }
 
-/// Brand-only colours for avatars, group tiles, QR and panels (BRAND.md §3,
-/// DESIGN.md §2 and §6). No other tints: people are Mist, groups are Teal
-/// like the app icon.
+/// Brand-only colours for avatars, links, QR and panels (BRAND.md §3,
+/// DESIGN.md §2 and §6). No other tints.
 class ExtraColors extends ThemeExtension<ExtraColors> {
   const ExtraColors({
     required this.avatar,
     required this.onAvatar,
-    required this.groupTile,
-    required this.onGroupTile,
+    required this.link,
     required this.settled,
     required this.qrDark,
     required this.qrLight,
@@ -58,9 +56,8 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
   final Color avatar;
   final Color onAvatar;
 
-  /// Group tile fill and initials.
-  final Color groupTile;
-  final Color onGroupTile;
+  /// Teal text for row-style actions ("New group or join").
+  final Color link;
 
   /// "Settled up" text: brand teal, never a money colour.
   final Color settled;
@@ -76,8 +73,7 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
   static const light = ExtraColors(
     avatar: AppColors.mist,
     onAvatar: AppColors.deepTeal,
-    groupTile: AppColors.teal,
-    onGroupTile: AppColors.white,
+    link: AppColors.deepTeal,
     settled: AppColors.deepTeal,
     qrDark: AppColors.ink,
     qrLight: AppColors.white,
@@ -87,8 +83,7 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
   static const dark = ExtraColors(
     avatar: AppColors.deepTeal,
     onAvatar: AppColors.mist,
-    groupTile: AppColors.teal,
-    onGroupTile: AppColors.white,
+    link: AppColors.teal,
     settled: AppColors.mist,
     qrDark: AppColors.ink,
     qrLight: AppColors.white,
@@ -99,8 +94,7 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
   ExtraColors copyWith({
     Color? avatar,
     Color? onAvatar,
-    Color? groupTile,
-    Color? onGroupTile,
+    Color? link,
     Color? settled,
     Color? qrDark,
     Color? qrLight,
@@ -108,8 +102,7 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
   }) => ExtraColors(
     avatar: avatar ?? this.avatar,
     onAvatar: onAvatar ?? this.onAvatar,
-    groupTile: groupTile ?? this.groupTile,
-    onGroupTile: onGroupTile ?? this.onGroupTile,
+    link: link ?? this.link,
     settled: settled ?? this.settled,
     qrDark: qrDark ?? this.qrDark,
     qrLight: qrLight ?? this.qrLight,

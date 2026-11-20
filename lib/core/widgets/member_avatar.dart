@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_sizes.dart';
 import '../theme/app_theme_extensions.dart';
 
-/// Initials on a flat brand colour (DESIGN.md §6). People are circles; groups are
-/// rounded squares ([MemberAvatar.group]). Placeholders get an outline
-/// instead of a fill. No photos.
+/// Initials on a flat Mist circle (DESIGN.md §6). Placeholders get an
+/// outline instead of a fill. No photos. Groups have no avatar.
 class MemberAvatar extends StatelessWidget {
   const MemberAvatar({
     super.key,
@@ -15,18 +13,11 @@ class MemberAvatar extends StatelessWidget {
     this.placeholder = false,
     this.size = AppSizes.avatar,
     this.ring,
-  }) : isGroup = false;
-
-  const MemberAvatar.group({super.key, required this.name})
-    : placeholder = false,
-      size = AppSizes.avatar,
-      ring = null,
-      isGroup = true;
+  });
 
   final String name;
   final bool placeholder;
   final double size;
-  final bool isGroup;
 
   /// Colour of a thin ring that separates overlapping avatars.
   final Color? ring;
@@ -41,22 +32,19 @@ class MemberAvatar extends StatelessWidget {
     final colors = context.extraColors;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final fill = isGroup ? colors.groupTile : colors.avatar;
-    final onFill = isGroup ? colors.onGroupTile : colors.onAvatar;
     final small = size < AppSizes.avatar;
     final textStyle =
         (small ? theme.textTheme.labelSmall : theme.textTheme.labelLarge)
-            ?.copyWith(color: placeholder ? scheme.onSurfaceVariant : onFill);
+            ?.copyWith(
+              color: placeholder ? scheme.onSurfaceVariant : colors.onAvatar,
+            );
     return Container(
       width: size,
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        shape: isGroup ? BoxShape.rectangle : BoxShape.circle,
-        borderRadius: isGroup
-            ? BorderRadius.circular(AppRadius.standard)
-            : null,
-        color: placeholder ? colors.panel : fill,
+        shape: BoxShape.circle,
+        color: placeholder ? colors.panel : colors.avatar,
         border: placeholder
             ? Border.all(color: scheme.outline, width: AppSizes.avatarOutline)
             : ring == null
