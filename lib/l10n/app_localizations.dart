@@ -1717,7 +1717,7 @@ abstract class AppLocalizations {
   /// No description provided for @phoneHelper.
   ///
   /// In en, this message translates to:
-  /// **'For WhatsApp reminders from your groups. Not verified.'**
+  /// **'Friends in your groups can remind you on WhatsApp.'**
   String get phoneHelper;
 
   /// No description provided for @phoneTitle.

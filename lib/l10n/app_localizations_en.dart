@@ -973,7 +973,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneHelper =>
-      'For WhatsApp reminders from your groups. Not verified.';
+      'Friends in your groups can remind you on WhatsApp.';
 
   @override
   String get phoneTitle => 'Phone number';

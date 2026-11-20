@@ -762,7 +762,7 @@
   "tipEveryone": "Everyone, equally",
   "phoneLabel": "Phone (optional)",
   "phoneHint": "0300 1234567",
-  "phoneHelper": "For WhatsApp reminders from your groups. Not verified.",
+  "phoneHelper": "Friends in your groups can remind you on WhatsApp.",
   "phoneTitle": "Phone number",
   "phoneNotAdded": "Not added",
   "phoneUpdated": "Phone number saved",
