@@ -515,4 +515,104 @@ class AppLocalizationsEn extends AppLocalizations {
   String groupDeleted(String group) {
     return '$group deleted';
   }
+
+  @override
+  String get addExpenseTitle => 'Add expense';
+
+  @override
+  String get addExpenseButton => 'Add expense';
+
+  @override
+  String get amountLabel => 'Amount';
+
+  @override
+  String get currencyPrefix => 'Rs ';
+
+  @override
+  String get expenseTitleLabel => 'What was it for?';
+
+  @override
+  String get expenseTitleHint => 'Chai, dinner, petrol';
+
+  @override
+  String get paidByRow => 'Paid by';
+
+  @override
+  String get splitRow => 'Split';
+
+  @override
+  String splitEqually(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return 'Equally between $_temp0';
+  }
+
+  @override
+  String get dateRow => 'Date';
+
+  @override
+  String get dateToday => 'Today';
+
+  @override
+  String get dateYesterday => 'Yesterday';
+
+  @override
+  String get whoPaidTitle => 'Who paid?';
+
+  @override
+  String get whoWasThereTitle => 'Who was there?';
+
+  @override
+  String splitEach(String amount) {
+    return '$amount each';
+  }
+
+  @override
+  String get errorAmountRequired => 'Enter an amount.';
+
+  @override
+  String get errorAmountTooLarge => 'That\'s more than Rs 1,000,000,000.';
+
+  @override
+  String get errorExpenseTitleRequired => 'Add what it was for.';
+
+  @override
+  String get errorPickSomeone => 'Pick at least one person.';
+
+  @override
+  String get expenseAdded => 'Done! Expense add ho gaya';
+
+  @override
+  String get undoButton => 'Undo';
+
+  @override
+  String expensePaidBy(String name, String amount) {
+    return '$name paid $amount';
+  }
+
+  @override
+  String expenseYouPaid(String amount) {
+    return 'You paid $amount';
+  }
+
+  @override
+  String rowYouLent(String amount) {
+    return 'you lent $amount';
+  }
+
+  @override
+  String get rowNotInvolved => 'not involved';
+
+  @override
+  String get rowEven => 'your share is paid';
+
+  @override
+  String get pickGroupTitle => 'Add to which group?';
+
+  @override
+  String get doneButton => 'Done';
 }

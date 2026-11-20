@@ -69,7 +69,8 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
   final Color qrDark;
   final Color qrLight;
 
-  /// Panel fill (DESIGN.md §4): Surface on light, one step above Night on dark.
+  /// Panel fill (DESIGN.md §4): Surface on light, one step above the dark
+  /// background on dark.
   final Color panel;
 
   static const light = ExtraColors(
@@ -91,7 +92,7 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
     settled: AppColors.mist,
     qrDark: AppColors.ink,
     qrLight: AppColors.white,
-    panel: AppColors.nightPanel,
+    panel: AppColors.darkPanel,
   );
 
   @override

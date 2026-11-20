@@ -6,6 +6,7 @@ import 'package:settle/core/money/money.dart';
 import 'package:settle/features/activity/data/activity_log.dart';
 import 'package:settle/features/activity/domain/activity.dart';
 import 'package:settle/features/expenses/data/expense_mapper.dart';
+import 'package:settle/features/expenses/domain/expense_summary.dart';
 import 'package:settle/features/expenses/domain/expense.dart';
 import 'package:settle/features/groups/data/group_mapper.dart';
 import 'package:settle/features/settlements/data/settlement_repository.dart';

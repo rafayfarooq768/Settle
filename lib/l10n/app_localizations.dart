@@ -969,6 +969,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{group} deleted'**
   String groupDeleted(String group);
+
+  /// No description provided for @addExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add expense'**
+  String get addExpenseTitle;
+
+  /// No description provided for @addExpenseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add expense'**
+  String get addExpenseButton;
+
+  /// No description provided for @amountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amountLabel;
+
+  /// No description provided for @currencyPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Rs '**
+  String get currencyPrefix;
+
+  /// No description provided for @expenseTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What was it for?'**
+  String get expenseTitleLabel;
+
+  /// No description provided for @expenseTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Chai, dinner, petrol'**
+  String get expenseTitleHint;
+
+  /// No description provided for @paidByRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid by'**
+  String get paidByRow;
+
+  /// No description provided for @splitRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Split'**
+  String get splitRow;
+
+  /// No description provided for @splitEqually.
+  ///
+  /// In en, this message translates to:
+  /// **'Equally between {count, plural, =1{1 person} other{{count} people}}'**
+  String splitEqually(int count);
+
+  /// No description provided for @dateRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateRow;
+
+  /// No description provided for @dateToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get dateToday;
+
+  /// No description provided for @dateYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get dateYesterday;
+
+  /// No description provided for @whoPaidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who paid?'**
+  String get whoPaidTitle;
+
+  /// No description provided for @whoWasThereTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who was there?'**
+  String get whoWasThereTitle;
+
+  /// No description provided for @splitEach.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} each'**
+  String splitEach(String amount);
+
+  /// No description provided for @errorAmountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount.'**
+  String get errorAmountRequired;
+
+  /// No description provided for @errorAmountTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s more than Rs 1,000,000,000.'**
+  String get errorAmountTooLarge;
+
+  /// No description provided for @errorExpenseTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add what it was for.'**
+  String get errorExpenseTitleRequired;
+
+  /// No description provided for @errorPickSomeone.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick at least one person.'**
+  String get errorPickSomeone;
+
+  /// No description provided for @expenseAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Done! Expense add ho gaya'**
+  String get expenseAdded;
+
+  /// No description provided for @undoButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undoButton;
+
+  /// No description provided for @expensePaidBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} paid {amount}'**
+  String expensePaidBy(String name, String amount);
+
+  /// No description provided for @expenseYouPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'You paid {amount}'**
+  String expenseYouPaid(String amount);
+
+  /// No description provided for @rowYouLent.
+  ///
+  /// In en, this message translates to:
+  /// **'you lent {amount}'**
+  String rowYouLent(String amount);
+
+  /// No description provided for @rowNotInvolved.
+  ///
+  /// In en, this message translates to:
+  /// **'not involved'**
+  String get rowNotInvolved;
+
+  /// No description provided for @rowEven.
+  ///
+  /// In en, this message translates to:
+  /// **'your share is paid'**
+  String get rowEven;
+
+  /// No description provided for @pickGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to which group?'**
+  String get pickGroupTitle;
+
+  /// No description provided for @doneButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get doneButton;
 }
 
 class _AppLocalizationsDelegate

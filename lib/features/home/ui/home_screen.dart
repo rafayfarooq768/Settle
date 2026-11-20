@@ -19,7 +19,7 @@ import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/app_sheet.dart';
 
 /// Home (DESIGN.md §11): overall balance, then your groups with your balance
-/// in each. Add expense (FAB) arrives in step 5.
+/// in each, and Add expense (FAB).
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -42,6 +42,14 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(width: AppSpacing.sm),
         ],
       ),
+      floatingActionButton: switch (groups.valueOrNull) {
+        final list? when list.isNotEmpty => FloatingActionButton.extended(
+          onPressed: () => _addExpense(context, list),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.addExpenseButton),
+        ),
+        _ => null,
+      },
       body: SafeArea(
         child: groups.when(
           // Cached data shows at once; this only appears on a cold start.
@@ -162,6 +170,55 @@ class _GroupRow extends ConsumerWidget {
       onTap: () => context.push('/groups/${group.id}'),
     );
   }
+}
+
+/// With one group, go straight to Add expense; otherwise ask which group
+/// in a sheet first (DESIGN.md §8).
+void _addExpense(BuildContext context, List<Group> groups) {
+  if (groups.length == 1) {
+    context.push('/groups/${groups.single.id}/expenses/new');
+    return;
+  }
+  final l10n = AppLocalizations.of(context)!;
+  showAppSheet<void>(
+    context: context,
+    scrollControlled: true,
+    builder: (sheet) => SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.screenHorizontal + AppSpacing.lg,
+                0,
+                AppSpacing.screenHorizontal,
+                AppSpacing.sm,
+              ),
+              child: Text(
+                l10n.pickGroupTitle,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            for (final g in groups)
+              ListTile(
+                minTileHeight: AppSpacing.rowHeight,
+                leading: MemberAvatar.group(name: g.name),
+                title: Text(g.name),
+                onTap: () {
+                  Navigator.of(sheet).pop();
+                  context.push('/groups/${g.id}/expenses/new');
+                },
+              ),
+            const SizedBox(height: AppSpacing.lg),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 /// DESIGN.md §8: a bottom sheet for the small choice.

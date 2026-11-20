@@ -5,6 +5,7 @@ import '../../../core/money/money.dart';
 import '../../activity/data/activity_log.dart';
 import '../../activity/domain/activity.dart';
 import '../domain/expense.dart';
+import '../domain/expense_summary.dart';
 import 'expense_mapper.dart';
 
 /// Expenses of one group. Never hard-deletes (PLAN.md §7 soft delete), and

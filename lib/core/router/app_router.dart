@@ -15,6 +15,7 @@ import '../../features/groups/ui/scan_code_screen.dart';
 import '../../features/home/ui/home_screen.dart';
 import '../../features/profile/ui/change_password_screen.dart';
 import '../../features/profile/ui/settings_screen.dart';
+import '../../features/expenses/ui/add_expense_screen.dart';
 
 const _authRoutes = {'/sign-in', '/sign-up', '/reset-password'};
 
@@ -74,6 +75,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: 'settings',
             builder: (context, state) =>
                 GroupSettingsScreen(groupId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: 'expenses/new',
+            builder: (context, state) =>
+                AddExpenseScreen(groupId: state.pathParameters['id']!),
           ),
           GoRoute(
             path: 'invite',

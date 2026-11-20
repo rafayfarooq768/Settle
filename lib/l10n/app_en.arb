@@ -365,5 +365,71 @@
         "type": "String"
       }
     }
-  }
+  },
+  "addExpenseTitle": "Add expense",
+  "addExpenseButton": "Add expense",
+  "amountLabel": "Amount",
+  "currencyPrefix": "Rs ",
+  "expenseTitleLabel": "What was it for?",
+  "expenseTitleHint": "Chai, dinner, petrol",
+  "paidByRow": "Paid by",
+  "splitRow": "Split",
+  "splitEqually": "Equally between {count, plural, =1{1 person} other{{count} people}}",
+  "@splitEqually": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dateRow": "Date",
+  "dateToday": "Today",
+  "dateYesterday": "Yesterday",
+  "whoPaidTitle": "Who paid?",
+  "whoWasThereTitle": "Who was there?",
+  "splitEach": "{amount} each",
+  "@splitEach": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAmountRequired": "Enter an amount.",
+  "errorAmountTooLarge": "That's more than Rs 1,000,000,000.",
+  "errorExpenseTitleRequired": "Add what it was for.",
+  "errorPickSomeone": "Pick at least one person.",
+  "expenseAdded": "Done! Expense add ho gaya",
+  "undoButton": "Undo",
+  "expensePaidBy": "{name} paid {amount}",
+  "@expensePaidBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseYouPaid": "You paid {amount}",
+  "@expenseYouPaid": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "rowYouLent": "you lent {amount}",
+  "@rowYouLent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "rowNotInvolved": "not involved",
+  "rowEven": "your share is paid",
+  "pickGroupTitle": "Add to which group?",
+  "doneButton": "Done"
 }

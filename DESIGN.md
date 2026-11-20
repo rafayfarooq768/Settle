@@ -23,11 +23,11 @@ Flat colours only. Material 3 `ColorScheme.fromSeed` with overrides.
 |---|---|---|
 | Primary (Teal) | `#0B8295` | Primary buttons, FAB, selected tab, app bar accents. White text on it passes (4.5:1). |
 | Deep teal | `#0A6170` | Teal text and links on light backgrounds. |
-| Night | `#0A3A42` | Dark surfaces, dark-mode base. Use instead of black. |
+| Night | `#0A3A42` | Brand colour (logo on dark). Not used as a screen background. |
 | Mist | `#A7D9E2` | Second bar shade in the logo; light teal tints. |
 | Secondary | `#4E8C85` | Secondary/tonal buttons, selected chips. |
 | Background | `#F7F8F8` | Screen background. |
-| Surface | `#FFFFFF` | Panels (see §4), sheets. Dark mode: `#104852`, one step lighter than Night. |
+| Surface | `#FFFFFF` | Panels (see §4), sheets. Dark mode: `#1A1F21`. |
 | Text (Ink) | `#14272B` | Main text. |
 | Text muted | `#5F6B6D` | Secondary text, dates, labels. |
 | Outline | `#D5DBDC` | Input borders, the few dividers we use. |
@@ -38,7 +38,10 @@ Rules:
 - **Never** convey owe/owed by colour alone. Always include words or a sign: "You owe Rs 300", "+ Rs 700".
 - Owed/owe colours are for money only. Don't reuse red for decoration or green for "success" toasts.
 - No gradients. No glow. No translucent/frosted layers.
-- Dark mode: generate from the same seed; keep owed/owe hues, adjusted for contrast.
+- Dark mode (owner's decision, 2026-11-20): **neutral near-black**, not teal. Background
+  `#0F1213`, panels `#1A1F21`, raised surfaces `#22282A`/`#2A3133`, outline `#3A4245`.
+  Teal only for accents (buttons, FAB, selected tab, group tiles). Keep owed/owe hues,
+  adjusted for contrast.
 - **Brand colours only** (owner's decision, 2026-11-19): no purple, no extra tints. The
   "settled" state uses Deep teal (Mist on dark), never a money colour.
 
@@ -216,12 +219,15 @@ Rules:
 - "Groups" label, then one panel of group rows: group tile, name, "Friends · 4 members" (muted),
   your balance in that group on the right ("you owe Rs 300" / "you are owed Rs 700" / "settled up").
   The last row is "New group or join" (add icon), opening a sheet with both choices.
-- FAB: Add expense (from step 5).
+- FAB: Add expense. With one group it opens Add expense directly; otherwise a sheet asks which group.
 
 **Group**
 - App bar: group name, settings icon.
 - Header panel: your balance in this group (large) and the member avatar row ("4 members").
 - Tabs: Expenses | Balances | Settle up.
+- FAB "Add expense" (brand Teal, both modes) only once someone besides you is in the group;
+  before that, "Invite friends" in the empty state is the one primary action.
+- Expenses tab: one panel per day under a date label (Today, Yesterday, 12 Nov).
 - Balances: list of members with net, sorted largest owed → largest owes.
 - Settle up: list of "Bilal → Ali Rs 300" rows; rows involving you are on top with an action
   (Pay / Remind / Record).

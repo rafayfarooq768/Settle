@@ -23,8 +23,13 @@ class AppColors {
   static const background = Color(0xFFF7F8F8);
   static const surface = white;
 
-  /// Panel fill in dark mode: one step lighter than Night (DESIGN.md §2).
-  static const nightPanel = Color(0xFF104852);
+  // Dark mode (DESIGN.md §2, owner 2026-11-20): neutral near-black, so teal
+  // stays an accent instead of covering the screen.
+  static const darkBackground = Color(0xFF0F1213);
+  static const darkPanel = Color(0xFF1A1F21);
+  static const darkContainer = Color(0xFF22282A);
+  static const darkContainerHigh = Color(0xFF2A3133);
+  static const darkOutline = Color(0xFF3A4245);
   static const text = ink;
   static const textMuted = Color(0xFF5F6B6D);
   static const outline = Color(0xFFD5DBDC);

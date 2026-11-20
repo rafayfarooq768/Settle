@@ -38,16 +38,30 @@ class AppTheme {
   }
 
   static ThemeData dark() {
-    // DESIGN.md §2: same seed; Night is the dark base instead of black.
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: Brightness.dark,
-    ).copyWith(surface: AppColors.night);
+    // DESIGN.md §2: same seed for the accents; neutral near-black surfaces
+    // (the seed would tint every surface teal).
+    final colorScheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          brightness: Brightness.dark,
+        ).copyWith(
+          // Same brand Teal buttons as light mode, not the seed's pale cyan.
+          primary: AppColors.primary,
+          onPrimary: AppColors.white,
+          surface: AppColors.darkBackground,
+          surfaceContainerLowest: AppColors.darkBackground,
+          surfaceContainerLow: AppColors.darkPanel,
+          surfaceContainer: AppColors.darkPanel,
+          surfaceContainerHigh: AppColors.darkContainer,
+          surfaceContainerHighest: AppColors.darkContainerHigh,
+          outline: AppColors.darkOutline,
+          outlineVariant: AppColors.darkOutline,
+        );
     return _base(
       colorScheme,
       MoneyColors.dark,
       ExtraColors.dark,
-      background: AppColors.night,
+      background: AppColors.darkBackground,
       linkColor: colorScheme.primary,
     );
   }
@@ -76,6 +90,12 @@ class AppTheme {
         ),
       ),
       textTheme: _textTheme(colorScheme),
+      // DESIGN.md §2/§5: the FAB is brand Teal in both modes, fully rounded.
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+        shape: StadiumBorder(),
+      ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(

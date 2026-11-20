@@ -16,6 +16,8 @@ import 'claim_member_view.dart';
 import 'group_actions.dart';
 import 'groups_providers.dart';
 import '../../../core/widgets/loading_button.dart';
+import '../../expenses/ui/expense_list.dart';
+import '../../expenses/ui/expenses_providers.dart';
 
 /// Group (DESIGN.md §11): header with your balance and the members, then
 /// Expenses | Balances | Settle up. Until the user picks "Which one are
@@ -31,6 +33,9 @@ class GroupScreen extends ConsumerWidget {
     final group = ref.watch(groupProvider(groupId));
     final me = ref.watch(myMemberProvider(groupId));
     final loaded = group.valueOrNull;
+    final activeCount = (ref.watch(membersProvider(groupId)).valueOrNull ?? [])
+        .where((m) => m.active)
+        .length;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,6 +49,17 @@ class GroupScreen extends ConsumerWidget {
             ),
         ],
       ),
+      // Only once you're a member (not while picking "Which one are you?")
+      // and someone else is in the group to split with. Until then the
+      // empty state's Invite is the screen's one primary action.
+      floatingActionButton:
+          loaded != null && me.valueOrNull != null && activeCount > 1
+          ? FloatingActionButton.extended(
+              onPressed: () => context.push('/groups/$groupId/expenses/new'),
+              icon: const Icon(Icons.add),
+              label: Text(l10n.addExpenseButton),
+            )
+          : null,
       body: SafeArea(
         child: switch ((group, me)) {
           (AsyncError(:final error), _) ||
@@ -140,8 +156,8 @@ class _Header extends ConsumerWidget {
   }
 }
 
-/// Expenses arrive in step 5. Until then: the empty state, and the next
-/// useful step if you're alone in the group.
+/// The group's expenses by day; when there are none, the empty state with
+/// the next useful step (DESIGN.md §9).
 class _ExpensesTab extends ConsumerWidget {
   const _ExpensesTab({required this.group, required this.me});
 
@@ -151,7 +167,32 @@ class _ExpensesTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final members = ref.watch(membersProvider(group.id)).valueOrNull ?? [];
+    final all = ref.watch(membersProvider(group.id)).valueOrNull ?? [];
+    final expenses = ref.watch(expensesProvider(group.id));
+    return expenses.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => _Centered(errorText(l10n, e)),
+      data: (list) => list.any((e) => !e.deleted)
+          ? ExpenseList(expenses: list, members: all, meId: me.id)
+          : _NoExpenses(group: group, me: me, members: all),
+    );
+  }
+}
+
+class _NoExpenses extends ConsumerWidget {
+  const _NoExpenses({
+    required this.group,
+    required this.me,
+    required this.members,
+  });
+
+  final Group group;
+  final Member me;
+  final List<Member> members;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final onlyMe = members.where((m) => m.active).length <= 1;
 
     void invite() => context.push('/groups/${group.id}/invite');
@@ -172,6 +213,7 @@ class _ExpensesTab extends ConsumerWidget {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.xl),
+        // The FAB already adds expenses, so these are the other next steps.
         if (onlyMe) ...[
           LoadingButton(label: l10n.inviteFriendsButton, onPressed: invite),
           const SizedBox(height: AppSpacing.sm),
