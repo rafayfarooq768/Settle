@@ -267,7 +267,7 @@ Rules:
 - FAB: Add expense. With one group it opens Add expense directly; otherwise a sheet asks which group.
 
 **Group**
-- App bar: group name, settings icon.
+- App bar: group name, Search and Activity. Group settings opens from the members line.
 - Header (owner's decision, 2026-11-20): **no panel**. Straight on the background, aligned with
   the panel text below: a small label in the balance colour ("You are owed" / "You owe"), the
   amount under it in headlineLarge, number first. Settled: muted "Your balance" over

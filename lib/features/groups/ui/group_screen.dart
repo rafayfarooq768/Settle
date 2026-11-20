@@ -58,11 +58,6 @@ class GroupScreen extends ConsumerWidget {
               icon: const Icon(Icons.history),
               onPressed: () => context.push('/groups/$groupId/activity'),
             ),
-            IconButton(
-              tooltip: l10n.groupSettingsTooltip,
-              icon: const Icon(Icons.settings_outlined),
-              onPressed: () => context.push('/groups/$groupId/settings'),
-            ),
           ],
         ],
       ),

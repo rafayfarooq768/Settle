@@ -376,12 +376,6 @@ abstract class AppLocalizations {
   /// **'Done! Group ban gaya'**
   String get groupCreated;
 
-  /// No description provided for @groupSettingsTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Group settings'**
-  String get groupSettingsTooltip;
-
   /// No description provided for @groupOnlyYou.
   ///
   /// In en, this message translates to:

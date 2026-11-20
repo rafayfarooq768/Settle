@@ -252,7 +252,8 @@ groups on the free plan; revisit if someone has many large groups.
 ## 8. Screens
 
 1. Sign in (Google, email/password, reset password)
-2. Profile setup (name, phone, payment methods, skippable)
+2. Sign up asks for name and phone; payment methods are added in Settings (no separate
+   profile setup screen, owner 2026-11-20)
 3. Home: overall balance, group list with per-group balance, Add expense
 4. Group: Expenses | Balances | Settle up
 5. Add / edit expense (amount, title, paid by, split)

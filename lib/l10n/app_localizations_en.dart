@@ -157,9 +157,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupCreated => 'Done! Group ban gaya';
 
   @override
-  String get groupSettingsTooltip => 'Group settings';
-
-  @override
   String get groupOnlyYou => 'Add your friends to start splitting.';
 
   @override

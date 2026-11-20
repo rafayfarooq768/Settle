@@ -276,7 +276,9 @@ Rules:
   group. The Group screen keeps its FAB (its list scrolls under it).
 
 **Group**
-- App bar: group name, then Search, Activity (history icon) and settings icons.
+- App bar: group name, then Search and Activity (history icon). No settings icon (owner,
+  2026-11-20): the members line under the balance opens Group settings, and the name needs
+  the room.
 - Header (owner's decision, 2026-11-20): **no panel**. Straight on the background, aligned with
   the panel text below: a small label in the balance colour ("You are owed" / "You owe"), the
   amount under it in headlineLarge, number first. Settled: muted "Your balance" over

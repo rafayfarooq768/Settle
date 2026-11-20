@@ -72,7 +72,6 @@
   "@groupCreated": {
     "description": "Success SnackBar; Roman Urdu touch (DESIGN.md §10)"
   },
-  "groupSettingsTooltip": "Group settings",
   "groupOnlyYou": "Add your friends to start splitting.",
   "groupNoExpenses": "Abhi koi expense nahi.",
   "@groupNoExpenses": {
