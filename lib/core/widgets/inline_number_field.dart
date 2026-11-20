@@ -15,8 +15,9 @@ import 'press_scale.dart';
 /// number. The unit sits beside it: "Rs 300" or "16 %".
 ///
 /// With [onUnitTap] the unit becomes a small teal button with a ▾ so it
-/// reads as tappable; it stays at the end so the row doesn't jump when it
-/// changes.
+/// reads as tappable. With [unitAtEnd] (or [onUnitTap]) the unit sits in
+/// a fixed slot after the number, so the numbers of rows in one panel
+/// line up whether their unit is tappable or not.
 class InlineNumberField extends StatelessWidget {
   const InlineNumberField({
     super.key,
@@ -25,6 +26,7 @@ class InlineNumberField extends StatelessWidget {
     this.percent = false,
     this.onUnitTap,
     this.unitTapHint,
+    this.unitAtEnd = false,
     this.textInputAction = TextInputAction.next,
   });
 
@@ -41,6 +43,9 @@ class InlineNumberField extends StatelessWidget {
 
   /// What the unit button does, for screen readers.
   final String? unitTapHint;
+
+  /// "300 Rs" in the end slot instead of "Rs 300".
+  final bool unitAtEnd;
   final TextInputAction textInputAction;
 
   @override
@@ -96,10 +101,10 @@ class InlineNumberField extends StatelessWidget {
       textDirection: TextDirection.ltr,
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: onUnitTap != null
+        children: onUnitTap != null || unitAtEnd
             ? [
                 field,
-                _UnitButton(unit: unit, hint: unitTapHint, onTap: onUnitTap!),
+                _UnitSlot(unit: unit, hint: unitTapHint, onTap: onUnitTap),
               ]
             : percent
             ? [field, const SizedBox(width: AppSpacing.xs), unitText]
@@ -109,16 +114,32 @@ class InlineNumberField extends StatelessWidget {
   }
 }
 
-/// "% ▾": the unit as a quiet teal button.
-class _UnitButton extends StatelessWidget {
-  const _UnitButton({required this.unit, required this.onTap, this.hint});
+/// The unit after the number, in a fixed-width slot: "% ▾" as a quiet
+/// teal button when [onTap] is set, otherwise plain muted "Rs".
+class _UnitSlot extends StatelessWidget {
+  const _UnitSlot({required this.unit, this.onTap, this.hint});
 
   final String unit;
   final String? hint;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    if (onTap == null) {
+      return SizedBox(
+        width: AppSizes.unitSlotWidth,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
+          child: Text(
+            unit,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      );
+    }
     final link = context.extraColors.link;
     return Semantics(
       button: true,
@@ -127,24 +148,19 @@ class _UnitButton extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppRadius.standard),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: AppSizes.tapTarget,
-              minHeight: AppSizes.tapTarget,
-            ),
+          child: SizedBox(
+            width: AppSizes.unitSlotWidth,
+            height: AppSizes.tapTarget,
             child: Padding(
-              padding: const EdgeInsetsDirectional.only(
-                start: AppSpacing.sm,
-                end: AppSpacing.xs,
-              ),
+              padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     unit,
-                    style: Theme.of(context).textTheme.titleMedium
-                        ?.copyWith(color: link, fontWeight: FontWeight.w600),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: link,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   Icon(Icons.arrow_drop_down, color: link),
                 ],

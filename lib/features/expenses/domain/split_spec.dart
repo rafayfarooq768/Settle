@@ -213,8 +213,9 @@ class BillLine {
 
 /// Itemized (PLAN.md §4): items → people (a shared item is just an item
 /// several people had), plus tax and service charge (each a percentage
-/// of the items or a rupee amount) and a tip in rupees. Those are spread in proportion to what
-/// each person had, or equally. The bill total becomes the expense amount.
+/// of the items or a rupee amount), shared by what each person had, and a
+/// tip in rupees: equally, or given by one person ([tipBy]). The bill
+/// total becomes the expense amount.
 class ItemizedSpec extends SplitSpec {
   const ItemizedSpec({
     required this.items,
@@ -223,7 +224,7 @@ class ItemizedSpec extends SplitSpec {
     this.serviceBp = 0,
     this.serviceRs = 0,
     this.tip = 0,
-    this.spread = ExtrasSpread.proportional,
+    this.tipBy,
   });
 
   final List<BillLine> items;
@@ -239,7 +240,10 @@ class ItemizedSpec extends SplitSpec {
 
   /// Paisa.
   final int tip;
-  final ExtrasSpread spread;
+
+  /// The member who gives the whole tip; null = everyone on the bill,
+  /// equally.
+  final String? tipBy;
 
   /// Before tax, service and tip.
   int get itemsTotal => items.fold(0, (sum, i) => sum + i.amount);
@@ -249,9 +253,7 @@ class ItemizedSpec extends SplitSpec {
   int get service =>
       percentOf(amount: itemsTotal, basisPoints: serviceBp) + serviceRs;
 
-  int get extras => tax + service + tip;
-
-  int get total => itemsTotal + extras;
+  int get total => itemsTotal + tax + service + tip;
 
   @override
   SplitMode get mode => SplitMode.itemized;
@@ -282,8 +284,9 @@ class ItemizedSpec extends SplitSpec {
             BillItem(amount: i.amount, memberIds: i.memberIds),
         ],
         order: order,
-        extras: extras,
-        spread: spread,
+        extras: tax + service,
+        tip: tip,
+        tipBy: tip > 0 ? tipBy : null,
         payers: payers,
       ),
     );
@@ -297,7 +300,7 @@ class ItemizedSpec extends SplitSpec {
     'serviceBp': serviceBp,
     'serviceRs': serviceRs,
     'tip': tip,
-    'spread': spread.name,
+    'tipBy': tipBy,
   };
 
   static ItemizedSpec? fromJson(Json json) {
@@ -334,9 +337,7 @@ class ItemizedSpec extends SplitSpec {
       serviceBp: intOf('serviceBp'),
       serviceRs: intOf('serviceRs'),
       tip: intOf('tip'),
-      spread: json['spread'] == ExtrasSpread.equal.name
-          ? ExtrasSpread.equal
-          : ExtrasSpread.proportional,
+      tipBy: json['tipBy'] is String ? json['tipBy'] as String : null,
     );
   }
 }

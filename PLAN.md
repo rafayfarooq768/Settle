@@ -50,8 +50,9 @@ Build order (§9) decides the sequence, not separate releases.
 
 ### Expenses
 6. Add expense with split modes: **Equal, Exact amounts, Percentages, Itemized**.
-   Itemized (restaurants): items, shared items, tax/service charge/tip spread proportionally.
-   Tax and service are each a % of the items or a rupee amount, tip is in rupees; the bill total becomes the
+   Itemized (restaurants): items, shared items, tax and service charge spread by what each person had.
+   Tax and service are each a % of the items or a rupee amount, shared by what each person
+   ordered; the tip is in rupees, split equally or given by one person (2026-11-20); the bill total becomes the
    expense amount. A shared item (drinks) is an item with several people ticked (2026-11-20).
 7. Edit/delete expense; balances always recompute.
    Multiple payers on one expense.
@@ -120,7 +121,7 @@ Positive = is owed. Negative = owes. Sum of all nets in a group = 0 (assert this
 | Equal | tick participants | at least 1 participant |
 | Exact | amount per person | sum = total; show "Rs X left to assign" live |
 | Percent | % per person | sum = 100% |
-| Itemized | items → people, plus tax/service/tip | tax spread proportionally to subtotal (option: equally) |
+| Itemized | items → people, plus tax/service/tip | tax and service by each person's subtotal; tip equally or by one person |
 
 ### Worked examples (use as unit tests)
 - **Chai:** 1000 by A + 500 by B, 5 people equal → A +700, B +200, C/D/E −300.

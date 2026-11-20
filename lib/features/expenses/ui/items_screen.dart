@@ -17,6 +17,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../groups/domain/group.dart';
 import '../../groups/ui/groups_providers.dart';
 import '../domain/split_spec.dart';
+import 'expense_pickers.dart';
 import 'item_sheet.dart';
 import 'split_screen.dart';
 
@@ -39,8 +40,9 @@ class ItemsArgs {
 }
 
 /// Itemized split (PLAN.md §3 item 6, §4): items → people, then tax and
-/// service (% of the items or Rs, tap the unit) and a tip in rupees,
-/// spread by what each
+/// service (% of the items or Rs, tap the unit), shared by what each
+/// person had, and a tip in rupees: equally, or given by one person. Not
+/// shared by what each
 /// person had (or equally). "Who owes what" shows the result live. Done
 /// pops the [ItemizedSpec]; its total becomes the expense amount.
 class ItemsScreen extends ConsumerStatefulWidget {
@@ -68,7 +70,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
         : _rupeeText(widget.args.spec?.serviceRs),
   );
   late final _tip = _controller(_rupeeText(widget.args.spec?.tip));
-  late bool _equally = widget.args.spec?.spread == ExtrasSpread.equal;
+  late String? _tipBy = widget.args.spec?.tipBy;
 
   static String _percentText(int? bp) =>
       bp == null || bp == 0 ? '' : formatPercent(bp).replaceAll('%', '');
@@ -94,7 +96,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
     serviceBp: _servicePercent ? parsePercent(_service.text) ?? 0 : 0,
     serviceRs: _servicePercent ? 0 : parseRupees(_service.text) ?? 0,
     tip: parseRupees(_tip.text) ?? 0,
-    spread: _equally ? ExtrasSpread.equal : ExtrasSpread.proportional,
+    tipBy: _tipBy,
   );
 
   /// Flips Tax or Service between % and Rs, keeping what it comes to
@@ -119,6 +121,17 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
       }
       field.text = text;
     });
+  }
+
+  Future<void> _pickTipGiver(List<Member> members) async {
+    final picked = await pickTipGiver(
+      context,
+      members: members,
+      meId: widget.args.meId,
+      selected: _tipBy,
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _tipBy = picked == tipEveryone ? null : picked);
   }
 
   /// Add (no [index]) or edit an item.
@@ -203,16 +216,33 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                     _flipUnit(_service, _servicePercent, spec.service),
               ),
               _ExtraRow(label: l10n.tipLabel, controller: _tip),
-              SwitchListTile(
-                title: Text(l10n.extrasEqually),
-                // Says what happens now, so the switch explains itself.
-                subtitle: Text(
-                  _equally ? l10n.extrasSameForAll : l10n.extrasByOrder,
+              if (spec.tip > 0)
+                _TipGiverRow(
+                  value: switch (_tipBy) {
+                    final id? when byId[id] != null => memberName(
+                      l10n,
+                      byId[id]!,
+                      widget.args.meId,
+                    ),
+                    _ => l10n.tipEveryone,
+                  },
+                  onTap: () => _pickTipGiver(members),
                 ),
-                value: _equally,
-                onChanged: (on) => setState(() => _equally = on),
-              ),
             ],
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.screenHorizontal + AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.screenHorizontal + AppSpacing.lg,
+              0,
+            ),
+            child: Text(
+              l10n.extrasByOrderNote,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ),
           if (owes.isNotEmpty) ...[
             SectionLabel(l10n.whoOwesSection),
@@ -365,11 +395,11 @@ class _ExtraRow extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return ListTile(
       minTileHeight: AppSpacing.rowHeight,
-      // The unit button has its own inner padding; trim the row's end so
-      // its edge lines up with Tip below.
-      contentPadding: EdgeInsetsDirectional.only(
+      // The unit slot has its own inner space; a smaller row end keeps
+      // the panel's right edge even.
+      contentPadding: const EdgeInsetsDirectional.only(
         start: AppSpacing.lg,
-        end: onFlip == null ? AppSpacing.lg : AppSpacing.sm,
+        end: AppSpacing.sm,
       ),
       title: Text(label),
       subtitle: percent && amount > 0 ? Text(formatRupees(amount)) : null,
@@ -379,7 +409,40 @@ class _ExtraRow extends StatelessWidget {
         unit: percent ? l10n.percentSuffix : l10n.currencyPrefix,
         onUnitTap: onFlip,
         unitTapHint: onFlip == null ? null : l10n.unitSwitchHint,
+        unitAtEnd: true,
       ),
+    );
+  }
+}
+
+/// "Who gives the tip" with its value and a chevron; opens a sheet.
+class _TipGiverRow extends StatelessWidget {
+  const _TipGiverRow({required this.value, required this.onTap});
+
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return ListTile(
+      minTileHeight: AppSpacing.rowHeight,
+      title: Text(l10n.tipGiverLabel),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: context.extraColors.link,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+        ],
+      ),
+      onTap: onTap,
     );
   }
 }

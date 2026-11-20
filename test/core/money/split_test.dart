@@ -131,17 +131,47 @@ void main() {
   });
 
   group('itemized', () {
-    test('extras can be spread equally', () {
+    const items = [
+      BillItem(amount: 1000, memberIds: ['a']),
+      BillItem(amount: 3000, memberIds: ['b']),
+    ];
+
+    test('tax and service follow the order, the tip is equal', () {
       final shares = splitItemized(
-        items: [
-          const BillItem(amount: 1000, memberIds: ['a']),
-          const BillItem(amount: 3000, memberIds: ['b']),
-        ],
-        extras: 200,
-        spread: ExtrasSpread.equal,
+        items: items,
+        extras: 400,
+        tip: 200,
         order: ['a', 'b'],
       );
-      expect(shares, {'a': 1100, 'b': 3100});
+      expect(shares, {'a': 1200, 'b': 3400});
+    });
+
+    test('one person can give the whole tip, even with no item', () {
+      expect(
+        splitItemized(items: items, tip: 500, tipBy: 'a', order: ['a', 'b']),
+        {'a': 1500, 'b': 3000},
+      );
+      expect(
+        splitItemized(
+          items: items,
+          tip: 500,
+          tipBy: 'c',
+          order: ['a', 'b', 'c'],
+        ),
+        {'a': 1000, 'b': 3000, 'c': 500},
+      );
+    });
+
+    test('the tip giver must be in the group', () {
+      expect(
+        () => splitItemized(
+          items: items,
+          tip: 500,
+          tipBy: 'z',
+          order: ['a', 'b'],
+        ),
+        throwsA(isA<MoneyException>()),
+      );
     });
 
     test('rejects items with nobody on them', () {

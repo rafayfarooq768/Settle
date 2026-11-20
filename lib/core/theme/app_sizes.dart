@@ -46,6 +46,10 @@ class AppSizes {
   static const double inlineFieldMinWidth = 48;
   static const double inlineFieldMaxWidth = 128;
 
+  /// The unit after an inline number ("% ▾", "Rs ▾", "Rs"), fixed so the
+  /// numbers in one panel line up.
+  static const double unitSlotWidth = 72;
+
   /// Underline of a focused amount (AmountField, InlineNumberField).
   static const double focusLine = 2;
 }

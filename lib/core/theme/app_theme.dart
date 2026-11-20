@@ -149,6 +149,49 @@ class AppTheme {
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ),
+      // Owner 2026-11-20: no pale tinted fills on selected segments and
+      // chips. Selected is solid brand Teal with white text, like the FAB;
+      // unselected is plain with an outline. Radius 8 (DESIGN.md §5).
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.standard),
+            ),
+          ),
+          side: WidgetStatePropertyAll(BorderSide(color: colorScheme.outline)),
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (s) => s.contains(WidgetState.selected) ? AppColors.primary : null,
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (s) => s.contains(WidgetState.selected)
+                ? AppColors.white
+                : colorScheme.onSurface,
+          ),
+          textStyle: WidgetStatePropertyAll(text.labelLarge),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.standard),
+        ),
+        side: WidgetStateBorderSide.resolveWith(
+          (s) => s.contains(WidgetState.selected)
+              ? const BorderSide(color: AppColors.primary)
+              : BorderSide(color: colorScheme.outline),
+        ),
+        color: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? AppColors.primary : null,
+        ),
+        checkmarkColor: AppColors.white,
+        labelStyle: WidgetStateTextStyle.resolveWith(
+          (s) => (text.labelLarge ?? const TextStyle()).copyWith(
+            color: s.contains(WidgetState.selected)
+                ? AppColors.white
+                : colorScheme.onSurface,
+          ),
+        ),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.standard),

@@ -54,6 +54,47 @@ Future<String?> pickPayer(
   );
 }
 
+/// What [pickTipGiver] returns for "Everyone, equally".
+const tipEveryone = '';
+
+/// "Who gives the tip?" sheet: everyone on the bill equally, or one
+/// person. [selected] is null for everyone.
+Future<String?> pickTipGiver(
+  BuildContext context, {
+  required List<Member> members,
+  required String meId,
+  required String? selected,
+}) {
+  final l10n = AppLocalizations.of(context)!;
+  return showAppSheet<String>(
+    context: context,
+    scrollControlled: true,
+    builder: (sheet) => _SheetList(
+      title: l10n.tipGiverTitle,
+      children: [
+        ListTile(
+          minTileHeight: AppSpacing.rowHeight,
+          leading: const Icon(Icons.group_outlined),
+          title: Text(l10n.tipEveryone),
+          trailing: selected == null ? const Icon(Icons.check) : null,
+          onTap: () => Navigator.of(sheet).pop(tipEveryone),
+        ),
+        for (final m in members)
+          ListTile(
+            minTileHeight: AppSpacing.rowHeight,
+            leading: MemberAvatar(
+              name: m.displayName,
+              placeholder: m.isPlaceholder,
+            ),
+            title: Text(_name(l10n, m, meId)),
+            trailing: m.id == selected ? const Icon(Icons.check) : null,
+            onTap: () => Navigator.of(sheet).pop(m.id),
+          ),
+      ],
+    ),
+  );
+}
+
 /// Sheet body: title and a scrollable list.
 class _SheetList extends StatelessWidget {
   const _SheetList({required this.title, required this.children});

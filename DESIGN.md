@@ -264,7 +264,8 @@ Rules:
 **Add expense**
 - Amount (autofocus) → Title → Paid by (row, opens sheet) → Split (row: "Equally between 5", opens split screen) → Save.
 - Split screen (full screen, title "Split Rs 1,000"): mode selector as a `SegmentedButton`
-  (Equal / Exact / %), one muted line saying what to enter, then one panel of members:
+  (Equal / Exact / %; selected segment solid Teal with white text, no pale tint, radius 8;
+  selected chips the same, owner 2026-11-20), one muted line saying what to enter, then one panel of members:
   Equal ticks people; Exact / % put an inline number at the end of each row (`InlineNumberField`,
   owner 2026-11-20: no boxes): the figure on a thin underline that turns teal while typing, like
   `AmountField`, with "Rs" before it or "%" after it, the empty hint "0", and %
@@ -281,9 +282,10 @@ Rules:
   link under the split screen's members opens "Split by items". Panels: Items (name, who had it
   or "Everyone", price; last row "Add item" in teal with +), "Tax, service and tip" (Tax and
   Service charge are each a % or Rs: the unit is a teal "% ▾" / "Rs ▾" button at the end, tap to
-  switch, keeping what it comes to; a % shows its rupees under the label. Tip in Rs. Then a
-  "Share tax, service and tip equally" switch whose line says what it does now: "Off: bigger
-  orders pay more" / "On: everyone pays the same"), then "Who owes what" once there's an item. Above Done:
+  switch, keeping what it comes to; a % shows its rupees under the label. Both are shared by what each
+  person ordered, said in a muted line under the panel. Tip in Rs, its "Rs" in the same end slot
+  so the numbers line up; once there's a tip, a "Who gives the tip" row opens a sheet: "Everyone,
+  equally" or one person (owner, 2026-11-20)), then "Who owes what" once there's an item. Above Done:
   "Bill total Rs 4,400" (and "The amount changes from Rs 4,000" if you typed something else).
   An item is added or edited in a sheet: Item name, Price, "Who had it?" chips (nobody ticked for
   a new item, owner 2026-11-20), Save item, and Delete item (owe-red) when editing. The bill total becomes the

@@ -250,16 +250,30 @@ void main() {
       expect(back.serviceRs, 2000);
     });
 
-    test('extras can be split equally instead', () {
+    test('the tip is equal, or given by one person', () {
       const bill = ItemizedSpec(
         items: [
           BillLine(name: '', amount: 30000, memberIds: ['a']),
           BillLine(name: '', amount: 10000, memberIds: ['b']),
         ],
+        taxBp: 1000,
         tip: 2000,
-        spread: ExtrasSpread.equal,
       );
-      expect(_shares(bill, 42000), {'a': 31000, 'b': 11000});
+      // Tax by order (3,000 / 1,000), tip split in half.
+      expect(_shares(bill, 46000), {'a': 34000, 'b': 12000});
+      const byB = ItemizedSpec(
+        items: [
+          BillLine(name: '', amount: 30000, memberIds: ['a']),
+          BillLine(name: '', amount: 10000, memberIds: ['b']),
+        ],
+        taxBp: 1000,
+        tip: 2000,
+        tipBy: 'b',
+      );
+      expect(_shares(byB, 46000), {'a': 33000, 'b': 13000});
+      final back =
+          SplitSpec.fromJson(SplitMode.itemized, byB.toJson())! as ItemizedSpec;
+      expect(back.tipBy, 'b');
     });
 
     test('problems: no items, an item nobody had, a changed amount', () {

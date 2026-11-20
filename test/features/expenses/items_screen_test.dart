@@ -115,12 +115,26 @@ void main() {
     expect(find.text(l10n.billTotal('Rs 3,480')), findsOneWidget);
   });
 
-  testWidgets('the switch says what it does now', (tester) async {
-    await open(tester);
-    expect(find.text(l10n.extrasByOrder), findsOneWidget);
-    await tester.tap(find.text(l10n.extrasEqually));
-    await tester.pump();
-    expect(find.text(l10n.extrasSameForAll), findsOneWidget);
+  testWidgets('one person can give the tip', (tester) async {
+    await open(
+      tester,
+      spec: const ItemizedSpec(
+        items: [
+          BillLine(name: 'Chai', amount: 20000, memberIds: ['m1', 'm2']),
+        ],
+        tip: 10000,
+      ),
+    );
+    expect(find.text(l10n.extrasByOrderNote), findsOneWidget);
+    // Equal tip to start: Rs 100 + Rs 50 each.
+    expect(find.text('Rs 150'), findsNWidgets(2));
+    await tester.tap(find.text(l10n.tipGiverLabel));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sara').last);
+    await tester.pumpAndSettle();
+    // Ali Rs 100; Sara Rs 200 (next to the Chai item's own Rs 200).
+    expect(find.text('Rs 100'), findsOneWidget);
+    expect(find.text('Rs 200'), findsNWidgets(2));
   });
 
   testWidgets('an item can be deleted', (tester) async {

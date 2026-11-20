@@ -1624,12 +1624,6 @@ abstract class AppLocalizations {
   /// **'Tip'**
   String get tipLabel;
 
-  /// No description provided for @extrasEqually.
-  ///
-  /// In en, this message translates to:
-  /// **'Share tax, service and tip equally'**
-  String get extrasEqually;
-
   /// No description provided for @whoOwesSection.
   ///
   /// In en, this message translates to:
@@ -1678,23 +1672,35 @@ abstract class AppLocalizations {
   /// **'By items'**
   String get splitByItems;
 
-  /// No description provided for @extrasByOrder.
-  ///
-  /// In en, this message translates to:
-  /// **'Off: bigger orders pay more'**
-  String get extrasByOrder;
-
-  /// No description provided for @extrasSameForAll.
-  ///
-  /// In en, this message translates to:
-  /// **'On: everyone pays the same'**
-  String get extrasSameForAll;
-
   /// No description provided for @unitSwitchHint.
   ///
   /// In en, this message translates to:
   /// **'Switch between % and Rs'**
   String get unitSwitchHint;
+
+  /// No description provided for @extrasByOrderNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax and service charge are shared by what each person ordered.'**
+  String get extrasByOrderNote;
+
+  /// No description provided for @tipGiverLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who gives the tip'**
+  String get tipGiverLabel;
+
+  /// No description provided for @tipGiverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who gives the tip?'**
+  String get tipGiverTitle;
+
+  /// No description provided for @tipEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone, equally'**
+  String get tipEveryone;
 }
 
 class _AppLocalizationsDelegate

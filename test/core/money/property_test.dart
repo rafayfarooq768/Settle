@@ -70,9 +70,10 @@ void main() {
             amount: subtotal,
             basisPoints: random.nextInt(2500),
           ),
-          spread: random.nextBool()
-              ? ExtrasSpread.proportional
-              : ExtrasSpread.equal,
+          tip: random.nextInt(50000),
+          tipBy: random.nextBool()
+              ? null
+              : members[random.nextInt(members.length)],
           order: members,
           payers: [payer],
         );

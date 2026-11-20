@@ -93,29 +93,26 @@ class BillItem {
   final List<String> memberIds;
 }
 
-/// How tax, service charge and tip are shared in Itemized mode.
-enum ExtrasSpread {
-  /// In proportion to each person's item subtotal (default).
-  proportional,
-
-  /// Equally among everyone who had an item.
-  equal,
-}
-
-/// Itemized: items → people, plus [extras] (tax + service + tip, in paisa).
-/// Returns shares summing to items total + extras.
+/// Itemized: items → people, plus [extras] (tax + service charge, in
+/// paisa) in proportion to what each person had, plus a [tip]: equally
+/// among everyone who had an item, or all of it on [tipBy] (owner,
+/// 2026-11-20). Returns shares summing to items total + extras + tip.
 Map<String, int> splitItemized({
   required List<BillItem> items,
   required List<String> order,
   int extras = 0,
-  ExtrasSpread spread = ExtrasSpread.proportional,
+  int tip = 0,
+  String? tipBy,
   Iterable<String> payers = const [],
 }) {
   if (items.isEmpty) {
     throw const MoneyException('Add at least one item.');
   }
-  if (extras < 0) {
+  if (extras < 0 || tip < 0) {
     throw const MoneyException('Tax, service and tip cannot be negative.');
+  }
+  if (tipBy != null && !order.contains(tipBy)) {
+    throw const MoneyException('Who gives the tip must be in the group.');
   }
   final stable = payerFirstOrder(members: order, payers: payers);
 
@@ -136,18 +133,26 @@ Map<String, int> splitItemized({
     });
   }
 
-  if (extras == 0) return subtotals;
+  final shares = {...subtotals};
+  void add(Map<String, int> more) => more.forEach((id, paisa) {
+    shares[id] = (shares[id] ?? 0) + paisa;
+  });
 
-  final extraShares = allocate(
-    total: extras,
-    weights: spread == ExtrasSpread.proportional
-        ? subtotals
-        : {for (final id in subtotals.keys) id: 1},
-    order: stable,
-  );
-  return {
-    for (final id in subtotals.keys) id: subtotals[id]! + extraShares[id]!,
-  };
+  if (extras > 0) {
+    add(allocate(total: extras, weights: subtotals, order: stable));
+  }
+  if (tip > 0) {
+    add(
+      tipBy != null
+          ? {tipBy: tip}
+          : allocate(
+              total: tip,
+              weights: {for (final id in subtotals.keys) id: 1},
+              order: stable,
+            ),
+    );
+  }
+  return shares;
 }
 
 /// [basisPoints] percent of [amount], rounded half up to the paisa.
