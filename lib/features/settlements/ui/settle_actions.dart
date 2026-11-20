@@ -10,6 +10,7 @@ import '../domain/settlement.dart';
 import 'payment_sheet.dart';
 import 'remind_sheet.dart';
 import 'settlements_providers.dart';
+import '../../../core/theme/app_motion.dart';
 
 /// The settle flow (PLAN.md §3 items 10–11). Writes go through
 /// [SettlementRepository]; the security rules decide who may do what.
@@ -151,6 +152,8 @@ class SettleActions {
       messenger.showSnackBar(
         SnackBar(
           content: Text(done),
+          persist: false,
+          duration: undo == null ? AppMotion.snackBar : AppMotion.undoSnackBar,
           action: undo == null
               ? null
               : SnackBarAction(label: l10n.undoButton, onPressed: undo),

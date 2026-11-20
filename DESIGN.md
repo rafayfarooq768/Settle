@@ -152,6 +152,7 @@ One primary button per screen. Full-width only at the bottom of forms.
     (exit is faster than entry). Always opened through `showAppSheet`.
   - The standard progress indicator while a real network action runs, and a brief
     `SnackBar` after save ("Expense added" with Undo).
+    It closes by itself: 4 s, or 6 s when it has Undo (`AppMotion`).
 - When the phone has "Remove animations" on, press feedback and sheet motion are off.
 - Never fake loading. If data is cached, show it immediately.
 
