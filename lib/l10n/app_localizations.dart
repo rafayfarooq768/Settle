@@ -1185,6 +1185,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'is owed'**
   String get stackIsOwed;
+
+  /// No description provided for @iPaidButton.
+  ///
+  /// In en, this message translates to:
+  /// **'I paid'**
+  String get iPaidButton;
+
+  /// No description provided for @recordPaymentButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Record payment'**
+  String get recordPaymentButton;
+
+  /// No description provided for @remindButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind'**
+  String get remindButton;
+
+  /// No description provided for @confirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmButton;
+
+  /// No description provided for @notReceivedButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Not received'**
+  String get notReceivedButton;
+
+  /// No description provided for @cancelPaymentButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel payment'**
+  String get cancelPaymentButton;
+
+  /// No description provided for @payTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {name}'**
+  String payTitle(String name);
+
+  /// No description provided for @recordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment from {name}'**
+  String recordTitle(String name);
+
+  /// No description provided for @balanceYouOweName.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe {name} {amount}'**
+  String balanceYouOweName(String name, String amount);
+
+  /// No description provided for @balanceNameOwesYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} owes you {amount}'**
+  String balanceNameOwesYou(String name, String amount);
+
+  /// No description provided for @pendingSaysPaidYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} says they paid you'**
+  String pendingSaysPaidYou(String name);
+
+  /// No description provided for @pendingYouPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'You paid {name}'**
+  String pendingYouPaid(String name);
+
+  /// No description provided for @pendingWaitingFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for {name} to confirm'**
+  String pendingWaitingFor(String name);
+
+  /// No description provided for @paymentSentToConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to {name} to confirm'**
+  String paymentSentToConfirm(String name);
+
+  /// No description provided for @paymentRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment recorded'**
+  String get paymentRecorded;
+
+  /// No description provided for @paymentConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment confirmed'**
+  String get paymentConfirmed;
+
+  /// No description provided for @paymentNotReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as not received'**
+  String get paymentNotReceived;
+
+  /// No description provided for @paymentCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment cancelled'**
+  String get paymentCancelled;
+
+  /// No description provided for @remindTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind {name}'**
+  String remindTitle(String name);
+
+  /// No description provided for @remindMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get remindMessageLabel;
+
+  /// No description provided for @remindSendButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send on WhatsApp'**
+  String get remindSendButton;
+
+  /// No description provided for @remindMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Salam! {amount} for {group} is pending on Settle.'**
+  String remindMessage(String amount, String group);
+
+  /// No description provided for @pendingToConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 payment to confirm} other{{count} payments to confirm}}'**
+  String pendingToConfirm(int count);
 }
 
 class _AppLocalizationsDelegate

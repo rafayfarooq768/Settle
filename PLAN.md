@@ -61,6 +61,10 @@ Build order (§9) decides the sequence, not separate releases.
 8. Balances per group and overall ("You owe Rs 300" / "You are owed Rs 900").
 9. **Simplified settle-up** list (minimum payments).
 10. Settle flow: "I paid" → creditor confirms (or creditor records payment directly).
+    The amount starts at what's owed and can be changed to any amount (owner's decision,
+    2026-11-20). Paying a placeholder counts straight away (nobody can confirm for them).
+    One pending "I paid" per person at a time; the payer can cancel it, the creditor can
+    say "Not received".
 11. WhatsApp reminder (prefilled `wa.me` message, no API).
 12. Activity log: every add/edit/delete/settle, with who did it.
 13. Monthly summary per group (totals by month, computed in the app; no charts for decoration).

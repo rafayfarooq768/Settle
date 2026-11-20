@@ -9,7 +9,9 @@ import '../../../core/widgets/member_avatar.dart';
 import '../../../core/widgets/panel.dart';
 import '../../../core/widgets/tab_message.dart';
 import '../../balances/ui/balances_tab.dart';
+import '../../settlements/domain/settle_up.dart';
 import '../../settlements/ui/settle_up_tab.dart';
+import '../../settlements/ui/settlements_providers.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../balances/ui/balances_providers.dart';
 import '../domain/group.dart';
@@ -98,7 +100,7 @@ class _GroupTabs extends StatelessWidget {
             tabs: [
               Tab(text: l10n.tabExpenses),
               Tab(text: l10n.tabBalances),
-              Tab(text: l10n.tabSettleUp),
+              _SettleUpTabLabel(groupId: group.id, meId: me.id),
             ],
           ),
           Expanded(
@@ -106,7 +108,7 @@ class _GroupTabs extends StatelessWidget {
               children: [
                 _ExpensesTab(group: group, me: me),
                 BalancesTab(groupId: group.id, me: me),
-                SettleUpTab(groupId: group.id, me: me),
+                SettleUpTab(group: group, me: me),
               ],
             ),
           ),
@@ -230,6 +232,29 @@ class _NoExpenses extends ConsumerWidget {
             style: LoadingButtonStyle.outlined,
           ),
       ],
+    );
+  }
+}
+
+/// "Settle up", with a count when payments wait for your confirmation:
+/// the one actionable badge (DESIGN.md §6 Status indicators).
+class _SettleUpTabLabel extends ConsumerWidget {
+  const _SettleUpTabLabel({required this.groupId, required this.meId});
+
+  final String groupId;
+  final String meId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final settlements = ref.watch(settlementsProvider(groupId)).valueOrNull;
+    final count = pendingForMe(settlements ?? const [], meId).toConfirm.length;
+    return Tab(
+      child: Badge.count(
+        count: count,
+        isLabelVisible: count > 0,
+        child: Text(l10n.tabSettleUp),
+      ),
     );
   }
 }

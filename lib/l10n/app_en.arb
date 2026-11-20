@@ -453,5 +453,114 @@
   "settleYoursLabel": "Your payments",
   "settleOthersLabel": "Others in the group",
   "stackOwes": "owes",
-  "stackIsOwed": "is owed"
+  "stackIsOwed": "is owed",
+  "iPaidButton": "I paid",
+  "recordPaymentButton": "Record payment",
+  "remindButton": "Remind",
+  "confirmButton": "Confirm",
+  "notReceivedButton": "Not received",
+  "cancelPaymentButton": "Cancel payment",
+  "payTitle": "Pay {name}",
+  "@payTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordTitle": "Payment from {name}",
+  "@recordTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceYouOweName": "You owe {name} {amount}",
+  "@balanceYouOweName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceNameOwesYou": "{name} owes you {amount}",
+  "@balanceNameOwesYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingSaysPaidYou": "{name} says they paid you",
+  "@pendingSaysPaidYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingYouPaid": "You paid {name}",
+  "@pendingYouPaid": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingWaitingFor": "Waiting for {name} to confirm",
+  "@pendingWaitingFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentSentToConfirm": "Sent to {name} to confirm",
+  "@paymentSentToConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRecorded": "Payment recorded",
+  "paymentConfirmed": "Payment confirmed",
+  "paymentNotReceived": "Marked as not received",
+  "paymentCancelled": "Payment cancelled",
+  "remindTitle": "Remind {name}",
+  "@remindTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remindMessageLabel": "Message",
+  "remindSendButton": "Send on WhatsApp",
+  "remindMessage": "Salam! {amount} for {group} is pending on Settle.",
+  "@remindMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingToConfirm": "{count, plural, =1{1 payment to confirm} other{{count} payments to confirm}}",
+  "@pendingToConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

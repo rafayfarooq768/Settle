@@ -643,4 +643,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stackIsOwed => 'is owed';
+
+  @override
+  String get iPaidButton => 'I paid';
+
+  @override
+  String get recordPaymentButton => 'Record payment';
+
+  @override
+  String get remindButton => 'Remind';
+
+  @override
+  String get confirmButton => 'Confirm';
+
+  @override
+  String get notReceivedButton => 'Not received';
+
+  @override
+  String get cancelPaymentButton => 'Cancel payment';
+
+  @override
+  String payTitle(String name) {
+    return 'Pay $name';
+  }
+
+  @override
+  String recordTitle(String name) {
+    return 'Payment from $name';
+  }
+
+  @override
+  String balanceYouOweName(String name, String amount) {
+    return 'You owe $name $amount';
+  }
+
+  @override
+  String balanceNameOwesYou(String name, String amount) {
+    return '$name owes you $amount';
+  }
+
+  @override
+  String pendingSaysPaidYou(String name) {
+    return '$name says they paid you';
+  }
+
+  @override
+  String pendingYouPaid(String name) {
+    return 'You paid $name';
+  }
+
+  @override
+  String pendingWaitingFor(String name) {
+    return 'Waiting for $name to confirm';
+  }
+
+  @override
+  String paymentSentToConfirm(String name) {
+    return 'Sent to $name to confirm';
+  }
+
+  @override
+  String get paymentRecorded => 'Payment recorded';
+
+  @override
+  String get paymentConfirmed => 'Payment confirmed';
+
+  @override
+  String get paymentNotReceived => 'Marked as not received';
+
+  @override
+  String get paymentCancelled => 'Payment cancelled';
+
+  @override
+  String remindTitle(String name) {
+    return 'Remind $name';
+  }
+
+  @override
+  String get remindMessageLabel => 'Message';
+
+  @override
+  String get remindSendButton => 'Send on WhatsApp';
+
+  @override
+  String remindMessage(String amount, String group) {
+    return 'Salam! $amount for $group is pending on Settle.';
+  }
+
+  @override
+  String pendingToConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count payments to confirm',
+      one: '1 payment to confirm',
+    );
+    return '$_temp0';
+  }
 }

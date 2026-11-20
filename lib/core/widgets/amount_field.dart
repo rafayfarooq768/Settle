@@ -169,6 +169,14 @@ class RupeeInputFormatter extends TextInputFormatter {
     );
   }
 
+  /// What the field shows for [paisa]: "1,200", or "1,200.50" when
+  /// paisa aren't zero. `parseRupees` reads it back to the same value.
+  static String textFor(int paisa) {
+    final whole = groupThousands('${paisa ~/ 100}');
+    final cents = paisa % 100;
+    return cents == 0 ? whole : '$whole.${'$cents'.padLeft(2, '0')}';
+  }
+
   static String groupThousands(String digits) {
     final out = StringBuffer();
     for (var i = 0; i < digits.length; i++) {

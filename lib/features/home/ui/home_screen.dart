@@ -6,6 +6,8 @@ import '../../../core/errors/error_text.dart';
 import '../../../core/money/money.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../settlements/domain/settle_up.dart';
+import '../../settlements/ui/settlements_providers.dart';
 import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
@@ -160,6 +162,12 @@ class _GroupRow extends ConsumerWidget {
       (false, final c?) => l10n.groupSubtitle(group.type, c),
     };
     final theme = Theme.of(context);
+    // In-app notice instead of push (PLAN.md §3): someone says they paid.
+    final me = ref.watch(myMemberProvider(group.id)).valueOrNull;
+    final settlements = ref.watch(settlementsProvider(group.id)).valueOrNull;
+    final toConfirm = me == null
+        ? 0
+        : pendingForMe(settlements ?? const [], me.id).toConfirm.length;
     // No tile: the name is the strongest thing in the row, and the
     // chevron says the row opens the group.
     return ListTile(
@@ -174,7 +182,16 @@ class _GroupRow extends ConsumerWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: subtitle == null ? null : Text(subtitle),
+      subtitle: toConfirm > 0
+          ? Text(
+              l10n.pendingToConfirm(toConfirm),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: context.extraColors.link,
+              ),
+            )
+          : subtitle == null
+          ? null
+          : Text(subtitle),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

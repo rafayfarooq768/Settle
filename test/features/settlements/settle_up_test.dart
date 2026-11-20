@@ -140,21 +140,45 @@ void main() {
     });
   });
 
-  testWidgets('Settle up tab: money lines say who, direction and amount', (
-    tester,
-  ) async {
-    final l10n = AppLocalizationsEn();
-    final members = [
-      _m('a', 'Ali'),
-      _m('b', 'Sara'),
-      _m('c', 'Bilal'),
-      _m('d', 'Hamza'),
-      _m('e', 'Fatima'),
-    ];
+  test('pendingForMe: to confirm when paid to you, waiting when you paid', () {
+    final p = pendingForMe([
+      _s('b', 'a', 300, SettlementStatus.pending),
+      _s('a', 'c', 200, SettlementStatus.pending),
+      _s('b', 'a', 100, SettlementStatus.confirmed),
+      _s('b', 'c', 50, SettlementStatus.pending),
+    ], 'a');
+    expect([for (final s in p.toConfirm) s.amount], [300]);
+    expect([for (final s in p.waiting) s.amount], [200]);
+  });
+
+  final chai = Group(
+    id: 'g',
+    name: 'Chai',
+    type: 'Friends',
+    createdBy: 'ua',
+    createdAt: _t,
+    joinCode: 'CHAI-4821',
+    memberUids: const ['ua', 'ub', 'uc', 'ud', 'ue'],
+  );
+  final members = [
+    _m('a', 'Ali'),
+    _m('b', 'Sara'),
+    _m('c', 'Bilal'),
+    _m('d', 'Hamza'),
+    _m('e', 'Fatima'),
+  ];
+
+  Future<void> openTab(
+    WidgetTester tester, {
+    required Member me,
+    List<Settlement> settlements = const [],
+  }) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           membersProvider('g').overrideWith((ref) => Stream.value(members)),
+          settlementsProvider('g')
+              .overrideWith((ref) => Stream.value(settlements)),
           groupNetsProvider('g').overrideWithValue(const AsyncData(_chaiNets)),
         ],
         child: MaterialApp(
@@ -162,12 +186,19 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: SettleUpTab(groupId: 'g', me: members[0]),
+            body: SettleUpTab(group: chai, me: me),
           ),
         ),
       ),
     );
     await tester.pump();
+  }
+
+  testWidgets('Settle up tab: money lines say who, direction and amount', (
+    tester,
+  ) async {
+    final l10n = AppLocalizationsEn();
+    await openTab(tester, me: members[0]);
 
     expect(find.text(l10n.settleYoursLabel), findsOneWidget);
     expect(find.text(l10n.transferPaysYou('Bilal')), findsOneWidget);
@@ -178,5 +209,29 @@ void main() {
     expect(find.text('Rs 300'), findsNWidgets(2));
     expect(find.text('Rs 200'), findsOneWidget);
     expect(find.text('Rs 100'), findsOneWidget);
+    // Ali is owed by three people: Record + Remind on each, nothing on
+    // the row between others.
+    expect(find.text(l10n.recordPaymentButton), findsNWidgets(3));
+    expect(find.text(l10n.remindButton), findsNWidgets(3));
+    expect(find.text(l10n.iPaidButton), findsNothing);
+  });
+
+  testWidgets('Settle up tab: debtor sees I paid; pending shows on both '
+      'sides', (tester) async {
+    final l10n = AppLocalizationsEn();
+    final pending = _s('e', 'a', 10000, SettlementStatus.pending);
+
+    await openTab(tester, me: members[4], settlements: [pending]);
+    expect(find.text(l10n.transferYouPay('Sara')), findsOneWidget);
+    // Already waiting on Ali: only Sara's row offers I paid.
+    expect(find.text(l10n.iPaidButton), findsOneWidget);
+    expect(find.text(l10n.pendingYouPaid('Ali')), findsOneWidget);
+    expect(find.text(l10n.pendingWaitingFor('Ali')), findsOneWidget);
+    expect(find.text(l10n.cancelPaymentButton), findsOneWidget);
+
+    await openTab(tester, me: members[0], settlements: [pending]);
+    expect(find.text(l10n.pendingSaysPaidYou('Fatima')), findsOneWidget);
+    expect(find.text(l10n.confirmButton), findsOneWidget);
+    expect(find.text(l10n.notReceivedButton), findsOneWidget);
   });
 }

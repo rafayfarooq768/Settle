@@ -33,4 +33,13 @@ void main() {
   test('what it shows parses back to the same paisa', () {
     expect(parseRupees(_type('', '1234567.89')), 123456789);
   });
+
+  test('textFor shows what the field would show, and parses back', () {
+    expect(RupeeInputFormatter.textFor(30000), '300');
+    expect(RupeeInputFormatter.textFor(123456789), '1,234,567.89');
+    expect(RupeeInputFormatter.textFor(5), '0.05');
+    for (final paisa in [1, 99, 100, 33334, 100000000000]) {
+      expect(parseRupees(RupeeInputFormatter.textFor(paisa)), paisa);
+    }
+  });
 }

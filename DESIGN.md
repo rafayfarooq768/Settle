@@ -238,7 +238,15 @@ Rules:
   ("owes" over "Rs 300"; your own row says "you owe").
 - Settle up: "Your payments" panel first ("You pay Ali" in owe-red / "Ali pays you" in owed-green,
   amount at the end), then "Others in the group" ("Bilal pays Ali", plain). Labels only for
-  non-empty sections. Your rows get an action (Pay / Remind / Record) in step 7.
+  non-empty sections. Your rows carry compact row buttons (`RowButton`) under the text:
+  "You pay Ali" → **I paid** (tonal); "Ali pays you" → **Record payment** (tonal) + **Remind**
+  (outlined). Pending ones sit at the top of "Your payments": "Ali says they paid you" →
+  **Confirm** / **Not received**; "You paid Ali" with muted "Waiting for Ali to confirm" →
+  **Cancel payment**. A count badge on the Settle up tab and a teal "1 payment to confirm"
+  line on the Home group row are the in-app notices (no push).
+- I paid / Record open a sheet: title "Pay Ali", the money line it settles, the amount
+  (`AmountField`, prefilled, editable), primary action, Cancel. Remind opens a sheet with the
+  editable WhatsApp message and "Send on WhatsApp".
 
 **Add expense**
 - Amount (autofocus) → Title → Paid by (row, opens sheet) → Split (row: "Equally between 5", opens split screen) → Save.
