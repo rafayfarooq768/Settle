@@ -157,7 +157,7 @@ One primary button per screen. Full-width only at the bottom of forms.
 ### Icons
 - Material Symbols (Outlined), one weight, 24dp.
 - Icons only where they help recognition: tab bar, FAB, back, settings, copy, share, QR,
-  edit (pencil) and activity (history clock) in app bars.
+  edit (pencil), search and activity (history clock) in app bars.
 - **No emoji as icons. No icon next to every heading.**
 
 ### Status indicators
@@ -267,7 +267,7 @@ Rules:
   group. The Group screen keeps its FAB (its list scrolls under it).
 
 **Group**
-- App bar: group name, then Activity (history icon) and settings icons.
+- App bar: group name, then Search, Activity (history icon) and settings icons.
 - Header (owner's decision, 2026-11-20): **no panel**. Straight on the background, aligned with
   the panel text below: a small label in the balance colour ("You are owed" / "You owe"), the
   amount under it in headlineLarge, number first. Settled: muted "Your balance" over
@@ -344,6 +344,23 @@ Rules:
   header and offers "Restore expense" instead.
 - Edit reuses Add expense ("Edit expense"), filled in, same split mode. Save shows
   "Done! Expense update ho gaya" with Undo, which puts the old version back.
+
+**Search** (step 11, owner 2026-11-20)
+- Opened by the search icon on the Group app bar. The app bar is the search field (autofocus,
+  hint "Search expenses", no box) with a clear ✕ once there's text. It matches the title or
+  note, any case.
+- Under it, two `FilterChip`s: "Involves me" (you paid or have a share) and "Month ▾" (a sheet:
+  "Any month" and each month that has expenses; the chip then reads "November 2026").
+- Results: the same day panels and expense rows as the Expenses tab, without payments.
+  Nothing matching: one muted line, "No expenses match."
+
+**By month** (Balances tab, step 11)
+- Under the member balances: "By month" label, one panel, one row per month, newest first:
+  "November 2026" over muted "Group spent Rs 11,197", and at the end "Your share" (muted) over
+  the amount in the row amount style, not a money colour (a share isn't a debt); "Not
+  involved" when you had no share. Numbers only, no chart. Deleted and unbalanced expenses
+  and payments don't count.
+- Lists on screens with a FAB end with `AppSpacing.fabClearance` so it never covers a row.
 
 **Activity**
 - One panel per day under a date label, like the expense list. Row: the actor's avatar, the

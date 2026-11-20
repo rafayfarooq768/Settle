@@ -26,7 +26,11 @@ class ExpenseList extends StatelessWidget {
     required this.members,
     required this.meId,
     this.onOpen,
+    this.where,
   });
+
+  /// Only the expenses this keeps (search), and no payments.
+  final bool Function(Expense)? where;
 
   /// Opens an expense's detail screen.
   final ValueChanged<Expense>? onOpen;
@@ -40,10 +44,10 @@ class ExpenseList extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final names = {for (final m in members) m.id: m.displayName};
-    final days = timelineByDay(expenses, settlements);
+    final days = timelineByDay(expenses, settlements, where: where);
     return ListView(
       // Room for the FAB so it never covers the last row.
-      padding: const EdgeInsets.only(bottom: AppSpacing.xxl * 3),
+      padding: const EdgeInsets.only(bottom: AppSpacing.fabClearance),
       children: [
         for (final (day, list) in days) ...[
           SectionLabel(dayLabel(l10n, day)),

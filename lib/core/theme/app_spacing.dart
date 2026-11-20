@@ -9,6 +9,10 @@ class AppSpacing {
   static const double xl = 24;
   static const double xxl = 32;
 
+  /// Empty space under a list on a screen with a FAB, so the FAB never
+  /// covers the last row.
+  static const double fabClearance = xxl * 3;
+
   /// Standard screen horizontal padding (DESIGN.md §4).
   static const double screenHorizontal = lg;
 

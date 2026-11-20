@@ -1267,4 +1267,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copiedTooltip => 'Copied';
+
+  @override
+  String get searchTooltip => 'Search';
+
+  @override
+  String get searchHint => 'Search expenses';
+
+  @override
+  String get clearSearchTooltip => 'Clear';
+
+  @override
+  String get filterInvolvesMe => 'Involves me';
+
+  @override
+  String get filterMonth => 'Month';
+
+  @override
+  String get filterAnyMonth => 'Any month';
+
+  @override
+  String get searchNoResults => 'No expenses match.';
+
+  @override
+  String get byMonthSection => 'By month';
+
+  @override
+  String monthGroupSpent(String amount) {
+    return 'Group spent $amount';
+  }
+
+  @override
+  String get monthYourShare => 'Your share';
+
+  @override
+  String get monthNotInvolved => 'Not involved';
 }

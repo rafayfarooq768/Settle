@@ -90,7 +90,7 @@ class SettleUpTab extends ConsumerWidget {
         ];
 
         return ListView(
-          padding: const EdgeInsets.only(bottom: AppSpacing.xxl * 3),
+          padding: const EdgeInsets.only(bottom: AppSpacing.fabClearance),
           children: [
             if (mine.isNotEmpty) ...[
               SectionLabel(l10n.settleYoursLabel),

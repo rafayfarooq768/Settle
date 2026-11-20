@@ -73,17 +73,22 @@ Set<String> settledExpenseIds(
 
 /// Expenses and confirmed payments grouped by calendar day, newest day
 /// and newest item first (DESIGN.md §6 date headers). Deleted expenses
-/// and pending payments are left out.
+/// and pending payments are left out. With [where] (search), only the
+/// expenses it keeps are listed and no payments; "settled" is still
+/// worked out from all of them.
 List<(DateTime day, List<TimelineItem> items)> timelineByDay(
   Iterable<Expense> expenses,
-  Iterable<Settlement> settlements,
-) {
+  Iterable<Settlement> settlements, {
+  bool Function(Expense)? where,
+}) {
   final settled = settledExpenseIds(expenses, settlements);
   final items = <TimelineItem>[
     for (final e in expenses)
-      if (!e.deleted) ExpenseItem(e, settled: settled.contains(e.id)),
-    for (final s in settlements)
-      if (s.isConfirmed) PaymentItem(s),
+      if (!e.deleted && (where == null || where(e)))
+        ExpenseItem(e, settled: settled.contains(e.id)),
+    if (where == null)
+      for (final s in settlements)
+        if (s.isConfirmed) PaymentItem(s),
   ]..sort((a, b) => b.at.compareTo(a.at));
 
   final days = <DateTime, List<TimelineItem>>{};

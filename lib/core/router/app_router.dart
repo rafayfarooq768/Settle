@@ -19,6 +19,7 @@ import '../../features/profile/ui/settings_screen.dart';
 import '../../features/activity/ui/activity_screen.dart';
 import '../../features/expenses/ui/add_expense_screen.dart';
 import '../../features/expenses/ui/expense_detail_screen.dart';
+import '../../features/expenses/ui/expense_search_screen.dart';
 import '../../features/expenses/ui/items_screen.dart';
 import '../../features/expenses/ui/payers_screen.dart';
 import '../../features/expenses/ui/split_screen.dart';
@@ -111,6 +112,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 ),
               ),
             ],
+          ),
+          GoRoute(
+            path: 'search',
+            builder: (context, state) =>
+                ExpenseSearchScreen(groupId: state.pathParameters['id']!),
           ),
           GoRoute(
             path: 'activity',

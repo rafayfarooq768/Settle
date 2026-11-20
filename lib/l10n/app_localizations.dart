@@ -2175,6 +2175,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copied'**
   String get copiedTooltip;
+
+  /// No description provided for @searchTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchTooltip;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search expenses'**
+  String get searchHint;
+
+  /// No description provided for @clearSearchTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearSearchTooltip;
+
+  /// No description provided for @filterInvolvesMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Involves me'**
+  String get filterInvolvesMe;
+
+  /// No description provided for @filterMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get filterMonth;
+
+  /// No description provided for @filterAnyMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Any month'**
+  String get filterAnyMonth;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses match.'**
+  String get searchNoResults;
+
+  /// No description provided for @byMonthSection.
+  ///
+  /// In en, this message translates to:
+  /// **'By month'**
+  String get byMonthSection;
+
+  /// No description provided for @monthGroupSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Group spent {amount}'**
+  String monthGroupSpent(String amount);
+
+  /// No description provided for @monthYourShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Your share'**
+  String get monthYourShare;
+
+  /// No description provided for @monthNotInvolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Not involved'**
+  String get monthNotInvolved;
 }
 
 class _AppLocalizationsDelegate

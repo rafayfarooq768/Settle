@@ -46,6 +46,12 @@ class GroupScreen extends ConsumerWidget {
         title: Text(loaded?.name ?? ''),
         actions: [
           if (loaded != null && me.valueOrNull != null) ...[
+            // Search and filter expenses (PLAN.md §3 item 7).
+            IconButton(
+              tooltip: l10n.searchTooltip,
+              icon: const Icon(Icons.search),
+              onPressed: () => context.push('/groups/$groupId/search'),
+            ),
             // Who did what (PLAN.md §3 item 12).
             IconButton(
               tooltip: l10n.activityTooltip,

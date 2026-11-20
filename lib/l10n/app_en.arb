@@ -1053,5 +1053,23 @@
     }
   },
   "copyNumberTooltip": "Copy number",
-  "copiedTooltip": "Copied"
+  "copiedTooltip": "Copied",
+  "searchTooltip": "Search",
+  "searchHint": "Search expenses",
+  "clearSearchTooltip": "Clear",
+  "filterInvolvesMe": "Involves me",
+  "filterMonth": "Month",
+  "filterAnyMonth": "Any month",
+  "searchNoResults": "No expenses match.",
+  "byMonthSection": "By month",
+  "monthGroupSpent": "Group spent {amount}",
+  "@monthGroupSpent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "monthYourShare": "Your share",
+  "monthNotInvolved": "Not involved"
 }
