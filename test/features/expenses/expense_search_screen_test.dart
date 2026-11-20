@@ -85,4 +85,23 @@ void main() {
     await tester.pump();
     expect(find.text(l10n.searchNoResults), findsOneWidget);
   });
+
+  // Bug (owner, 2026-11-20): the Month chip was a pixel taller.
+  testWidgets('both filter chips are the same height', (tester) async {
+    await open(tester);
+    // The visible chip (its Material), not the 48 tap area around it.
+    double visible(int i) => tester
+        .getSize(
+          find
+              .descendant(
+                of: find.byType(FilterChip).at(i),
+                matching: find.byType(Material),
+              )
+              .first,
+        )
+        .height;
+    final a = visible(0);
+    final b = visible(1);
+    expect(b, a);
+  });
 }

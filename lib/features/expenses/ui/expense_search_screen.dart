@@ -138,10 +138,19 @@ class _ExpenseSearchScreenState extends ConsumerState<ExpenseSearchScreen> {
                             ? l10n.filterMonth
                             : format.format(_month!),
                       ),
-                      // Small so this chip is as tall as "Involves me".
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        size: AppSizes.buttonIcon,
+                      // Drawn full size but takes no height, so this chip
+                      // is exactly as tall as "Involves me" (the icon is a
+                      // pixel taller than the text line).
+                      const SizedBox(
+                        width: AppSizes.buttonIcon,
+                        height: 0,
+                        child: OverflowBox(
+                          maxHeight: AppSizes.buttonIcon,
+                          child: Icon(
+                            Icons.arrow_drop_down,
+                            size: AppSizes.buttonIcon,
+                          ),
+                        ),
                       ),
                     ],
                   ),
