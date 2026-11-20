@@ -2,7 +2,9 @@ import '../../../core/money/money.dart';
 
 /// How the shares were produced. Balance math never looks at this
 /// (PLAN.md §4); it's kept so the expense can be edited in the same mode.
-enum SplitMode { equal, exact, percent, shares, itemized }
+/// Shares (units per person) was removed by the owner on 2026-11-20; an
+/// old expense saved that way still counts (its shares are stored).
+enum SplitMode { equal, exact, percent, itemized }
 
 /// `groups/{groupId}/expenses/{expenseId}` (PLAN.md §7). Amounts are paisa.
 class Expense {

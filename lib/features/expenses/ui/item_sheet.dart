@@ -19,24 +19,32 @@ class ItemSheetResult {
 }
 
 /// Add or edit one bill item: name, price, who had it (DESIGN.md §8: a
-/// sheet for a small form). New items start with everyone ticked, so a
-/// shared item is one tap less.
+/// sheet for a small form). New items start with everyone ticked. A
+/// [shared] item has no "Who had it?": it's split equally.
 Future<ItemSheetResult?> showItemSheet(
   BuildContext context, {
   required List<Member> members,
   required String meId,
   BillLine? line,
+  bool shared = false,
 }) => showAppSheet<ItemSheetResult>(
   context: context,
   scrollControlled: true,
-  builder: (_) => _ItemSheet(members: members, meId: meId, line: line),
+  builder: (_) =>
+      _ItemSheet(members: members, meId: meId, line: line, shared: shared),
 );
 
 class _ItemSheet extends StatefulWidget {
-  const _ItemSheet({required this.members, required this.meId, this.line});
+  const _ItemSheet({
+    required this.members,
+    required this.meId,
+    required this.shared,
+    this.line,
+  });
 
   final List<Member> members;
   final String meId;
+  final bool shared;
   final BillLine? line;
 
   @override
@@ -56,9 +64,34 @@ class _ItemSheetState extends State<_ItemSheet> {
   };
   String? _priceError;
   String? _whoError;
+  final _nameFocus = FocusNode();
+  Animation<double>? _sheetIn;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Open the keyboard only once the sheet has slid in: both moving at
+    // once made the sheet relayout every frame and stutter.
+    if (widget.line != null || _sheetIn != null) return;
+    _sheetIn = ModalRoute.of(context)?.animation;
+    if (_sheetIn == null || _sheetIn!.isCompleted) {
+      _nameFocus.requestFocus();
+    } else {
+      _sheetIn!.addStatusListener(_focusWhenOpen);
+    }
+  }
+
+  void _focusWhenOpen(AnimationStatus status) {
+    if (status == AnimationStatus.completed && mounted) {
+      _sheetIn?.removeStatusListener(_focusWhenOpen);
+      _nameFocus.requestFocus();
+    }
+  }
 
   @override
   void dispose() {
+    _sheetIn?.removeStatusListener(_focusWhenOpen);
+    _nameFocus.dispose();
     _name.dispose();
     _price.dispose();
     super.dispose();
@@ -71,7 +104,7 @@ class _ItemSheetState extends State<_ItemSheet> {
       _priceError = price == null || price == 0
           ? l10n.errorAmountRequired
           : null;
-      _whoError = _who.isEmpty ? l10n.errorPickWhoHad : null;
+      _whoError = !widget.shared && _who.isEmpty ? l10n.errorPickWhoHad : null;
     });
     if (_priceError != null || _whoError != null) return;
     Navigator.of(context).pop(
@@ -79,14 +112,54 @@ class _ItemSheetState extends State<_ItemSheet> {
         BillLine(
           name: _name.text.trim(),
           amount: price!,
-          memberIds: [
-            for (final m in widget.members)
-              if (_who.contains(m.id)) m.id,
-          ],
+          memberIds: widget.shared
+              ? const []
+              : [
+                  for (final m in widget.members)
+                    if (_who.contains(m.id)) m.id,
+                ],
         ),
       ),
     );
   }
+
+  /// "Who had it?" and its chips.
+  List<Widget> _whoHad(AppLocalizations l10n, ThemeData theme) => [
+    const SizedBox(height: AppSpacing.lg),
+    Text(
+      l10n.itemWhoHad,
+      style: theme.textTheme.labelLarge?.copyWith(
+        color: _whoError == null
+            ? theme.colorScheme.onSurfaceVariant
+            : theme.colorScheme.error,
+      ),
+    ),
+    const SizedBox(height: AppSpacing.sm),
+    Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: [
+        for (final m in widget.members)
+          FilterChip(
+            label: Text(memberName(l10n, m, widget.meId)),
+            selected: _who.contains(m.id),
+            onSelected: (on) => setState(() {
+              on ? _who.add(m.id) : _who.remove(m.id);
+              _whoError = null;
+            }),
+          ),
+      ],
+    ),
+    if (_whoError != null) ...[
+      const SizedBox(height: AppSpacing.xs),
+      Text(
+        _whoError!,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.error,
+        ),
+      ),
+    ],
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -104,13 +177,15 @@ class _ItemSheetState extends State<_ItemSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SheetTitle(
-                widget.line == null ? l10n.itemAddTitle : l10n.itemEditTitle,
-                inset: false,
-              ),
+              SheetTitle(switch ((widget.shared, widget.line == null)) {
+                (false, true) => l10n.itemAddTitle,
+                (false, false) => l10n.itemEditTitle,
+                (true, true) => l10n.sharedAddTitle,
+                (true, false) => l10n.sharedEditTitle,
+              }, inset: false),
               TextField(
                 controller: _name,
-                autofocus: widget.line == null,
+                focusNode: _nameFocus,
                 maxLength: 60,
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.next,
@@ -136,40 +211,7 @@ class _ItemSheetState extends State<_ItemSheet> {
                   errorText: _priceError,
                 ),
               ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                l10n.itemWhoHad,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: _whoError == null
-                      ? theme.colorScheme.onSurfaceVariant
-                      : theme.colorScheme.error,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Wrap(
-                spacing: AppSpacing.sm,
-                runSpacing: AppSpacing.sm,
-                children: [
-                  for (final m in widget.members)
-                    FilterChip(
-                      label: Text(memberName(l10n, m, widget.meId)),
-                      selected: _who.contains(m.id),
-                      onSelected: (on) => setState(() {
-                        on ? _who.add(m.id) : _who.remove(m.id);
-                        _whoError = null;
-                      }),
-                    ),
-                ],
-              ),
-              if (_whoError != null) ...[
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  _whoError!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.error,
-                  ),
-                ),
-              ],
+              if (!widget.shared) ..._whoHad(l10n, theme),
               const SizedBox(height: AppSpacing.xl),
               LoadingButton(label: l10n.itemSaveButton, onPressed: _save),
               if (widget.line != null) ...[

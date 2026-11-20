@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/money/money.dart';
-import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/amount_field.dart';
@@ -54,6 +53,7 @@ class ItemsScreen extends ConsumerStatefulWidget {
 
 class _ItemsScreenState extends ConsumerState<ItemsScreen> {
   late final List<BillLine> _items = [...?widget.args.spec?.items];
+  late final List<BillLine> _shared = [...?widget.args.spec?.shared];
   late final _tax = _controller(_percentText(widget.args.spec?.taxBp));
   late final _service = _controller(_percentText(widget.args.spec?.serviceBp));
   late final _tip = _controller(switch (widget.args.spec?.tip) {
@@ -76,30 +76,39 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
     super.dispose();
   }
 
-  ItemizedSpec get _spec => ItemizedSpec(
+  ItemizedSpec _spec(List<String> order) => ItemizedSpec(
     items: _items,
+    shared: _shared,
+    sharedWith: sharedWithFor(_items, order),
     taxBp: parsePercent(_tax.text) ?? 0,
     serviceBp: parsePercent(_service.text) ?? 0,
     tip: parseRupees(_tip.text) ?? 0,
     spread: _equally ? ExtrasSpread.equal : ExtrasSpread.proportional,
   );
 
-  Future<void> _edit(List<Member> members, [int? index]) async {
+  /// Add (no [index]) or edit an item, in [_shared] when [shared].
+  Future<void> _edit(
+    List<Member> members, {
+    int? index,
+    bool shared = false,
+  }) async {
+    final list = shared ? _shared : _items;
     final result = await showItemSheet(
       context,
       members: members,
       meId: widget.args.meId,
-      line: index == null ? null : _items[index],
+      line: index == null ? null : list[index],
+      shared: shared,
     );
     if (result == null || !mounted) return;
     setState(() {
       final line = result.line;
       if (index == null) {
-        if (line != null) _items.add(line);
+        if (line != null) list.add(line);
       } else if (line == null) {
-        _items.removeAt(index);
+        list.removeAt(index);
       } else {
-        _items[index] = line;
+        list[index] = line;
       }
     });
   }
@@ -114,12 +123,13 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
             .where((m) => m.active)
             .toList();
     final byId = {for (final m in members) m.id: m};
-    final spec = _spec;
+    final order = [for (final m in members) m.id];
+    final spec = _spec(order);
     final ready = spec.problem(null) == null;
     final owes = ready
         ? spec.shares(
             amount: spec.total,
-            order: [for (final m in members) m.id],
+            order: order,
             payers: widget.args.payerIds,
           )
         : const <String, int>{};
@@ -138,9 +148,25 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                 _ItemRow(
                   line: _items[i],
                   people: _peopleText(l10n, _items[i], members, byId),
-                  onTap: () => _edit(members, i),
+                  onTap: () => _edit(members, index: i),
                 ),
               _AddRow(label: l10n.itemsAdd, onTap: () => _edit(members)),
+            ],
+          ),
+          SectionLabel(l10n.sharedSection),
+          Panel(
+            dividerIndent: AppSpacing.lg,
+            children: [
+              for (var i = 0; i < _shared.length; i++)
+                _ItemRow(
+                  line: _shared[i],
+                  people: l10n.sharedSplitBetween(spec.sharedWith.length),
+                  onTap: () => _edit(members, index: i, shared: true),
+                ),
+              _AddRow(
+                label: l10n.sharedAdd,
+                onTap: () => _edit(members, shared: true),
+              ),
             ],
           ),
           SectionLabel(l10n.extrasSection),
@@ -311,36 +337,11 @@ class _ExtraRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     return ListTile(
       minTileHeight: AppSpacing.rowHeight,
       title: Text(label),
       subtitle: percent && amount > 0 ? Text(formatRupees(amount)) : null,
-      trailing: SizedBox(
-        width: AppSizes.splitInputWidth,
-        child: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: <TextInputFormatter>[
-            percent ? PercentInputFormatter() : RupeeInputFormatter(),
-          ],
-          textAlign: TextAlign.end,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            // Prefix/suffix only show once there's text; the hint says
-            // the unit while the box is empty.
-            hintText: percent
-                ? '0${l10n.percentSuffix}'
-                : '${l10n.currencyPrefix} 0',
-            prefixText: percent ? null : '${l10n.currencyPrefix} ',
-            suffixText: percent ? l10n.percentSuffix : null,
-          ),
-        ),
-      ),
+      trailing: UnitNumberField(controller: controller, percent: percent),
     );
   }
 }

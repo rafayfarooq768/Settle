@@ -38,7 +38,7 @@ class SplitArgs {
   final SplitSpec spec;
 }
 
-/// The split screen (DESIGN.md §11 Add expense): Equal / Exact / % / Shares
+/// The split screen (DESIGN.md §11 Add expense): Equal / Exact / %
 /// as a SegmentedButton, the members below, a live "Rs X left" line, and
 /// Done only once it adds up. Pops with the new [SplitSpec].
 class SplitScreen extends ConsumerStatefulWidget {
@@ -85,8 +85,6 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
             formatPercent(bp).replaceAll('%', ''),
           ),
         );
-      case SharesSpec(:final units):
-        units.forEach((id, u) => _field(SplitMode.shares, id, '$u'));
       case EqualSpec() || ItemizedSpec():
         break;
     }
@@ -111,18 +109,7 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
       (_fields[mode] ??= {})[id] ??= TextEditingController(text: initial)
         ..addListener(() => setState(() {}));
 
-  void _switchTo(SplitMode mode, List<Member> members) {
-    setState(() {
-      // Shares start at 1 for whoever was ticked, so it starts as an
-      // equal split and you only change the people who differ.
-      if (mode == SplitMode.shares && _fields[mode] == null) {
-        for (final m in members) {
-          _field(mode, m.id, _ticked!.contains(m.id) ? '1' : '');
-        }
-      }
-      _mode = mode;
-    });
-  }
+  void _switchTo(SplitMode mode) => setState(() => _mode = mode);
 
   SplitSpec _spec(List<Member> members) {
     Map<String, int> read(SplitMode mode, int? Function(String) parse) => {
@@ -135,9 +122,8 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
           if (_ticked!.contains(m.id)) m.id,
       ]),
       SplitMode.exact => ExactSpec(read(SplitMode.exact, parseRupees)),
-      SplitMode.percent => PercentSpec(read(SplitMode.percent, parsePercent)),
-      // itemized isn't on this screen.
-      _ => SharesSpec(read(SplitMode.shares, int.tryParse)),
+      // Percent (itemized has its own screen).
+      _ => PercentSpec(read(SplitMode.percent, parsePercent)),
     };
   }
 
@@ -214,13 +200,9 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
                   value: SplitMode.percent,
                   label: Text(l10n.splitModePercent),
                 ),
-                ButtonSegment(
-                  value: SplitMode.shares,
-                  label: Text(l10n.splitModeShares),
-                ),
               ],
               selected: {_mode},
-              onSelectionChanged: (s) => _switchTo(s.first, members),
+              onSelectionChanged: (s) => _switchTo(s.first),
             ),
           ),
           Padding(
@@ -234,8 +216,7 @@ class _SplitScreenState extends ConsumerState<SplitScreen> {
               switch (_mode) {
                 SplitMode.equal => l10n.splitHintEqual,
                 SplitMode.exact => l10n.splitHintExact,
-                SplitMode.percent => l10n.splitHintPercent,
-                _ => l10n.splitHintShares,
+                _ => l10n.splitHintPercent,
               },
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
@@ -322,9 +303,10 @@ class _TickRow extends StatelessWidget {
   }
 }
 
-/// Exact / % / Shares: a number per person at the end of the row.
+/// Exact / %: a number per person at the end of the row.
 class SplitInputRow extends StatelessWidget {
   const SplitInputRow({
+    super.key,
     required this.member,
     required this.meId,
     required this.mode,
@@ -337,36 +319,12 @@ class SplitInputRow extends StatelessWidget {
   final SplitMode mode;
   final TextEditingController controller;
 
-  /// Rupees this works out to (% and Shares), or null.
+  /// Rupees this works out to (%), or null.
   final int? owes;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final (formatters, keyboard, prefix, suffix) = switch (mode) {
-      SplitMode.exact => (
-        <TextInputFormatter>[RupeeInputFormatter()],
-        const TextInputType.numberWithOptions(decimal: true),
-        l10n.currencyPrefix,
-        null,
-      ),
-      SplitMode.percent => (
-        <TextInputFormatter>[PercentInputFormatter()],
-        const TextInputType.numberWithOptions(decimal: true),
-        null,
-        l10n.percentSuffix,
-      ),
-      _ => (
-        <TextInputFormatter>[
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(3),
-        ],
-        TextInputType.number,
-        null,
-        null,
-      ),
-    };
     return ListTile(
       minTileHeight: AppSpacing.rowHeight,
       leading: MemberAvatar(
@@ -375,25 +333,62 @@ class SplitInputRow extends StatelessWidget {
       ),
       title: Text(memberName(l10n, member, meId)),
       subtitle: owes == null ? null : Text(formatRupees(owes!)),
-      trailing: SizedBox(
-        width: AppSizes.splitInputWidth,
-        child: TextField(
-          controller: controller,
-          keyboardType: keyboard,
-          inputFormatters: formatters,
-          textAlign: TextAlign.end,
-          textInputAction: TextInputAction.next,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            // Prefix/suffix only show once there's text; the hint says
-            // the unit while the box is empty.
-            hintText: '${prefix == null ? '' : '$prefix '}0${suffix ?? ''}',
-            prefixText: prefix == null ? null : '$prefix ',
-            suffixText: suffix,
-          ),
+      trailing: UnitNumberField(
+        controller: controller,
+        percent: mode == SplitMode.percent,
+      ),
+    );
+  }
+}
+
+/// A small number box with its unit always showing: "Rs 300" or "16 %".
+/// (InputDecoration's prefix/suffix text hides while the box is empty,
+/// which made a bare "0" look like rupees, and doubled up with a "0%"
+/// hint once focused.)
+class UnitNumberField extends StatelessWidget {
+  const UnitNumberField({
+    super.key,
+    required this.controller,
+    this.percent = false,
+  });
+
+  final TextEditingController controller;
+  final bool percent;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final unit = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+      child: Text(
+        percent ? l10n.percentSuffix : l10n.currencyPrefix,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+    const fit = BoxConstraints();
+    return SizedBox(
+      width: AppSizes.splitInputWidth,
+      child: TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: <TextInputFormatter>[
+          percent ? PercentInputFormatter() : RupeeInputFormatter(),
+        ],
+        textAlign: TextAlign.end,
+        textInputAction: TextInputAction.next,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
+        decoration: InputDecoration(
+          isDense: true,
+          hintText: '0',
+          prefixIcon: percent ? null : unit,
+          prefixIconConstraints: fit,
+          suffixIcon: percent ? unit : null,
+          suffixIconConstraints: fit,
         ),
       ),
     );

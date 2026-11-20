@@ -51,9 +51,6 @@ sealed class SplitSpec {
       case SplitMode.percent:
         final m = ints(json['basisPoints']);
         return m == null ? null : PercentSpec(m);
-      case SplitMode.shares:
-        final m = ints(json['units']);
-        return m == null ? null : SharesSpec(m);
       case SplitMode.itemized:
         return ItemizedSpec.fromJson(json);
     }
@@ -192,37 +189,6 @@ class PercentSpec extends SplitSpec {
   Json toJson() => {'basisPoints': _nonZero(basisPoints)};
 }
 
-class SharesSpec extends SplitSpec {
-  const SharesSpec(this.units);
-
-  /// memberId → units (e.g. nights). Missing = 0.
-  final Map<String, int> units;
-
-  @override
-  SplitMode get mode => SplitMode.shares;
-
-  @override
-  SplitProblem? problem(int? amount) =>
-      sumOf(units) < 1 ? const NobodyPicked() : null;
-
-  @override
-  Map<String, int> shares({
-    required int amount,
-    required List<String> order,
-    required Iterable<String> payers,
-  }) => _nonZero(
-    splitShares(
-      amount: amount,
-      units: _nonZero(units),
-      order: order,
-      payers: payers,
-    ),
-  );
-
-  @override
-  Json toJson() => {'units': _nonZero(units)};
-}
-
 /// People with nothing entered (or whose part rounds to 0 paisa) aren't
 /// part of the expense, so they're left out ("not involved" in the list).
 Map<String, int> _nonZero(Map<String, int> m) => {
@@ -245,20 +211,31 @@ class BillLine {
   Json toJson() => {'name': name, 'amount': amount, 'members': memberIds};
 }
 
-/// Itemized (PLAN.md §4): items → people, plus tax and service charge as a
-/// percentage of the items and a tip in rupees. They're spread in
-/// proportion to what each person had, or equally. The bill total becomes
-/// the expense amount.
+/// Itemized (PLAN.md §4): items → people, shared items split equally
+/// between [sharedWith], plus tax and service charge as a percentage of
+/// the items and a tip in rupees. Those are spread in proportion to what
+/// each person had, or equally. The bill total becomes the expense amount.
 class ItemizedSpec extends SplitSpec {
   const ItemizedSpec({
     required this.items,
+    this.shared = const [],
+    this.sharedWith = const [],
     this.taxBp = 0,
     this.serviceBp = 0,
     this.tip = 0,
     this.spread = ExtrasSpread.proportional,
   });
 
+  /// Each person's own items (who had it is picked per item).
   final List<BillLine> items;
+
+  /// Shared items (drinks, starters): split equally between [sharedWith].
+  /// Their own `memberIds` aren't used.
+  final List<BillLine> shared;
+
+  /// Who the shared items are split between: everyone who had an item, or
+  /// the whole group when nobody did (worked out by the screen).
+  final List<String> sharedWith;
   final int taxBp;
   final int serviceBp;
 
@@ -266,7 +243,9 @@ class ItemizedSpec extends SplitSpec {
   final int tip;
   final ExtrasSpread spread;
 
-  int get itemsTotal => items.fold(0, (sum, i) => sum + i.amount);
+  /// Personal and shared items together, before tax, service and tip.
+  int get itemsTotal =>
+      [...items, ...shared].fold(0, (sum, i) => sum + i.amount);
 
   int get tax => percentOf(amount: itemsTotal, basisPoints: taxBp);
 
@@ -281,8 +260,9 @@ class ItemizedSpec extends SplitSpec {
 
   @override
   SplitProblem? problem(int? amount) {
-    if (items.isEmpty) return const NoItems();
-    if (items.any((i) => i.memberIds.isEmpty)) {
+    if (items.isEmpty && shared.isEmpty) return const NoItems();
+    if (items.any((i) => i.memberIds.isEmpty) ||
+        (shared.isNotEmpty && sharedWith.isEmpty)) {
       return const ItemWithoutPeople();
     }
     if (amount != null && amount != total) return BillTotalDiffers(total);
@@ -303,6 +283,8 @@ class ItemizedSpec extends SplitSpec {
         items: [
           for (final i in items)
             BillItem(amount: i.amount, memberIds: i.memberIds),
+          for (final i in shared)
+            BillItem(amount: i.amount, memberIds: sharedWith),
         ],
         order: order,
         extras: extras,
@@ -315,6 +297,8 @@ class ItemizedSpec extends SplitSpec {
   @override
   Json toJson() => {
     'items': [for (final i in items) i.toJson()],
+    'shared': [for (final i in shared) i.toJson()],
+    'sharedWith': sharedWith,
     'taxBp': taxBp,
     'serviceBp': serviceBp,
     'tip': tip,
@@ -322,26 +306,38 @@ class ItemizedSpec extends SplitSpec {
   };
 
   static ItemizedSpec? fromJson(Json json) {
-    final raw = json['items'];
-    if (raw is! List) return null;
-    final items = <BillLine>[];
-    for (final i in raw) {
-      if (i is! Map) return null;
-      final amount = i['amount'];
-      final members = i['members'];
-      if (amount is! int || members is! List) return null;
-      if (members.any((id) => id is! String)) return null;
-      items.add(
-        BillLine(
-          name: i['name'] is String ? i['name'] as String : '',
-          amount: amount,
-          memberIds: members.cast<String>(),
-        ),
-      );
+    List<String>? ids(Object? raw) =>
+        raw is List && raw.every((id) => id is String)
+        ? raw.cast<String>()
+        : null;
+    List<BillLine>? lines(Object? raw) {
+      if (raw is! List) return null;
+      final out = <BillLine>[];
+      for (final i in raw) {
+        if (i is! Map) return null;
+        final amount = i['amount'];
+        final members = ids(i['members'] ?? const <String>[]);
+        if (amount is! int || members == null) return null;
+        out.add(
+          BillLine(
+            name: i['name'] is String ? i['name'] as String : '',
+            amount: amount,
+            memberIds: members,
+          ),
+        );
+      }
+      return out;
     }
+
+    final items = lines(json['items']);
+    final shared = lines(json['shared'] ?? const <Object>[]);
+    final sharedWith = ids(json['sharedWith'] ?? const <String>[]);
+    if (items == null || shared == null || sharedWith == null) return null;
     int intOf(String key) => json[key] is int ? json[key] as int : 0;
     return ItemizedSpec(
       items: items,
+      shared: shared,
+      sharedWith: sharedWith,
       taxBp: intOf('taxBp'),
       serviceBp: intOf('serviceBp'),
       tip: intOf('tip'),
@@ -350,4 +346,16 @@ class ItemizedSpec extends SplitSpec {
           : ExtrasSpread.proportional,
     );
   }
+}
+
+/// Who shared items are split between: everyone who had one of [items],
+/// in group [order]; the whole group when nobody did.
+List<String> sharedWithFor(List<BillLine> items, List<String> order) {
+  final had = {for (final i in items) ...i.memberIds};
+  return had.isEmpty
+      ? order
+      : [
+          for (final id in order)
+            if (had.contains(id)) id,
+        ];
 }

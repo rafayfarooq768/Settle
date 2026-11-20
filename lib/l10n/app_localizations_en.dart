@@ -796,9 +796,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splitModePercent => '%';
 
   @override
-  String get splitModeShares => 'Shares';
-
-  @override
   String get splitHintEqual => 'Tick who was there.';
 
   @override
@@ -806,9 +803,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splitHintPercent => 'Enter each person\'s percentage.';
-
-  @override
-  String get splitHintShares => 'Give each person shares, like nights stayed.';
 
   @override
   String splitLeftToAssign(String amount) {
@@ -829,31 +823,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splitAmountFirst => 'Enter the amount first.';
 
   @override
-  String get splitNoShares => 'Give at least one share.';
-
-  @override
   String get splitByExact => 'Exact amounts';
 
   @override
   String get splitByPercent => 'By percentage';
 
   @override
-  String get splitByShares => 'By shares';
-
-  @override
   String splitYourShare(String amount) {
     return 'Your share $amount';
-  }
-
-  @override
-  String splitSharesCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count shares',
-      one: '1 share',
-    );
-    return '$_temp0';
   }
 
   @override
@@ -977,4 +954,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splitByItems => 'By items';
+
+  @override
+  String get sharedSection => 'Shared items';
+
+  @override
+  String get sharedAdd => 'Add shared item';
+
+  @override
+  String get sharedAddTitle => 'Add shared item';
+
+  @override
+  String get sharedEditTitle => 'Edit shared item';
+
+  @override
+  String sharedSplitBetween(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return 'Split equally between $_temp0';
+  }
 }

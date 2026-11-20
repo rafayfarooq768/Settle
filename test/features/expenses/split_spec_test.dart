@@ -101,23 +101,6 @@ void main() {
     });
   });
 
-  group('Shares', () {
-    test('nights: 3 / 2 / 1 of Rs 6000', () {
-      final s = _shares(const SharesSpec({'a': 3, 'b': 2, 'c': 1}), 600000);
-      expect(s, {'a': 300000, 'b': 200000, 'c': 100000});
-    });
-
-    test('0 units means not involved', () {
-      final s = _shares(const SharesSpec({'a': 1, 'b': 0, 'c': 1}), 1000);
-      expect(s, {'a': 500, 'c': 500});
-    });
-
-    test('needs at least one unit', () {
-      expect(const SharesSpec({'a': 0}).problem(100), isA<NobodyPicked>());
-      expect(const SharesSpec({'a': 2}).problem(null), isNull);
-    });
-  });
-
   test('Equal keeps group order and needs someone', () {
     expect(_shares(const EqualSpec(['c', 'a']), 1000), {'a': 500, 'c': 500});
     expect(const EqualSpec([]).problem(100), isA<NobodyPicked>());
@@ -128,7 +111,6 @@ void main() {
       const EqualSpec(['a', 'b']),
       const ExactSpec({'a': 300, 'b': 700}),
       const PercentSpec({'a': 2500, 'b': 7500}),
-      const SharesSpec({'a': 1, 'b': 3}),
     ];
     for (final spec in specs) {
       final back = SplitSpec.fromJson(spec.mode, spec.toJson())!;
@@ -269,6 +251,43 @@ void main() {
       );
       expect((restaurant.problem(400000)! as BillTotalDiffers).total, 440000);
       expect(restaurant.problem(440000), isNull);
+    });
+
+    test('the restaurant with drinks as a shared item gives the same', () {
+      final withShared = ItemizedSpec(
+        items: restaurant.items.take(4).toList(),
+        shared: const [BillLine(name: 'Drinks', amount: 80000, memberIds: [])],
+        sharedWith: sharedWithFor(restaurant.items.take(4).toList(), _order),
+        taxBp: 1000,
+      );
+      expect(withShared.sharedWith, ['a', 'b', 'c', 'd']);
+      expect(withShared.total, 440000);
+      expect(_shares(withShared, 440000), _shares(restaurant, 440000));
+    });
+
+    test('shared items alone are split across the whole group', () {
+      const order = ['a', 'b'];
+      expect(sharedWithFor(const [], order), order);
+      final bill = ItemizedSpec(
+        items: const [],
+        shared: const [BillLine(name: 'Pizza', amount: 2000, memberIds: [])],
+        sharedWith: sharedWithFor(const [], order),
+      );
+      expect(bill.problem(null), isNull);
+      expect(bill.shares(amount: 2000, order: order, payers: const ['a']), {
+        'a': 1000,
+        'b': 1000,
+      });
+    });
+
+    test('older bills without shared items still read back', () {
+      final json = Map.of(restaurant.toJson())
+        ..remove('shared')
+        ..remove('sharedWith');
+      final back =
+          SplitSpec.fromJson(SplitMode.itemized, json)! as ItemizedSpec;
+      expect(back.shared, isEmpty);
+      expect(_shares(back, 440000), _shares(restaurant, 440000));
     });
 
     test('reads back from splitInput the same', () {

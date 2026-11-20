@@ -94,19 +94,10 @@ void main() {
     await tester.enterText(inputs().at(1), '40');
     await tester.pump();
     expect(find.text('Rs 600'), findsOneWidget);
+    // Only Equal, Exact and % (owner, 2026-11-20).
+    expect(find.text('Shares'), findsNothing);
     expect(find.text('Rs 400'), findsOneWidget);
     expect(doneEnabled(tester), isTrue);
-  });
-
-  testWidgets('shares start at 1 each and can be changed', (tester) async {
-    await open(tester);
-    await tester.tap(find.text(l10n.splitModeShares));
-    await tester.pump();
-    expect(find.text(l10n.splitSharesCount(2)), findsOneWidget);
-    await tester.enterText(inputs().at(0), '3');
-    await tester.pump();
-    expect(find.text('Rs 750'), findsOneWidget);
-    expect(find.text('Rs 250'), findsOneWidget);
   });
 
   testWidgets('reopening keeps what was entered', (tester) async {

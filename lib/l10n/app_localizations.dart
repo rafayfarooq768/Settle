@@ -1408,12 +1408,6 @@ abstract class AppLocalizations {
   /// **'%'**
   String get splitModePercent;
 
-  /// No description provided for @splitModeShares.
-  ///
-  /// In en, this message translates to:
-  /// **'Shares'**
-  String get splitModeShares;
-
   /// No description provided for @splitHintEqual.
   ///
   /// In en, this message translates to:
@@ -1431,12 +1425,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter each person\'s percentage.'**
   String get splitHintPercent;
-
-  /// No description provided for @splitHintShares.
-  ///
-  /// In en, this message translates to:
-  /// **'Give each person shares, like nights stayed.'**
-  String get splitHintShares;
 
   /// No description provided for @splitLeftToAssign.
   ///
@@ -1462,12 +1450,6 @@ abstract class AppLocalizations {
   /// **'Enter the amount first.'**
   String get splitAmountFirst;
 
-  /// No description provided for @splitNoShares.
-  ///
-  /// In en, this message translates to:
-  /// **'Give at least one share.'**
-  String get splitNoShares;
-
   /// No description provided for @splitByExact.
   ///
   /// In en, this message translates to:
@@ -1480,23 +1462,11 @@ abstract class AppLocalizations {
   /// **'By percentage'**
   String get splitByPercent;
 
-  /// No description provided for @splitByShares.
-  ///
-  /// In en, this message translates to:
-  /// **'By shares'**
-  String get splitByShares;
-
   /// No description provided for @splitYourShare.
   ///
   /// In en, this message translates to:
   /// **'Your share {amount}'**
   String splitYourShare(String amount);
-
-  /// No description provided for @splitSharesCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 share} other{{count} shares}}'**
-  String splitSharesCount(int count);
 
   /// No description provided for @percentSuffix.
   ///
@@ -1713,6 +1683,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'By items'**
   String get splitByItems;
+
+  /// No description provided for @sharedSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared items'**
+  String get sharedSection;
+
+  /// No description provided for @sharedAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add shared item'**
+  String get sharedAdd;
+
+  /// No description provided for @sharedAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add shared item'**
+  String get sharedAddTitle;
+
+  /// No description provided for @sharedEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit shared item'**
+  String get sharedEditTitle;
+
+  /// No description provided for @sharedSplitBetween.
+  ///
+  /// In en, this message translates to:
+  /// **'Split equally between {count, plural, =1{1 person} other{{count} people}}'**
+  String sharedSplitBetween(int count);
 }
 
 class _AppLocalizationsDelegate

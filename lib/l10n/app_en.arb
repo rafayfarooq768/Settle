@@ -625,11 +625,9 @@
   "splitModeEqual": "Equal",
   "splitModeExact": "Exact",
   "splitModePercent": "%",
-  "splitModeShares": "Shares",
   "splitHintEqual": "Tick who was there.",
   "splitHintExact": "Enter what each person owes.",
   "splitHintPercent": "Enter each person's percentage.",
-  "splitHintShares": "Give each person shares, like nights stayed.",
   "splitLeftToAssign": "{amount} left to assign",
   "@splitLeftToAssign": {
     "placeholders": {
@@ -655,23 +653,13 @@
     }
   },
   "splitAmountFirst": "Enter the amount first.",
-  "splitNoShares": "Give at least one share.",
   "splitByExact": "Exact amounts",
   "splitByPercent": "By percentage",
-  "splitByShares": "By shares",
   "splitYourShare": "Your share {amount}",
   "@splitYourShare": {
     "placeholders": {
       "amount": {
         "type": "String"
-      }
-    }
-  },
-  "splitSharesCount": "{count, plural, =1{1 share} other{{count} shares}}",
-  "@splitSharesCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
       }
     }
   },
@@ -768,5 +756,17 @@
   "errorItemsNeeded": "Add at least one item.",
   "errorItemNeedsPeople": "Pick who had each item.",
   "errorPickWhoHad": "Pick who had it.",
-  "splitByItems": "By items"
+  "splitByItems": "By items",
+  "sharedSection": "Shared items",
+  "sharedAdd": "Add shared item",
+  "sharedAddTitle": "Add shared item",
+  "sharedEditTitle": "Edit shared item",
+  "sharedSplitBetween": "Split equally between {count, plural, =1{1 person} other{{count} people}}",
+  "@sharedSplitBetween": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

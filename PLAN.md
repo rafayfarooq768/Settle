@@ -49,10 +49,11 @@ Build order (§9) decides the sequence, not separate releases.
 5. **Placeholder members**: add friends by name before they install. They claim their name later.
 
 ### Expenses
-6. Add expense with split modes: **Equal, Exact amounts, Percentages, Shares, Itemized**.
+6. Add expense with split modes: **Equal, Exact amounts, Percentages, Itemized**.
    Itemized (restaurants): items, shared items, tax/service charge/tip spread proportionally.
    Tax and service are a % of the items, tip is in rupees; the bill total becomes the
-   expense amount (2026-11-20).
+   expense amount. Shared items (drinks, starters) are a separate list split equally between
+   everyone who had an item, or the whole group if nobody did (2026-11-20).
 7. Edit/delete expense; balances always recompute.
    Multiple payers on one expense.
    Recurring expenses (rent, internet), created by the app when opened on/after the due date.
@@ -87,6 +88,8 @@ Build order (§9) decides the sequence, not separate releases.
 Don't build these or suggest them back unless the owner asks.
 - Committee (BC/kameti) tracking.
 - Export group to CSV.
+- Shares split mode (units per person) — owner's decision, 2026-11-20. Equal, Exact and %
+  cover it.
 
 ---
 
@@ -118,7 +121,6 @@ Positive = is owed. Negative = owes. Sum of all nets in a group = 0 (assert this
 | Equal | tick participants | at least 1 participant |
 | Exact | amount per person | sum = total; show "Rs X left to assign" live |
 | Percent | % per person | sum = 100% |
-| Shares | units per person (e.g. nights) | at least 1 unit |
 | Itemized | items → people, plus tax/service/tip | tax spread proportionally to subtotal (option: equally) |
 
 ### Worked examples (use as unit tests)
@@ -177,7 +179,7 @@ groups/{groupId}/members/{memberId}
 
 groups/{groupId}/expenses/{expenseId}
   title, amount (paisa), date, createdBy (uid), createdAt, updatedAt, deleted (soft delete)
-  splitMode: "equal" | "exact" | "percent" | "shares" | "itemized"
+  splitMode: "equal" | "exact" | "percent" | "itemized"
   payers: { memberId: paisa }     // sums to amount
   shares: { memberId: paisa }     // sums to amount
   splitInput: { ... }             // raw input so the expense can be edited in the same mode
@@ -264,7 +266,7 @@ See DESIGN.md for how each one should look.
 5. Add expense: Equal split. Group expenses list.
 6. Balances + settle-up list.
 7. Settle flow + WhatsApp reminder.
-8. Exact / Percent / Shares splits, then Itemized and multiple payers.
+8. Exact / Percent splits, then Itemized and multiple payers.
 9. Edit/delete + activity log + duplicate guard.
 10. Payment methods + settle-up pay screen.
 11. Recurring expenses, search/filter, monthly summary.

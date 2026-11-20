@@ -30,7 +30,7 @@ import '../../../core/widgets/app_snack_bar.dart';
 /// Add expense (DESIGN.md §11): amount → title → paid by → split → Save.
 /// The common case is 3 taps (PLAN.md §2): paid by defaults to you and
 /// everyone is ticked, split equally. Split opens the split screen
-/// (Equal / Exact / % / Shares). Works offline.
+/// (Equal / Exact / %, or a bill by items). Works offline.
 class AddExpenseScreen extends ConsumerStatefulWidget {
   const AddExpenseScreen({super.key, required this.groupId});
 
@@ -350,7 +350,7 @@ class _Details extends StatelessWidget {
   final VoidCallback onSplit;
   final VoidCallback onDay;
 
-  /// "Equally between 5" + "Rs 200 each"; "By shares" + "Your share
+  /// "Equally between 5" + "Rs 200 each"; "By percentage" + "Your share
   /// Rs 300"; or what's still left to assign.
   (String, String?) _splitSummary(AppLocalizations l10n) {
     final amount = this.amount;
@@ -359,7 +359,6 @@ class _Details extends StatelessWidget {
       EqualSpec(:final participants) => l10n.splitEqually(participants.length),
       ExactSpec() => l10n.splitByExact,
       PercentSpec() => l10n.splitByPercent,
-      SharesSpec() => l10n.splitByShares,
       ItemizedSpec() => l10n.splitByItems,
     };
     if (amount == null || amount == 0) return (value, null);

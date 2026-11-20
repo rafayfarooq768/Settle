@@ -92,6 +92,31 @@ void main() {
     expect(find.text('Sara'), findsNothing);
   });
 
+  testWidgets('a shared item has no "who had it" and is split equally', (
+    tester,
+  ) async {
+    await open(tester);
+    await tester.tap(find.text(l10n.sharedAdd).last);
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.sharedAddTitle), findsWidgets);
+    expect(find.text(l10n.itemWhoHad), findsNothing);
+    await tester.enterText(
+      find.widgetWithText(TextField, l10n.itemNameLabel),
+      'Drinks',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, l10n.itemPriceLabel),
+      '800',
+    );
+    await tester.tap(find.text(l10n.itemSaveButton));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Drinks'), findsOneWidget);
+    // Nobody has a personal item, so it's split across the group.
+    expect(find.text(l10n.sharedSplitBetween(2)), findsOneWidget);
+    expect(find.text('Rs 400'), findsNWidgets(2));
+  });
+
   testWidgets('an item can be deleted', (tester) async {
     await open(
       tester,

@@ -21,7 +21,7 @@ String splitProblemText(AppLocalizations l10n, SplitProblem problem) =>
     };
 
 /// The line when it adds up: "Rs 200 each", "Adds up to Rs 1,000",
-/// "Adds up to 100%", "6 shares".
+/// "Adds up to 100%", "Bill total Rs 4,400".
 String splitStatusText(AppLocalizations l10n, SplitSpec spec, int? amount) =>
     switch (spec) {
       EqualSpec(:final participants) =>
@@ -30,6 +30,5 @@ String splitStatusText(AppLocalizations l10n, SplitSpec spec, int? amount) =>
             : l10n.splitEqually(participants.length),
       ExactSpec() => l10n.splitAddsUp(formatRupees(amount ?? 0)),
       PercentSpec() => l10n.splitAddsUp(formatPercent(fullPercentBp)),
-      SharesSpec(:final units) => l10n.splitSharesCount(sumOf(units)),
       ItemizedSpec(:final total) => l10n.billTotal(formatRupees(total)),
     };

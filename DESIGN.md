@@ -264,20 +264,22 @@ Rules:
 **Add expense**
 - Amount (autofocus) → Title → Paid by (row, opens sheet) → Split (row: "Equally between 5", opens split screen) → Save.
 - Split screen (full screen, title "Split Rs 1,000"): mode selector as a `SegmentedButton`
-  (Equal / Exact / % / Shares), one muted line saying what to enter, then one panel of members:
-  Equal ticks people; Exact / % / Shares put a number field at the end of each row, and %/Shares
+  (Equal / Exact / %), one muted line saying what to enter, then one panel of members:
+  Equal ticks people; Exact / % put a number field at the end of each row (its "Rs" or "%" always
+  shows, the empty hint is "0"), and %
   show the rupees it works out to under the name. Above Done, a live line: "Rs 200 left to
   assign" (muted), "Rs 100 too much" (error colour), or "Adds up to Rs 1,000" (settled colour).
-  Done is disabled until it adds up. Switching modes keeps what you typed; Shares start at 1 each.
+  Done is disabled until it adds up. Switching modes keeps what you typed.
   Nobody with 0 is part of the expense. Back on Add expense the Split field says "Exact amounts"
-  / "By percentage" / "By shares" with "Your share Rs 300" (or what's left) under it.
+  / "By percentage" / "By items" with "Your share Rs 300" (or what's left) under it.
 - Several payers (owner, 2026-11-20): the Paid by sheet's last row is "More than one person",
   opening a screen with an amount per person, the same live line and Done. Paid by then reads
   "You and Sara" / "You and 2 others" with small overlapping avatars. In the list:
   "2 people paid Rs 1,500".
 - Itemized (owner, 2026-11-20: its own screen, not a 5th tab): a teal "Split a bill by items ›"
   link under the split screen's members opens "Split by items". Panels: Items (name, who had it
-  or "Everyone", price; last row "Add item" in teal with +), "Tax, service and tip" (Tax % and
+  or "Everyone", price; last row "Add item" in teal with +), Shared items (name, "Split equally
+  between 4 people", price; "Add shared item"; their sheet has no "Who had it?"), "Tax, service and tip" (Tax % and
   Service charge % with the rupees under them, Tip in Rs, and a "Split these equally" switch;
   off = by what each person had), then "Who owes what" once there's an item. Above Done:
   "Bill total Rs 4,400" (and "The amount changes from Rs 4,000" if you typed something else).

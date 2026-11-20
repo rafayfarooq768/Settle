@@ -170,7 +170,7 @@ service cloud.firestore {
             && str(d.title, 1, 100)
             && paisa(d.amount)
             && d.date is timestamp
-            && d.splitMode in ['equal', 'exact', 'percent', 'shares', 'itemized']
+            && d.splitMode in ['equal', 'exact', 'percent', 'itemized']
             && d.payers is map && d.payers.size() >= 1 && d.payers.size() <= 100
             && d.shares is map && d.shares.size() >= 1 && d.shares.size() <= 100
             && d.splitInput is map
