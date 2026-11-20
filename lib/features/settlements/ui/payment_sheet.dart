@@ -37,7 +37,7 @@ Future<int?> showPaymentSheet(
   ),
 );
 
-/// The person being paid's methods, preferred first, with the label above
+/// The person being paid's methods, as they added them, with the label above
 /// them ("Ali's payment methods") and what to say when there are none.
 typedef PayMethods = ({
   List<PaymentMethod> list,
@@ -166,7 +166,7 @@ class _PaymentSheetState extends State<_PaymentSheet> {
   }
 }
 
-/// One way to pay: the name (and "Preferred"), the account title, then the
+/// One way to pay: the name, the account title, then the
 /// number with a copy button. No panel: the sheet is already one.
 class PayMethodRow extends StatefulWidget {
   const PayMethodRow({super.key, required this.method});
@@ -214,21 +214,10 @@ class _PayMethodRowState extends State<PayMethodRow> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text.rich(
-                  TextSpan(
-                    text: m.name,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    children: [
-                      if (m.preferred)
-                        TextSpan(
-                          text: '  ${l10n.paymentMethodPreferred}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: muted,
-                          ),
-                        ),
-                    ],
+                Text(
+                  m.name,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 if (m.accountTitle.isNotEmpty)

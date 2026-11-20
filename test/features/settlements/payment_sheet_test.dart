@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:settle/core/theme/app_theme.dart';
 import 'package:settle/features/profile/domain/payment_method.dart';
-import 'package:settle/features/profile/domain/payment_methods.dart';
 import 'package:settle/features/settlements/ui/payment_sheet.dart';
 import 'package:settle/l10n/app_localizations.dart';
 import 'package:settle/l10n/app_localizations_en.dart';
@@ -17,10 +16,9 @@ const meezan = PaymentMethod(
 );
 const nayapay = PaymentMethod(
   id: 'b',
-  name: 'NayaPay',
+  name: 'Nayapay',
   accountTitle: 'Ali Khan',
   accountNumber: '03001234567',
-  preferred: true,
 );
 
 void main() {
@@ -42,7 +40,7 @@ void main() {
                 action: l10n.iPaidButton,
                 initial: 30000,
                 methods: (
-                  list: forPaying(list),
+                  list: list,
                   label: l10n.payMethodsLabel('Ali'),
                   emptyText: l10n.payNoMethods('Ali'),
                 ),
@@ -57,12 +55,12 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('lists the methods, preferred first', (tester) async {
+  testWidgets('lists the methods in the order they were added', (tester) async {
     await open(tester, [meezan, nayapay]);
     expect(find.text(l10n.payMethodsLabel('Ali')), findsOneWidget);
-    final naya = tester.getTopLeft(find.text('03001234567')).dy;
     final bank = tester.getTopLeft(find.text('PK36MEZN0001')).dy;
-    expect(naya, lessThan(bank));
+    final naya = tester.getTopLeft(find.text('03001234567')).dy;
+    expect(bank, lessThan(naya));
   });
 
   testWidgets('copy puts the number on the clipboard and shows a tick', (

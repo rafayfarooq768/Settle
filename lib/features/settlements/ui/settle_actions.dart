@@ -7,7 +7,6 @@ import '../../../l10n/app_localizations.dart';
 import '../../groups/domain/group.dart';
 import '../../profile/ui/profile_providers.dart';
 import '../domain/settlement.dart';
-import '../../profile/domain/payment_methods.dart';
 import 'payment_sheet.dart';
 import 'remind_sheet.dart';
 import 'settlements_providers.dart';
@@ -45,7 +44,7 @@ class SettleActions {
       methods: to.isPlaceholder
           ? null
           : (
-              list: forPaying(to.paymentMethods),
+              list: to.paymentMethods,
               label: l10n.payMethodsLabel(to.displayName),
               emptyText: l10n.payNoMethods(to.displayName),
             ),

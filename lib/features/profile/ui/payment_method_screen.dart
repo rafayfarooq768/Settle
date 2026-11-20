@@ -14,9 +14,8 @@ import '../domain/payment_method.dart';
 import '../domain/payment_methods.dart';
 import 'profile_providers.dart';
 
-/// Saves [methods] on your profile and copies them onto your member doc in
-/// every group, so group-mates see them at settle-up (PLAN.md §5). Not
-/// awaited by the UI: offline, Firestore queues it and syncs later.
+/// Saves [methods] on your profile and your member doc in every group, so
+/// group-mates see them at settle-up (PLAN.md §5).
 Future<void> saveMyPaymentMethods(
   WidgetRef ref,
   List<PaymentMethod> methods,
@@ -24,15 +23,12 @@ Future<void> saveMyPaymentMethods(
   final uid = ref.read(myIdentityProvider)?.uid;
   if (uid == null) return;
   await ref
-      .read(userRepositoryProvider)
-      .update(uid: uid, paymentMethods: methods);
-  await ref
       .read(groupRepositoryProvider)
-      .syncMyProfile(uid: uid, paymentMethods: methods);
+      .saveMyProfile(uid: uid, paymentMethods: methods);
 }
 
 /// Add or edit one payment method (PLAN.md §5): name with suggestions,
-/// account title, number, preferred. Free text, no format checks.
+/// account title, number. Free text, no format checks.
 class PaymentMethodScreen extends ConsumerStatefulWidget {
   const PaymentMethodScreen({super.key, this.methodId});
 
@@ -48,7 +44,6 @@ class _PaymentMethodScreenState extends ConsumerState<PaymentMethodScreen> {
   final _name = TextEditingController();
   final _title = TextEditingController();
   final _number = TextEditingController();
-  bool _preferred = false;
   String? _nameError;
   String? _numberError;
   PaymentMethod? _original;
@@ -64,11 +59,9 @@ class _PaymentMethodScreenState extends ConsumerState<PaymentMethodScreen> {
       _name.text = original.name;
       _title.text = original.accountTitle;
       _number.text = original.accountNumber;
-      _preferred = original.preferred;
     } else {
-      // Most accounts are in your own name; the first method is preferred.
+      // Most accounts are in your own name.
       _title.text = me?.name ?? '';
-      _preferred = list.isEmpty;
     }
   }
 
@@ -98,7 +91,6 @@ class _PaymentMethodScreenState extends ConsumerState<PaymentMethodScreen> {
       name: name,
       accountTitle: _title.text.trim(),
       accountNumber: number,
-      preferred: _preferred,
     );
     _write(saveMethod(_current, method), l10n.paymentMethodSaved);
   }
@@ -165,14 +157,6 @@ class _PaymentMethodScreenState extends ConsumerState<PaymentMethodScreen> {
               errorText: _numberError,
               counterText: '',
             ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(l10n.preferredSwitchTitle),
-            subtitle: Text(l10n.preferredSwitchSubtitle),
-            value: _preferred,
-            onChanged: (v) => setState(() => _preferred = v),
           ),
         ],
         actions: [

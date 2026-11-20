@@ -838,12 +838,6 @@ abstract class AppLocalizations {
   /// **'Password'**
   String get passwordRow;
 
-  /// No description provided for @googleOnlyAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'You sign in with Google'**
-  String get googleOnlyAccount;
-
   /// No description provided for @changeNameTitle.
   ///
   /// In en, this message translates to:
@@ -2080,12 +2074,6 @@ abstract class AppLocalizations {
   /// **'People in your groups see these when they pay you.'**
   String get paymentMethodsNote;
 
-  /// No description provided for @paymentMethodPreferred.
-  ///
-  /// In en, this message translates to:
-  /// **'Preferred'**
-  String get paymentMethodPreferred;
-
   /// No description provided for @addPaymentMethodTitle.
   ///
   /// In en, this message translates to:
@@ -2107,13 +2095,13 @@ abstract class AppLocalizations {
   /// No description provided for @paymentMethodNameHelper.
   ///
   /// In en, this message translates to:
-  /// **'A bank or wallet, e.g. Meezan Bank or NayaPay'**
+  /// **'A bank or wallet, e.g. Meezan Bank or Nayapay'**
   String get paymentMethodNameHelper;
 
   /// Comma-separated suggestion chips. Bank and wallet brand names; keep them as written.
   ///
   /// In en, this message translates to:
-  /// **'Raast,NayaPay,SadaPay,JazzCash,Easypaisa,Meezan Bank,HBL'**
+  /// **'Raast,Nayapay,Sadapay,JazzCash,Easypaisa,Meezan Bank,HBL,UBL'**
   String get paymentMethodNameSuggestions;
 
   /// No description provided for @accountTitleLabel.
@@ -2133,18 +2121,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account number, IBAN or Raast ID'**
   String get accountNumberLabel;
-
-  /// No description provided for @preferredSwitchTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Preferred'**
-  String get preferredSwitchTitle;
-
-  /// No description provided for @preferredSwitchSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Shown first when someone pays you'**
-  String get preferredSwitchSubtitle;
 
   /// No description provided for @deletePaymentMethodButton.
   ///
@@ -2167,7 +2143,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorPaymentNameRequired.
   ///
   /// In en, this message translates to:
-  /// **'Enter a name, e.g. NayaPay or Meezan Bank'**
+  /// **'Enter a name, e.g. Nayapay or Meezan Bank'**
   String get errorPaymentNameRequired;
 
   /// No description provided for @errorAccountNumberRequired.

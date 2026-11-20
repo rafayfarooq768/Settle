@@ -140,10 +140,12 @@ Positive = is owed. Negative = owes. Sum of all nets in a group = 0 (assert this
 ## 5. Payment methods
 
 - Optional. A user can add any number.
-- Fields: **name** (free text, e.g. "Meezan Bank", "NayaPay", "SadaPay", "JazzCash"),
-  **account title**, **account number / IBAN / Raast ID**, **preferred** flag.
+- Fields: **name** (free text, e.g. "Meezan Bank", "Nayapay", "Sadapay", "JazzCash"),
+  **account title**, **account number / IBAN / Raast ID**. No preferred flag (owner,
+  2026-11-20): every method is always shown, in the order added.
 - Suggestion chips for common names, but any text is allowed. No strict format validation.
-- Shown at settle-up to the person paying, preferred one first, each with a copy button.
+- Shown at settle-up to the person paying (in the "I paid" sheet), each with a copy button.
+- Saved on the profile and every member doc in one batch, so it never half-saves offline.
 - Visible only to people who share a group with the owner.
 
 ---
@@ -173,7 +175,7 @@ Positive = is owed. Negative = owes. Sum of all nets in a group = 0 (assert this
 users/{uid}
   displayName, email, createdAt
   phone                           // optional, "+923001234567" or ""; not verified
-  paymentMethods: [{ id, name, accountTitle, accountNumber, preferred }]
+  paymentMethods: [{ id, name, accountTitle, accountNumber }]
 
 groups/{groupId}
   name, type, createdBy, createdAt, joinCode, currency: "PKR"

@@ -87,22 +87,17 @@ class SettingsScreen extends ConsumerWidget {
                 title: Text(l10n.emailRow),
                 subtitle: Text(user?.email ?? ''),
               ),
-              ListTile(
-                minTileHeight: AppSpacing.rowHeight,
-                leading: const Icon(Icons.lock_outline),
-                title: Text(l10n.passwordRow),
-                subtitle: Text(
-                  auth.hasPassword
-                      ? l10n.changePasswordTitle
-                      : l10n.googleOnlyAccount,
+              // Google-only accounts have no password to change, so no
+              // row at all (owner, 2026-11-20).
+              if (auth.hasPassword)
+                ListTile(
+                  minTileHeight: AppSpacing.rowHeight,
+                  leading: const Icon(Icons.lock_outline),
+                  title: Text(l10n.passwordRow),
+                  subtitle: Text(l10n.changePasswordTitle),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/settings/password'),
                 ),
-                trailing: auth.hasPassword
-                    ? const Icon(Icons.chevron_right)
-                    : null,
-                onTap: auth.hasPassword
-                    ? () => context.push('/settings/password')
-                    : null,
-              ),
             ],
           ),
           SectionLabel(l10n.paymentMethodsSection),
@@ -145,10 +140,9 @@ class SettingsScreen extends ConsumerWidget {
     final phone = normalizePhone(typed) ?? '';
     if (phone == current) return;
     try {
-      await ref.read(userRepositoryProvider).update(uid: uid, phone: phone);
       await ref
           .read(groupRepositoryProvider)
-          .syncMyProfile(uid: uid, phone: phone);
+          .saveMyProfile(uid: uid, phone: phone);
       messenger.showMessage(
         phone.isEmpty ? l10n.phoneRemoved : l10n.phoneUpdated,
       );
@@ -179,12 +173,10 @@ class SettingsScreen extends ConsumerWidget {
     if (name == null || name == current || uid == null) return;
     try {
       await ref
-          .read(userRepositoryProvider)
-          .update(uid: uid, displayName: name);
-      await ref.read(authRepositoryProvider).updateDisplayName(name);
-      await ref
           .read(groupRepositoryProvider)
-          .syncMyProfile(uid: uid, displayName: name);
+          .saveMyProfile(uid: uid, displayName: name);
+      await ref.read(authRepositoryProvider).updateDisplayName(name);
+
       messenger.showMessage(l10n.nameUpdated);
     } catch (e) {
       messenger.showMessage(errorText(l10n, e));
@@ -192,8 +184,8 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-/// Your payment methods, preferred first: name over the number, then
-/// "Preferred" and a chevron. The last row adds one (up to the rules' 20).
+/// Your payment methods in the order you added them: name over the
+/// number, then a chevron. The last row adds one (up to the rules' 20).
 class _PaymentMethodsPanel extends StatelessWidget {
   const _PaymentMethodsPanel({required this.methods});
 
@@ -202,11 +194,10 @@ class _PaymentMethodsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
     return Panel(
       dividerIndent: AppSpacing.lg,
       children: [
-        for (final m in forPaying(methods))
+        for (final m in methods)
           ListTile(
             minTileHeight: AppSpacing.rowHeight,
             title: Text(m.name, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -215,19 +206,7 @@ class _PaymentMethodsPanel extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (m.preferred)
-                  Text(
-                    l10n.paymentMethodPreferred,
-                    style: Theme.of(context).textTheme.bodyMedium
-                        ?.copyWith(color: muted),
-                  ),
-                const SizedBox(width: AppSpacing.sm),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
+            trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings/payment-methods/${m.id}'),
           ),
         if (methods.length < maxPaymentMethods)

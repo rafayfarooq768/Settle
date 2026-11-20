@@ -434,9 +434,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordRow => 'Password';
 
   @override
-  String get googleOnlyAccount => 'You sign in with Google';
-
-  @override
   String get changeNameTitle => 'Your name';
 
   @override
@@ -1213,9 +1210,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'People in your groups see these when they pay you.';
 
   @override
-  String get paymentMethodPreferred => 'Preferred';
-
-  @override
   String get addPaymentMethodTitle => 'Add payment method';
 
   @override
@@ -1226,11 +1220,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentMethodNameHelper =>
-      'A bank or wallet, e.g. Meezan Bank or NayaPay';
+      'A bank or wallet, e.g. Meezan Bank or Nayapay';
 
   @override
   String get paymentMethodNameSuggestions =>
-      'Raast,NayaPay,SadaPay,JazzCash,Easypaisa,Meezan Bank,HBL';
+      'Raast,Nayapay,Sadapay,JazzCash,Easypaisa,Meezan Bank,HBL,UBL';
 
   @override
   String get accountTitleLabel => 'Account title';
@@ -1240,12 +1234,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountNumberLabel => 'Account number, IBAN or Raast ID';
-
-  @override
-  String get preferredSwitchTitle => 'Preferred';
-
-  @override
-  String get preferredSwitchSubtitle => 'Shown first when someone pays you';
 
   @override
   String get deletePaymentMethodButton => 'Delete payment method';
@@ -1258,7 +1246,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorPaymentNameRequired =>
-      'Enter a name, e.g. NayaPay or Meezan Bank';
+      'Enter a name, e.g. Nayapay or Meezan Bank';
 
   @override
   String get errorAccountNumberRequired =>

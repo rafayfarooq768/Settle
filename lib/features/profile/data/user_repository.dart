@@ -47,20 +47,6 @@ class UserRepository {
     };
     if (update.isNotEmpty) await ref.update(update);
   }
-
-  /// Saves the profile. Call GroupRepository.syncMyProfile afterwards so
-  /// group-mates see the change.
-  Future<void> update({
-    required String uid,
-    String? displayName,
-    List<PaymentMethod>? paymentMethods,
-    String? phone,
-  }) => _user(uid).update({
-    'displayName': ?displayName,
-    'phone': ?phone,
-    if (paymentMethods != null)
-      'paymentMethods': [for (final m in paymentMethods) m.toMap()],
-  });
 }
 
 AppUser appUserFromMap(String uid, Json data) => AppUser(

@@ -359,7 +359,7 @@ Rules:
 
 **Paying: methods in the I paid sheet** (owner, 2026-11-20: no separate Pay screen)
 - Under the amount: "Ali's payment methods" (titleSmall, muted), then one row per method,
-  preferred first: name (16/500) with a small muted "Preferred", the account title (muted),
+  in the order Ali added them: name (16/500), the account title (muted),
   the number (LTR, selectable), and a copy button at the end. No panel (the sheet is one);
   dividers between methods. Copy turns the icon into a teal tick for 2.5 s instead of a
   SnackBar (which would sit behind the sheet).
@@ -385,16 +385,16 @@ Rules:
 **Settings**
 - Small lockup (T = 32, no tagline) at the top (BRAND.md §6).
 - Account panel: Name (opens a sheet), Phone (optional; "Not added" or "+92 300 1234567",
-  opens a sheet; saving it empty removes it), Email (read-only), Password (opens Change password;
-  Google-only accounts see "You sign in with Google" instead).
-- Payment methods panel (step 10): one row per method, preferred first: name over the
-  number, muted "Preferred" and a chevron at the end; the last row "Add payment method" in
+  opens a sheet; saving it empty removes it), Email (read-only), Password (opens Change password).
+  Google-only accounts have no Password row at all (owner, 2026-11-20).
+- Payment methods panel (step 10): one row per method, in the order added: name over the
+  number and a chevron at the end; the last row "Add payment method" in
   teal with a + (`AddRow`, the same row as "New group or join" and "Add item"). A muted
   `PanelNote` under it: "People in your groups see these when they pay you."
 - Add / edit payment method is a full screen (a form, §8): Name with suggestion chips
-  (Raast, NayaPay, SadaPay, JazzCash, Easypaisa, Meezan Bank, HBL), Account title (starts as
-  your name), Account number / IBAN / Raast ID, a Preferred switch (only one is preferred;
-  your first method starts preferred). Save; when editing, "Delete payment method" in
+  (Raast, Nayapay, Sadapay, JazzCash, Easypaisa, Meezan Bank, HBL, UBL), Account title
+  (starts as your name), Account number / IBAN / Raast ID. No "preferred" flag (owner,
+  2026-11-20): every method is always shown. Save; when editing, "Delete payment method" in
   owe-red, with Undo, no confirmation.
 - Sign out as a text button below the panel.
 

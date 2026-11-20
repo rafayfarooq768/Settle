@@ -349,9 +349,12 @@ class GroupRepository {
     await last.commit();
   }
 
-  /// Copies the user's name, payment methods and phone onto their member
-  /// doc in every group, so group-mates see current details (PLAN.md §5).
-  Future<void> syncMyProfile({
+  /// Saves your name, phone or payment methods on your profile AND on your
+  /// member doc in every group, in one batch, so group-mates see the change
+  /// (PLAN.md §5). Groups come from the cache when it has them: the batch is
+  /// queued at once, even offline, instead of waiting on the server between
+  /// steps (a save that waited could finish after a sign-out and fail).
+  Future<void> saveMyProfile({
     required String uid,
     String? displayName,
     List<PaymentMethod>? paymentMethods,
@@ -364,15 +367,32 @@ class GroupRepository {
         'paymentMethods': paymentMethodsToList(paymentMethods),
     };
     if (update.isEmpty) return;
-    final groups = await _groups.where('memberUids', arrayContains: uid).get();
-    final batch = _db.batch();
+    final batch = _db.batch()
+      ..update(_db.collection(Col.users).doc(uid), update);
+    final groups = await _cacheFirst(
+      _groups.where('memberUids', arrayContains: uid),
+    );
     for (final group in groups.docs) {
-      final mine = await _members(group.id).where('uid', isEqualTo: uid).get();
+      final mine = await _cacheFirst(
+        _members(group.id).where('uid', isEqualTo: uid),
+      );
       for (final member in mine.docs) {
         batch.update(member.reference, update);
       }
     }
     await commitOrQueue(batch);
+  }
+
+  /// The cached result when there is one (instant, works offline), else
+  /// the server's.
+  Future<QuerySnapshot<Json>> _cacheFirst(Query<Json> query) async {
+    try {
+      final cached = await query.get(const GetOptions(source: Source.cache));
+      if (cached.docs.isNotEmpty) return cached;
+    } on FirebaseException {
+      // Nothing cached yet: ask the server.
+    }
+    return query.get();
   }
 
   Json _newMember(

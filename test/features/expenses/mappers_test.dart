@@ -107,7 +107,7 @@ void main() {
       'paymentMethods': [
         {
           'id': 'p1',
-          'name': 'NayaPay',
+          'name': 'Nayapay',
           'accountTitle': 'F',
           'accountNumber': '03xx',
           'preferred': true,
@@ -115,7 +115,7 @@ void main() {
       ],
     });
     expect(m.isPlaceholder, isTrue);
-    expect(m.paymentMethods.single.name, 'NayaPay');
+    expect(m.paymentMethods.single.name, 'Nayapay');
   });
 
   test('activity from a newer app version (unknown type) is skipped', () {

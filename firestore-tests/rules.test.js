@@ -454,6 +454,76 @@ describe('phone numbers', () => {
   });
 });
 
+describe('payment methods', () => {
+  const method = {
+    id: 'abc123def456',
+    name: 'Nayapay',
+    accountTitle: 'Alice Khan',
+    accountNumber: '03001234567',
+  };
+
+  test('you save them on your profile and your member doc', async () => {
+    await createGroup();
+    await setDoc(doc(db('alice'), 'users/alice'), {
+      displayName: 'Alice',
+      email: 'a@example.com',
+      createdAt: serverTimestamp(),
+      paymentMethods: [],
+      phone: '',
+    });
+    await assertSucceeds(
+      updateDoc(doc(db('alice'), 'users/alice'), { paymentMethods: [method] }),
+    );
+    await assertSucceeds(
+      updateDoc(doc(db('alice'), 'groups/g1/members/m-alice'), {
+        paymentMethods: [method],
+      }),
+    );
+  });
+
+  // The app saves the profile and every member copy in ONE batch (a save
+  // that waited between steps could finish after a sign-out and fail).
+  test('profile and member copy save together in one batch', async () => {
+    await createGroup();
+    await setDoc(doc(db('alice'), 'users/alice'), {
+      displayName: 'Alice',
+      email: 'a@example.com',
+      createdAt: serverTimestamp(),
+      paymentMethods: [],
+      phone: '',
+    });
+    const d = db('alice');
+    const batch = writeBatch(d);
+    batch.update(doc(d, 'users/alice'), { paymentMethods: [method] });
+    batch.update(doc(d, 'groups/g1/members/m-alice'), {
+      paymentMethods: [method],
+    });
+    await assertSucceeds(batch.commit());
+  });
+
+  test('group-mates read them from your member doc', async () => {
+    await createGroup();
+    await updateDoc(doc(db('alice'), 'groups/g1/members/m-alice'), {
+      paymentMethods: [method],
+    });
+    await joinAsNew('bob', 'm-bob');
+    const snap = await assertSucceeds(
+      getDoc(doc(db('bob'), 'groups/g1/members/m-alice')),
+    );
+    if (snap.data().paymentMethods.length !== 1) throw new Error('not copied');
+  });
+
+  test("nobody else can change yours", async () => {
+    await createGroup();
+    await joinAsNew('bob', 'm-bob');
+    await assertFails(
+      updateDoc(doc(db('bob'), 'groups/g1/members/m-alice'), {
+        paymentMethods: [method],
+      }),
+    );
+  });
+});
+
 describe('expenses', () => {
   test('members add, edit and soft-delete', async () => {
     await createGroup();

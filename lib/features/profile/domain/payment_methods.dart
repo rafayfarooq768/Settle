@@ -15,26 +15,17 @@ String newPaymentMethodId({Random? random}) {
   );
 }
 
-/// [list] with [method] added, or replacing the one with its id. Only one
-/// method is preferred: marking this one clears the others.
-List<PaymentMethod> saveMethod(List<PaymentMethod> list, PaymentMethod method) {
-  PaymentMethod plain(PaymentMethod m) =>
-      method.preferred && m.preferred ? m.copyWith(preferred: false) : m;
-  final i = list.indexWhere((m) => m.id == method.id);
-  return [
-    for (final m in list) m.id == method.id ? method : plain(m),
-    if (i < 0) method,
-  ];
-}
+/// [list] with [method] added at the end, or replacing the one with its id.
+List<PaymentMethod> saveMethod(
+  List<PaymentMethod> list,
+  PaymentMethod method,
+) => [
+  for (final m in list) m.id == method.id ? method : m,
+  if (!list.any((m) => m.id == method.id)) method,
+];
 
 /// [list] without the method with [id].
 List<PaymentMethod> removeMethod(List<PaymentMethod> list, String id) => [
   for (final m in list)
     if (m.id != id) m,
-];
-
-/// The order shown to someone paying: preferred first, then as added.
-List<PaymentMethod> forPaying(List<PaymentMethod> list) => [
-  ...list.where((m) => m.preferred),
-  ...list.where((m) => !m.preferred),
 ];
