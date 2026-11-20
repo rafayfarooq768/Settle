@@ -388,7 +388,9 @@ class SplitInputRow extends StatelessWidget {
           ),
           decoration: InputDecoration(
             isDense: true,
-            hintText: '0',
+            // Prefix/suffix only show once there's text; the hint says
+            // the unit while the box is empty.
+            hintText: '${prefix == null ? '' : '$prefix '}0${suffix ?? ''}',
             prefixText: prefix == null ? null : '$prefix ',
             suffixText: suffix,
           ),

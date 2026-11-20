@@ -331,7 +331,11 @@ class _ExtraRow extends StatelessWidget {
           ),
           decoration: InputDecoration(
             isDense: true,
-            hintText: '0',
+            // Prefix/suffix only show once there's text; the hint says
+            // the unit while the box is empty.
+            hintText: percent
+                ? '0${l10n.percentSuffix}'
+                : '${l10n.currencyPrefix} 0',
             prefixText: percent ? null : '${l10n.currencyPrefix} ',
             suffixText: percent ? l10n.percentSuffix : null,
           ),
