@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Selectable text whose selection clears when you tap anywhere else.
 /// Flutter's SelectableText keeps its selection after losing focus.

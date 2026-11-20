@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'app_colors.dart';
 import 'app_fonts.dart';
@@ -24,6 +24,13 @@ class AppTheme {
           secondary: AppColors.secondary,
           // No purple: brand palette only (DESIGN.md §2, owner 2026-11-19).
           tertiary: AppColors.deepTeal,
+          // Tints from the brand only (the seed makes a bright cyan).
+          primaryContainer: AppColors.mist,
+          onPrimaryContainer: AppColors.deepTeal,
+          secondaryContainer: AppColors.mist,
+          onSecondaryContainer: AppColors.deepTeal,
+          // One red in the app: errors use the owe-red (DESIGN.md §2).
+          error: AppColors.owe,
           surface: AppColors.surface,
           onSurface: AppColors.text,
           onSurfaceVariant: AppColors.textMuted,
@@ -50,6 +57,16 @@ class AppTheme {
           // Same brand Teal buttons as light mode, not the seed's pale cyan.
           primary: AppColors.primary,
           onPrimary: AppColors.white,
+          // The seed's dark secondary is blue-grey and its tertiary lavender;
+          // DESIGN.md §2 allows brand colours only.
+          secondary: AppColors.secondary,
+          onSecondary: AppColors.white,
+          tertiary: AppColors.mist,
+          primaryContainer: AppColors.deepTeal,
+          onPrimaryContainer: AppColors.mist,
+          secondaryContainer: AppColors.deepTeal,
+          onSecondaryContainer: AppColors.mist,
+          error: MoneyColors.dark.owe,
           surface: AppColors.darkBackground,
           surfaceContainerLowest: AppColors.darkBackground,
           surfaceContainerLow: AppColors.darkPanel,
@@ -109,7 +126,15 @@ class AppTheme {
           color: colorScheme.onSurfaceVariant,
         ),
       ),
+      // Dialogs, sheets and the date picker sit on the panel colour
+      // (Surface), not the seed's teal-tinted greys (DESIGN.md §2).
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: extraColors.panel,
+        surfaceTintColor: Colors.transparent,
+      ),
       dialogTheme: DialogThemeData(
+        backgroundColor: extraColors.panel,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.sheet),
         ),
@@ -228,8 +253,11 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.standard),
         ),
       ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        shape: RoundedRectangleBorder(
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: extraColors.panel,
+        modalBackgroundColor: extraColors.panel,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(AppRadius.sheet),
           ),

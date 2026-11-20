@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Inline, plain-words message under a form (DESIGN.md §6 Inputs: no popups).
 /// Errors use the theme's error colour, not the owe/owed money colours,

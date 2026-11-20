@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Flat colour tokens from DESIGN.md §2 and BRAND.md §3. Never hardcode these
 /// in widgets; use `Theme.of(context)` (or [SettleLogo] for brand colours).

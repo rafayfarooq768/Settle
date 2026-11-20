@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:settle/core/config/app_links.dart';
 import 'package:settle/core/theme/app_theme.dart';
 import 'package:settle/features/settlements/ui/remind_sheet.dart';
 import 'package:settle/l10n/app_localizations.dart';
+import 'package:settle/l10n/l10n_delegates.dart';
 import 'package:settle/l10n/app_localizations_en.dart';
 
 void main() {
@@ -13,7 +14,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light(),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) => Scaffold(

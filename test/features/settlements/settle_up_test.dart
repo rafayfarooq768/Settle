@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:settle/core/money/money.dart';
@@ -14,6 +14,7 @@ import 'package:settle/features/settlements/domain/settlement.dart';
 import 'package:settle/features/settlements/ui/settle_up_tab.dart';
 import 'package:settle/features/settlements/ui/settlements_providers.dart';
 import 'package:settle/l10n/app_localizations.dart';
+import 'package:settle/l10n/l10n_delegates.dart';
 import 'package:settle/l10n/app_localizations_en.dart';
 
 final _t = DateTime(2026, 11, 20);
@@ -183,7 +184,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light(),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: SettleUpTab(group: chai, me: me),
