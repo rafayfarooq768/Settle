@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'keyboard_observer.dart';
 import '../../features/auth/ui/auth_providers.dart';
 import '../../features/auth/ui/reset_password_screen.dart';
 import '../../features/auth/ui/sign_in_screen.dart';
@@ -33,6 +34,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(refresh.dispose);
 
   return GoRouter(
+    observers: [KeyboardStaysClosedObserver()],
     initialLocation: '/home',
     refreshListenable: refresh,
     redirect: (context, state) {

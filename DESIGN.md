@@ -180,6 +180,9 @@ One primary button per screen. Full-width only at the bottom of forms.
     It closes by itself: 2.5 s, or 4 s when it has Undo (`AppMotion`, owner 2026-11-20).
 - When the phone has "Remove animations" on, press feedback and sheet motion are off.
 - Never fake loading. If data is cached, show it immediately.
+- The keyboard opens only when you tap a field, or with a new form's autofocus. Closing a
+  sheet, dialog, date picker or screen never brings it back (owner, 2026-11-20;
+  `KeyboardStaysClosedObserver` on the router).
 
 ### Whole-screen layout
 Forms and single-purpose screens (sign in, sign up, reset, create group, join, change
