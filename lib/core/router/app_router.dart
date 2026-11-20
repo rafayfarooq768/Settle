@@ -14,6 +14,7 @@ import '../../features/groups/ui/join_screen.dart';
 import '../../features/groups/ui/scan_code_screen.dart';
 import '../../features/home/ui/home_screen.dart';
 import '../../features/profile/ui/change_password_screen.dart';
+import '../../features/profile/ui/payment_method_screen.dart';
 import '../../features/profile/ui/settings_screen.dart';
 import '../../features/activity/ui/activity_screen.dart';
 import '../../features/expenses/ui/add_expense_screen.dart';
@@ -64,6 +65,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'password',
             builder: (context, state) => const ChangePasswordScreen(),
+          ),
+          GoRoute(
+            path: 'payment-methods/new',
+            builder: (context, state) => const PaymentMethodScreen(),
+          ),
+          GoRoute(
+            path: 'payment-methods/:methodId',
+            builder: (context, state) =>
+                PaymentMethodScreen(methodId: state.pathParameters['methodId']),
           ),
         ],
       ),

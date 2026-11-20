@@ -11,6 +11,7 @@ import '../../settlements/ui/settlements_providers.dart';
 import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
+import '../../../core/widgets/add_row.dart';
 import '../../../core/widgets/panel.dart';
 import '../../../core/widgets/row_chevron.dart';
 import '../../../core/widgets/screen_layout.dart';
@@ -93,7 +94,11 @@ class _HomeBody extends ConsumerWidget {
           dividerIndent: AppSpacing.lg,
           children: [
             for (final group in sorted) _GroupRow(group: group),
-            _NewGroupRow(onTap: () => _showNewOrJoin(context)),
+            AddRow(
+              label: l10n.newGroupOrJoin,
+              contentPadding: chevronRowPadding,
+              onTap: () => _showNewOrJoin(context),
+            ),
           ],
         ),
       ],
@@ -199,32 +204,6 @@ class _GroupRow extends ConsumerWidget {
           : Text(subtitle),
       trailing: RowEnd(child: net == null ? null : BalanceStack(net: net)),
       onTap: () => context.push('/groups/${group.id}'),
-    );
-  }
-}
-
-/// Last row of the groups panel: teal text so it reads as an action,
-/// starting where the group names start.
-class _NewGroupRow extends StatelessWidget {
-  const _NewGroupRow({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final link = context.extraColors.link;
-    return ListTile(
-      minTileHeight: AppSpacing.rowHeight,
-      contentPadding: const EdgeInsetsDirectional.only(
-        start: AppSpacing.lg,
-        end: AppSpacing.sm,
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.newGroupOrJoin,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: link),
-      ),
-      trailing: Icon(Icons.add, color: link),
-      onTap: onTap,
     );
   }
 }

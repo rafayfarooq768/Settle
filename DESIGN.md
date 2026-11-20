@@ -357,9 +357,17 @@ Rules:
   a muted line saying what was added and when, "Add anyway" (primary) and Cancel. A sheet,
   not a dialog: nothing is lost either way.
 
-**Pay screen**
-- "Pay Ali Rs 300" as the title. Ali's payment methods listed: name, account title, number, copy button.
-  Preferred first. Primary button: "I paid". Secondary: Cancel.
+**Paying: methods in the I paid sheet** (owner, 2026-11-20: no separate Pay screen)
+- Under the amount: "Ali's payment methods" (titleSmall, muted), then one row per method,
+  preferred first: name (16/500) with a small muted "Preferred", the account title (muted),
+  the number (LTR, selectable), and a copy button at the end. No panel (the sheet is one);
+  dividers between methods. Copy turns the icon into a teal tick for 2.5 s instead of a
+  SnackBar (which would sit behind the sheet).
+- The amount doesn't autofocus here, so the keyboard doesn't cover the methods.
+- No methods: one muted line, "Ali hasn't added a payment method yet. Ask them how to pay."
+  Placeholders can't have methods, so their sheet shows neither.
+- No bank or wallet logos (owner, 2026-11-20): brand colours only, trademarks, and names are
+  free text.
 
 **Join**
 - Code field + "Scan QR" text button. Then "Which one are you?" list of placeholders + "I'm not listed".
@@ -379,6 +387,15 @@ Rules:
 - Account panel: Name (opens a sheet), Phone (optional; "Not added" or "+92 300 1234567",
   opens a sheet; saving it empty removes it), Email (read-only), Password (opens Change password;
   Google-only accounts see "You sign in with Google" instead).
+- Payment methods panel (step 10): one row per method, preferred first: name over the
+  number, muted "Preferred" and a chevron at the end; the last row "Add payment method" in
+  teal with a + (`AddRow`, the same row as "New group or join" and "Add item"). A muted
+  `PanelNote` under it: "People in your groups see these when they pay you."
+- Add / edit payment method is a full screen (a form, §8): Name with suggestion chips
+  (Raast, NayaPay, SadaPay, JazzCash, Easypaisa, Meezan Bank, HBL), Account title (starts as
+  your name), Account number / IBAN / Raast ID, a Preferred switch (only one is preferred;
+  your first method starts preferred). Save; when editing, "Delete payment method" in
+  owe-red, with Undo, no confirmation.
 - Sign out as a text button below the panel.
 
 ---

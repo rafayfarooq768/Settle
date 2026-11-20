@@ -1017,5 +1017,45 @@
   "homeHowItWorks": "How it works",
   "homeStep1": "Make a group, or join one with a code from a friend.",
   "homeStep2": "Add what anyone paid. Settle works out each person's share.",
-  "homeStep3": "See who owes whom, then settle up by bank, Raast, JazzCash or cash."
+  "homeStep3": "See who owes whom, then settle up by bank, Raast, JazzCash or cash.",
+  "paymentMethodsSection": "Payment methods",
+  "addPaymentMethod": "Add payment method",
+  "paymentMethodsNote": "People in your groups see these when they pay you.",
+  "paymentMethodPreferred": "Preferred",
+  "addPaymentMethodTitle": "Add payment method",
+  "editPaymentMethodTitle": "Edit payment method",
+  "paymentMethodNameLabel": "Name",
+  "paymentMethodNameHelper": "A bank or wallet, e.g. Meezan Bank or NayaPay",
+  "paymentMethodNameSuggestions": "Raast,NayaPay,SadaPay,JazzCash,Easypaisa,Meezan Bank,HBL",
+  "@paymentMethodNameSuggestions": {
+    "description": "Comma-separated suggestion chips. Bank and wallet brand names; keep them as written."
+  },
+  "accountTitleLabel": "Account title",
+  "accountTitleHelper": "The name on the account",
+  "accountNumberLabel": "Account number, IBAN or Raast ID",
+  "preferredSwitchTitle": "Preferred",
+  "preferredSwitchSubtitle": "Shown first when someone pays you",
+  "deletePaymentMethodButton": "Delete payment method",
+  "paymentMethodSaved": "Payment method saved",
+  "paymentMethodDeleted": "Payment method deleted",
+  "errorPaymentNameRequired": "Enter a name, e.g. NayaPay or Meezan Bank",
+  "errorAccountNumberRequired": "Enter the account number, IBAN or Raast ID",
+  "payMethodsLabel": "{name}'s payment methods",
+  "@payMethodsLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "payNoMethods": "{name} hasn't added a payment method yet. Ask them how to pay.",
+  "@payNoMethods": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "copyNumberTooltip": "Copy number",
+  "copiedTooltip": "Copied"
 }

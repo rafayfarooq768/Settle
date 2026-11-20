@@ -2061,6 +2061,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See who owes whom, then settle up by bank, Raast, JazzCash or cash.'**
   String get homeStep3;
+
+  /// No description provided for @paymentMethodsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment methods'**
+  String get paymentMethodsSection;
+
+  /// No description provided for @addPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Add payment method'**
+  String get addPaymentMethod;
+
+  /// No description provided for @paymentMethodsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'People in your groups see these when they pay you.'**
+  String get paymentMethodsNote;
+
+  /// No description provided for @paymentMethodPreferred.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred'**
+  String get paymentMethodPreferred;
+
+  /// No description provided for @addPaymentMethodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add payment method'**
+  String get addPaymentMethodTitle;
+
+  /// No description provided for @editPaymentMethodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit payment method'**
+  String get editPaymentMethodTitle;
+
+  /// No description provided for @paymentMethodNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get paymentMethodNameLabel;
+
+  /// No description provided for @paymentMethodNameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'A bank or wallet, e.g. Meezan Bank or NayaPay'**
+  String get paymentMethodNameHelper;
+
+  /// Comma-separated suggestion chips. Bank and wallet brand names; keep them as written.
+  ///
+  /// In en, this message translates to:
+  /// **'Raast,NayaPay,SadaPay,JazzCash,Easypaisa,Meezan Bank,HBL'**
+  String get paymentMethodNameSuggestions;
+
+  /// No description provided for @accountTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Account title'**
+  String get accountTitleLabel;
+
+  /// No description provided for @accountTitleHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'The name on the account'**
+  String get accountTitleHelper;
+
+  /// No description provided for @accountNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Account number, IBAN or Raast ID'**
+  String get accountNumberLabel;
+
+  /// No description provided for @preferredSwitchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred'**
+  String get preferredSwitchTitle;
+
+  /// No description provided for @preferredSwitchSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown first when someone pays you'**
+  String get preferredSwitchSubtitle;
+
+  /// No description provided for @deletePaymentMethodButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete payment method'**
+  String get deletePaymentMethodButton;
+
+  /// No description provided for @paymentMethodSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method saved'**
+  String get paymentMethodSaved;
+
+  /// No description provided for @paymentMethodDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method deleted'**
+  String get paymentMethodDeleted;
+
+  /// No description provided for @errorPaymentNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name, e.g. NayaPay or Meezan Bank'**
+  String get errorPaymentNameRequired;
+
+  /// No description provided for @errorAccountNumberRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the account number, IBAN or Raast ID'**
+  String get errorAccountNumberRequired;
+
+  /// No description provided for @payMethodsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s payment methods'**
+  String payMethodsLabel(String name);
+
+  /// No description provided for @payNoMethods.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} hasn\'t added a payment method yet. Ask them how to pay.'**
+  String payNoMethods(String name);
+
+  /// No description provided for @copyNumberTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy number'**
+  String get copyNumberTooltip;
+
+  /// No description provided for @copiedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copiedTooltip;
 }
 
 class _AppLocalizationsDelegate

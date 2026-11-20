@@ -6,20 +6,24 @@ import '../../../core/errors/error_text.dart';
 import '../../../core/phone/phone_number.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/add_row.dart';
 import '../../../core/widgets/panel.dart';
+import '../../../core/widgets/panel_note.dart';
 import '../../../core/widgets/section_label.dart';
 import '../../../core/widgets/settle_logo.dart';
 import '../../../core/widgets/text_input_sheet.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/ui/auth_providers.dart';
 import '../../groups/ui/groups_providers.dart';
+import '../domain/payment_method.dart';
+import '../domain/payment_methods.dart';
 import 'profile_providers.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/screen_layout.dart';
 import '../../../core/widgets/app_snack_bar.dart';
 
-/// Settings (PLAN.md §8 screen 11, DESIGN.md §11). Payment methods arrive in
-/// step 10, language in step 12.
+/// Settings (PLAN.md §8 screen 11, DESIGN.md §11). Language arrives in
+/// step 12.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -101,6 +105,9 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
+          SectionLabel(l10n.paymentMethodsSection),
+          _PaymentMethodsPanel(methods: me?.paymentMethods ?? const []),
+          PanelNote(l10n.paymentMethodsNote),
         ],
         actions: [
           LoadingButton(
@@ -182,5 +189,53 @@ class SettingsScreen extends ConsumerWidget {
     } catch (e) {
       messenger.showMessage(errorText(l10n, e));
     }
+  }
+}
+
+/// Your payment methods, preferred first: name over the number, then
+/// "Preferred" and a chevron. The last row adds one (up to the rules' 20).
+class _PaymentMethodsPanel extends StatelessWidget {
+  const _PaymentMethodsPanel({required this.methods});
+
+  final List<PaymentMethod> methods;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Panel(
+      dividerIndent: AppSpacing.lg,
+      children: [
+        for (final m in forPaying(methods))
+          ListTile(
+            minTileHeight: AppSpacing.rowHeight,
+            title: Text(m.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+            subtitle: Text(
+              m.accountNumber,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (m.preferred)
+                  Text(
+                    l10n.paymentMethodPreferred,
+                    style: Theme.of(context).textTheme.bodyMedium
+                        ?.copyWith(color: muted),
+                  ),
+                const SizedBox(width: AppSpacing.sm),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
+            onTap: () => context.push('/settings/payment-methods/${m.id}'),
+          ),
+        if (methods.length < maxPaymentMethods)
+          AddRow(
+            label: l10n.addPaymentMethod,
+            onTap: () => context.push('/settings/payment-methods/new'),
+          ),
+      ],
+    );
   }
 }

@@ -254,7 +254,8 @@ groups on the free plan; revisit if someone has many large groups.
 4. Group: Expenses | Balances | Settle up
 5. Add / edit expense (amount, title, paid by, split)
 6. Expense detail (who paid, who owes what, history)
-7. Settle up: payment list → pay screen with creditor's payment methods → "I paid"
+7. Settle up: payment list → "I paid" sheet with the amount and the creditor's payment methods
+   (owner, 2026-11-20: in the sheet, not a separate screen)
 8. Join group (code / QR / claim name)
 9. Group settings (name, type, members, add placeholder, join code)
 10. Activity

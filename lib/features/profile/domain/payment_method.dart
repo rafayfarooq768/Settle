@@ -18,6 +18,19 @@ class PaymentMethod {
   final String accountNumber;
   final bool preferred;
 
+  PaymentMethod copyWith({
+    String? name,
+    String? accountTitle,
+    String? accountNumber,
+    bool? preferred,
+  }) => PaymentMethod(
+    id: id,
+    name: name ?? this.name,
+    accountTitle: accountTitle ?? this.accountTitle,
+    accountNumber: accountNumber ?? this.accountNumber,
+    preferred: preferred ?? this.preferred,
+  );
+
   Map<String, Object?> toMap() => {
     'id': id,
     'name': name,

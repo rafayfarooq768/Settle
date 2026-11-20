@@ -1201,4 +1201,82 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get homeStep3 =>
       'See who owes whom, then settle up by bank, Raast, JazzCash or cash.';
+
+  @override
+  String get paymentMethodsSection => 'Payment methods';
+
+  @override
+  String get addPaymentMethod => 'Add payment method';
+
+  @override
+  String get paymentMethodsNote =>
+      'People in your groups see these when they pay you.';
+
+  @override
+  String get paymentMethodPreferred => 'Preferred';
+
+  @override
+  String get addPaymentMethodTitle => 'Add payment method';
+
+  @override
+  String get editPaymentMethodTitle => 'Edit payment method';
+
+  @override
+  String get paymentMethodNameLabel => 'Name';
+
+  @override
+  String get paymentMethodNameHelper =>
+      'A bank or wallet, e.g. Meezan Bank or NayaPay';
+
+  @override
+  String get paymentMethodNameSuggestions =>
+      'Raast,NayaPay,SadaPay,JazzCash,Easypaisa,Meezan Bank,HBL';
+
+  @override
+  String get accountTitleLabel => 'Account title';
+
+  @override
+  String get accountTitleHelper => 'The name on the account';
+
+  @override
+  String get accountNumberLabel => 'Account number, IBAN or Raast ID';
+
+  @override
+  String get preferredSwitchTitle => 'Preferred';
+
+  @override
+  String get preferredSwitchSubtitle => 'Shown first when someone pays you';
+
+  @override
+  String get deletePaymentMethodButton => 'Delete payment method';
+
+  @override
+  String get paymentMethodSaved => 'Payment method saved';
+
+  @override
+  String get paymentMethodDeleted => 'Payment method deleted';
+
+  @override
+  String get errorPaymentNameRequired =>
+      'Enter a name, e.g. NayaPay or Meezan Bank';
+
+  @override
+  String get errorAccountNumberRequired =>
+      'Enter the account number, IBAN or Raast ID';
+
+  @override
+  String payMethodsLabel(String name) {
+    return '$name\'s payment methods';
+  }
+
+  @override
+  String payNoMethods(String name) {
+    return '$name hasn\'t added a payment method yet. Ask them how to pay.';
+  }
+
+  @override
+  String get copyNumberTooltip => 'Copy number';
+
+  @override
+  String get copiedTooltip => 'Copied';
 }

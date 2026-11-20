@@ -10,7 +10,9 @@ import '../../../core/widgets/amount_field.dart';
 import '../../../core/widgets/inline_number_field.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/member_avatar.dart';
+import '../../../core/widgets/add_row.dart';
 import '../../../core/widgets/panel.dart';
+import '../../../core/widgets/panel_note.dart';
 import '../../../core/widgets/screen_layout.dart';
 import '../../../core/widgets/section_label.dart';
 import '../../../l10n/app_localizations.dart';
@@ -193,7 +195,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                   people: _peopleText(l10n, _items[i], members, byId),
                   onTap: () => _edit(members, index: i),
                 ),
-              _AddRow(label: l10n.itemsAdd, onTap: () => _edit(members)),
+              AddRow(label: l10n.itemsAdd, onTap: () => _edit(members)),
             ],
           ),
           SectionLabel(l10n.extrasSection),
@@ -223,20 +225,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                 ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.screenHorizontal + AppSpacing.lg,
-              AppSpacing.sm,
-              AppSpacing.screenHorizontal + AppSpacing.lg,
-              0,
-            ),
-            child: Text(
-              l10n.extrasByOrderNote,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
+          PanelNote(l10n.extrasByOrderNote),
           if (owes.isNotEmpty) ...[
             SectionLabel(l10n.whoOwesSection),
             Panel(
@@ -342,28 +331,6 @@ class _ItemRow extends StatelessWidget {
       title: Text(line.name.isEmpty ? l10n.itemUnnamed : line.name),
       subtitle: Text(people, maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: Text(formatRupees(line.amount), style: rowAmountStyle(theme)),
-      onTap: onTap,
-    );
-  }
-}
-
-/// "Add item" in teal with a + at the end, like Home's "New group" row.
-class _AddRow extends StatelessWidget {
-  const _AddRow({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final link = context.extraColors.link;
-    return ListTile(
-      minTileHeight: AppSpacing.rowHeight,
-      title: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: link),
-      ),
-      trailing: Icon(Icons.add, color: link),
       onTap: onTap,
     );
   }
