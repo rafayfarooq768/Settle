@@ -740,4 +740,25 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String paymentRowYouPaid(String name) {
+    return 'You paid $name';
+  }
+
+  @override
+  String paymentRowPaidYou(String name) {
+    return '$name paid you';
+  }
+
+  @override
+  String paymentRowPaid(String from, String to) {
+    return '$from paid $to';
+  }
+
+  @override
+  String get paymentRowLabel => 'Payment';
+
+  @override
+  String get rowSettledExpense => 'settled';
 }

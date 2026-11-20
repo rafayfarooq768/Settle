@@ -101,25 +101,4 @@ void main() {
       expect(myPart(solo, 'ali'), isA<Even>());
     });
   });
-
-  test('byDay: newest day first, deleted left out', () {
-    ExpenseDraft at(DateTime d) => equalDraft(
-      title: 't',
-      amount: 100,
-      date: d,
-      payerId: 'a',
-      participants: ['a'],
-    );
-    final days = byDay([
-      _expense('1', at(DateTime(2026, 11, 20, 9))),
-      _expense('2', at(DateTime(2026, 11, 18, 9))),
-      _expense('3', at(DateTime(2026, 11, 20, 8))),
-      _expense('4', at(DateTime(2026, 11, 19, 9)), deleted: true),
-    ]);
-    expect(days.map((d) => d.$1), [
-      DateTime(2026, 11, 20),
-      DateTime(2026, 11, 18),
-    ]);
-    expect(days.first.$2.map((e) => e.id), ['1', '3']);
-  });
 }

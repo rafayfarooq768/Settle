@@ -176,7 +176,14 @@ class _ExpensesTab extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => TabMessage(errorText(l10n, e)),
       data: (list) => list.any((e) => !e.deleted)
-          ? ExpenseList(expenses: list, members: all, meId: me.id)
+          ? ExpenseList(
+              expenses: list,
+              settlements:
+                  ref.watch(settlementsProvider(group.id)).valueOrNull ??
+                  const [],
+              members: all,
+              meId: me.id,
+            )
           : _NoExpenses(group: group, me: me, members: all),
     );
   }

@@ -1323,6 +1323,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 payment to confirm} other{{count} payments to confirm}}'**
   String pendingToConfirm(int count);
+
+  /// No description provided for @paymentRowYouPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'You paid {name}'**
+  String paymentRowYouPaid(String name);
+
+  /// No description provided for @paymentRowPaidYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} paid you'**
+  String paymentRowPaidYou(String name);
+
+  /// No description provided for @paymentRowPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} paid {to}'**
+  String paymentRowPaid(String from, String to);
+
+  /// No description provided for @paymentRowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentRowLabel;
+
+  /// No description provided for @rowSettledExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'settled'**
+  String get rowSettledExpense;
 }
 
 class _AppLocalizationsDelegate

@@ -233,7 +233,11 @@ Rules:
 - Tabs: Expenses | Balances | Settle up.
 - FAB "Add expense" (brand Teal, both modes) only once someone besides you is in the group;
   before that, "Invite friends" in the empty state is the one primary action.
-- Expenses tab: one panel per day under a date label (Today, Yesterday, 12 Nov).
+- Expenses tab: one panel per day under a date label (Today, Yesterday, 12 Nov). Confirmed
+  payments sit in the same list on the day they were paid ("Ali paid you", muted "Payment",
+  plain amount; not money colours, a payment isn't a debt). Expenses up to the last moment the
+  whole group was at zero are dimmed with "settled" (Deep teal) instead of your part
+  (owner's decision, 2026-11-20). Computed in the app every time, never stored.
 - Balances: list of members with net, sorted largest owed → largest owes, stacked like Home
   ("owes" over "Rs 300"; your own row says "you owe").
 - Settle up: "Your payments" panel first ("You pay Ali" in owe-red / "Ali pays you" in owed-green,

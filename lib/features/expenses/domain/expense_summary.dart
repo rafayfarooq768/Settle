@@ -100,15 +100,3 @@ class ExpenseDraft {
 
 /// Largest amount the rules accept: Rs 1 billion, in paisa.
 const int maxExpenseAmount = 100000000000;
-
-/// Expenses grouped by calendar day, newest day first (DESIGN.md §6:
-/// date headers). Deleted ones are left out.
-List<(DateTime day, List<Expense> expenses)> byDay(List<Expense> all) {
-  final days = <DateTime, List<Expense>>{};
-  for (final e in all.where((e) => !e.deleted)) {
-    final day = DateTime(e.date.year, e.date.month, e.date.day);
-    (days[day] ??= []).add(e);
-  }
-  final keys = days.keys.toList()..sort((a, b) => b.compareTo(a));
-  return [for (final d in keys) (d, days[d]!)];
-}

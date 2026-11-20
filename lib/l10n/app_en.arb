@@ -562,5 +562,34 @@
         "type": "int"
       }
     }
-  }
+  },
+  "paymentRowYouPaid": "You paid {name}",
+  "@paymentRowYouPaid": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRowPaidYou": "{name} paid you",
+  "@paymentRowPaidYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRowPaid": "{from} paid {to}",
+  "@paymentRowPaid": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRowLabel": "Payment",
+  "rowSettledExpense": "settled"
 }
