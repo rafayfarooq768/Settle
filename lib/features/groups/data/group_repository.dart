@@ -7,6 +7,7 @@ import '../../profile/domain/payment_method.dart';
 import '../domain/group.dart';
 import '../domain/join_code.dart';
 import 'group_mapper.dart';
+import '../../../core/firestore/retry_when_denied.dart';
 
 /// Groups, members and join codes (PLAN.md §6, §7). The only place that
 /// touches these collections. Every change also writes an activity entry in
@@ -29,13 +30,12 @@ class GroupRepository {
       .map((s) => [for (final d in s.docs) groupFromMap(d.id, d.data())]);
 
   Stream<Group?> watchGroup(String groupId) =>
-      _group(groupId)
-          .snapshots()
+      retryWhenDenied(() => _group(groupId).snapshots())
           .map((d) => d.exists ? groupFromMap(d.id, d.data()!) : null);
 
   /// In join order, so leftover-paisa and settle-up order are stable.
   Stream<List<Member>> watchMembers(String groupId) =>
-      _members(groupId).snapshots().map((s) {
+      retryWhenDenied(() => _members(groupId).snapshots()).map((s) {
         final members = [for (final d in s.docs) memberFromMap(d.id, d.data())];
         members.sort((a, b) {
           final byDate = a.joinedAt.compareTo(b.joinedAt);

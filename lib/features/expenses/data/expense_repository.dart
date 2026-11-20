@@ -7,6 +7,7 @@ import '../../activity/domain/activity.dart';
 import '../domain/expense.dart';
 import '../domain/expense_summary.dart';
 import 'expense_mapper.dart';
+import '../../../core/firestore/retry_when_denied.dart';
 
 /// Expenses of one group. Never hard-deletes (PLAN.md §7 soft delete), and
 /// refuses to write anything that breaks the money rules.
@@ -21,10 +22,9 @@ class ExpenseRepository {
       _group(groupId).collection(Col.expenses);
 
   /// Newest first, including deleted ones (needed for Undo and history).
-  Stream<List<Expense>> watch(String groupId) => _expenses(groupId)
-      .orderBy('date', descending: true)
-      .snapshots()
-      .map((s) => [for (final d in s.docs) ?expenseFromMap(d.id, d.data())]);
+  Stream<List<Expense>> watch(String groupId) => retryWhenDenied(
+    () => _expenses(groupId).orderBy('date', descending: true).snapshots(),
+  ).map((s) => [for (final d in s.docs) ?expenseFromMap(d.id, d.data())]);
 
   /// Returns the new expense id. Throws [MoneyException] if payers or shares
   /// don't sum exactly to the amount.

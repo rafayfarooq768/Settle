@@ -5,6 +5,7 @@ import '../../../core/money/money.dart';
 import '../../activity/data/activity_log.dart';
 import '../../activity/domain/activity.dart';
 import '../domain/settlement.dart';
+import '../../../core/firestore/retry_when_denied.dart';
 
 /// Settle flow (PLAN.md §3 item 10). Security rules decide who may create,
 /// confirm or remove each settlement.
@@ -18,10 +19,12 @@ class SettlementRepository {
   CollectionReference<Json> _settlements(String groupId) =>
       _group(groupId).collection(Col.settlements);
 
-  Stream<List<Settlement>> watch(String groupId) => _settlements(groupId)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((s) => [for (final d in s.docs) ?settlementFromMap(d.id, d.data())]);
+  Stream<List<Settlement>> watch(String groupId) => retryWhenDenied(
+    () =>
+        _settlements(groupId)
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
+  ).map((s) => [for (final d in s.docs) ?settlementFromMap(d.id, d.data())]);
 
   /// "I paid" → pending until [to] confirms. Or, when [confirmed] is true,
   /// the person paid records it directly.
