@@ -49,7 +49,7 @@ Rules:
 
 ## 3. Typography
 
-- **One font family for the interface.** Use the platform default (Roboto). Urdu: Noto Nastaliq Urdu or Noto Sans Arabic, only for Urdu text.
+- **One font family for the interface.** Use the platform default (Roboto).
 - **Manrope** is the brand font: the logo wordmark, splash and sign-in logo, and (owner's decision,
   2026-11-20) **headings**: screen titles, the big balance, section labels, sheet titles, tabs.
   Body text, lists, inputs and buttons stay Roboto. See BRAND.md.
@@ -221,7 +221,7 @@ Plain text and one action. No illustrations.
 - Money lines always: who + direction + amount. "You owe Sara Rs 200". "Hamza owes you Rs 300".
 - WhatsApp reminder default (editable): "Salam! Rs 300 for Chai is pending on Settle. My NayaPay: 03xx-xxxxxxx"
 - No marketing copy inside the app. No fake numbers, testimonials or user counts anywhere.
-- All strings in ARB files (English with Roman Urdu touches, plus a full Urdu locale). Layouts must survive RTL.
+- All strings in ARB files (English with Roman Urdu touches). No Urdu-script locale (owner, 2026-11-20).
 
 ### Roman Urdu touches
 English is the main language. A **little** Roman Urdu adds warmth and makes the app feel local.
@@ -245,8 +245,7 @@ Rules:
 - Roman Urdu is a seasoning: at most one Roman Urdu phrase per screen, never in the same
   sentence as an amount the user must act on.
 - Use common spellings people text with (nahi, hai, ho gaya, bhai, yaar, hisaab). Don't mix in Urdu script.
-- Roman Urdu strings still go in the English ARB file (they're part of the English UI).
-  The full Urdu-script translation is a separate locale.
+- Roman Urdu strings go in the English ARB file (they're part of the English UI).
 - No Roman Urdu jokes about money, debt or shaming people who owe.
 
 ---
@@ -435,7 +434,7 @@ Add only if very, very necessary (owner, 2026-11-20: loosened from "do not add")
 10. Emoji as icons.
 11. Illustrations, stock or AI-generated.
 12. Purple/blue/pink colour washes.
-13. More than one font family (plus Urdu font).
+13. More than one font family (Roboto, plus Manrope for headings and the logo).
 14. Oversized headings.
 15. Huge empty gaps or cramped rows (stick to §4).
 16. Badges/pills/chips that aren't actionable or essential.

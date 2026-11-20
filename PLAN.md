@@ -80,8 +80,7 @@ Build order (§9) decides the sequence, not separate releases.
 14. Offline use (Firestore offline cache).
 15. English UI with light **Roman Urdu** touches (greetings, empty states, success messages,
     WhatsApp reminders). Money lines, buttons and errors stay in English. See DESIGN.md §10.
-16. Full Urdu (Urdu script) as a second language option, RTL layout.
-17. Light and dark mode.
+16. Light and dark mode.
 
 ### Not included (needs a paid service)
 - Receipt photos: Firebase Storage needs the paid Blaze plan for new projects (verify before deciding).
@@ -95,6 +94,8 @@ Don't build these or suggest them back unless the owner asks.
 - Shares split mode (units per person) — owner's decision, 2026-11-20. Equal, Exact and %
   cover it.
 - Recurring expenses (rent, internet) — owner's decision, 2026-11-20. Not for now.
+- Full Urdu (Urdu script) language and RTL layout — owner's decision, 2026-11-20. The UI is
+  English with Roman Urdu touches only.
 
 ---
 
@@ -261,7 +262,7 @@ groups on the free plan; revisit if someone has many large groups.
 8. Join group (code / QR / claim name)
 9. Group settings (name, type, members, add placeholder, join code)
 10. Activity
-11. Settings (name, password, payment methods, language, sign out)
+11. Settings (name, password, payment methods, sign out)
 
 See DESIGN.md for how each one should look.
 
@@ -281,7 +282,7 @@ See DESIGN.md for how each one should look.
 9. Edit/delete + activity log + duplicate guard.
 10. Payment methods + settle-up pay screen.
 11. Search/filter, monthly summary.
-12. Full Urdu locale (RTL) and dark mode.
+12. Dark mode pass.
 13. Polish against DESIGN.md, test on a low-end phone, release APK on GitHub Releases.
 
 ---

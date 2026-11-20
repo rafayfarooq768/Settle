@@ -38,7 +38,8 @@ When a decision changes the plan, update PLAN.md in the same change.
 - State management: Riverpod. Navigation: go_router. (Don't introduce alternatives.)
 - Structure by feature: `lib/features/<feature>/{data,domain,ui}`, shared code in `lib/core/`.
 - Firestore access only through repository classes; no Firestore calls in widgets.
-- All user-facing strings in ARB files (`lib/l10n/`). No hardcoded UI strings. Support RTL.
+- All user-facing strings in ARB files (`lib/l10n/`). No hardcoded UI strings. English only
+  (no Urdu-script locale, owner 2026-11-20).
 - UI language is English with a little Roman Urdu, following DESIGN.md §10 "Roman Urdu touches".
   Never use Roman Urdu in money lines, buttons, errors or payment screens.
 - Theme defined once in `lib/core/theme/` from DESIGN.md tokens. Widgets use

@@ -22,8 +22,7 @@ import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/screen_layout.dart';
 import '../../../core/widgets/app_snack_bar.dart';
 
-/// Settings (PLAN.md §8 screen 11, DESIGN.md §11). Language arrives in
-/// step 12.
+/// Settings (PLAN.md §8 screen 11, DESIGN.md §11).
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
