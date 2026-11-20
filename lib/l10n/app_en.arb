@@ -726,8 +726,7 @@
   "taxLabel": "Tax",
   "serviceLabel": "Service charge",
   "tipLabel": "Tip",
-  "extrasEqually": "Split these equally",
-  "extrasEquallyHelp": "Off: by what each person had",
+  "extrasEqually": "Share tax, service and tip equally",
   "whoOwesSection": "Who owes what",
   "billTotal": "Bill total {amount}",
   "@billTotal": {
@@ -756,5 +755,8 @@
   "errorItemsNeeded": "Add at least one item.",
   "errorItemNeedsPeople": "Pick who had each item.",
   "errorPickWhoHad": "Pick who had it.",
-  "splitByItems": "By items"
+  "splitByItems": "By items",
+  "extrasByOrder": "Off: bigger orders pay more",
+  "extrasSameForAll": "On: everyone pays the same",
+  "unitSwitchHint": "Switch between % and Rs"
 }

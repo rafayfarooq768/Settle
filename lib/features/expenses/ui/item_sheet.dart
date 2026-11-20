@@ -19,8 +19,8 @@ class ItemSheetResult {
 }
 
 /// Add or edit one bill item: name, price, who had it (DESIGN.md §8: a
-/// sheet for a small form). New items start with everyone ticked: untick
-/// whoever didn't have it (one item can be shared by several people).
+/// sheet for a small form). New items start with nobody ticked (owner,
+/// 2026-11-20); tick everyone who had it, several for a shared item.
 Future<ItemSheetResult?> showItemSheet(
   BuildContext context, {
   required List<Member> members,
@@ -50,10 +50,7 @@ class _ItemSheetState extends State<_ItemSheet> {
         ? ''
         : RupeeInputFormatter.textFor(widget.line!.amount),
   );
-  late final Set<String> _who = {
-    ...?widget.line?.memberIds,
-    if (widget.line == null) ...widget.members.map((m) => m.id),
-  };
+  late final Set<String> _who = {...?widget.line?.memberIds};
   String? _priceError;
   String? _whoError;
   final _nameFocus = FocusNode();

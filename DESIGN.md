@@ -265,8 +265,9 @@ Rules:
 - Amount (autofocus) → Title → Paid by (row, opens sheet) → Split (row: "Equally between 5", opens split screen) → Save.
 - Split screen (full screen, title "Split Rs 1,000"): mode selector as a `SegmentedButton`
   (Equal / Exact / %), one muted line saying what to enter, then one panel of members:
-  Equal ticks people; Exact / % put a number field at the end of each row (its "Rs" or "%" always
-  shows, the empty hint is "0"), and %
+  Equal ticks people; Exact / % put an inline number at the end of each row (`InlineNumberField`,
+  owner 2026-11-20: no boxes): the figure on a thin underline that turns teal while typing, like
+  `AmountField`, with "Rs" before it or "%" after it, the empty hint "0", and %
   show the rupees it works out to under the name. Above Done, a live line: "Rs 200 left to
   assign" (muted), "Rs 100 too much" (error colour), or "Adds up to Rs 1,000" (settled colour).
   Done is disabled until it adds up. Switching modes keeps what you typed.
@@ -278,12 +279,14 @@ Rules:
   "2 people paid Rs 1,500".
 - Itemized (owner, 2026-11-20: its own screen, not a 5th tab): a teal "Split a bill by items ›"
   link under the split screen's members opens "Split by items". Panels: Items (name, who had it
-  or "Everyone", price; last row "Add item" in teal with +), "Tax, service and tip" (Tax % and
-  Service charge % with the rupees under them, Tip in Rs, and a "Split these equally" switch;
-  off = by what each person had), then "Who owes what" once there's an item. Above Done:
+  or "Everyone", price; last row "Add item" in teal with +), "Tax, service and tip" (Tax and
+  Service charge are each a % or Rs: the unit is a teal "% ▾" / "Rs ▾" button at the end, tap to
+  switch, keeping what it comes to; a % shows its rupees under the label. Tip in Rs. Then a
+  "Share tax, service and tip equally" switch whose line says what it does now: "Off: bigger
+  orders pay more" / "On: everyone pays the same"), then "Who owes what" once there's an item. Above Done:
   "Bill total Rs 4,400" (and "The amount changes from Rs 4,000" if you typed something else).
-  An item is added or edited in a sheet: Item name, Price, "Who had it?" chips (all ticked for a
-  new item), Save item, and Delete item (owe-red) when editing. The bill total becomes the
+  An item is added or edited in a sheet: Item name, Price, "Who had it?" chips (nobody ticked for
+  a new item, owner 2026-11-20), Save item, and Delete item (owe-red) when editing. The bill total becomes the
   expense amount.
 
 **Pay screen**

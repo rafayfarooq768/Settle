@@ -920,10 +920,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tipLabel => 'Tip';
 
   @override
-  String get extrasEqually => 'Split these equally';
-
-  @override
-  String get extrasEquallyHelp => 'Off: by what each person had';
+  String get extrasEqually => 'Share tax, service and tip equally';
 
   @override
   String get whoOwesSection => 'Who owes what';
@@ -954,4 +951,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splitByItems => 'By items';
+
+  @override
+  String get extrasByOrder => 'Off: bigger orders pay more';
+
+  @override
+  String get extrasSameForAll => 'On: everyone pays the same';
+
+  @override
+  String get unitSwitchHint => 'Switch between % and Rs';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/app_sizes.dart';
 import '../theme/app_spacing.dart';
 
 /// The amount on Add expense (DESIGN.md §6, owner 2026-11-20): a big
@@ -73,7 +74,9 @@ class _AmountFieldState extends State<AmountField> {
               border: Border(
                 bottom: BorderSide(
                   color: lineColor,
-                  width: _focus.hasFocus || error != null ? 2 : 1,
+                  width: _focus.hasFocus || error != null
+                      ? AppSizes.focusLine
+                      : 1,
                 ),
               ),
             ),

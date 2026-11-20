@@ -8,6 +8,7 @@ import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/amount_field.dart';
+import '../../../core/widgets/inline_number_field.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../core/widgets/panel.dart';
@@ -333,63 +334,12 @@ class SplitInputRow extends StatelessWidget {
       ),
       title: Text(memberName(l10n, member, meId)),
       subtitle: owes == null ? null : Text(formatRupees(owes!)),
-      trailing: UnitNumberField(
+      trailing: InlineNumberField(
         controller: controller,
         percent: mode == SplitMode.percent,
-      ),
-    );
-  }
-}
-
-/// A small number box with its unit always showing: "Rs 300" or "16 %".
-/// (InputDecoration's prefix/suffix text hides while the box is empty,
-/// which made a bare "0" look like rupees, and doubled up with a "0%"
-/// hint once focused.)
-class UnitNumberField extends StatelessWidget {
-  const UnitNumberField({
-    super.key,
-    required this.controller,
-    this.percent = false,
-  });
-
-  final TextEditingController controller;
-  final bool percent;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final unit = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-      child: Text(
-        percent ? l10n.percentSuffix : l10n.currencyPrefix,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-    const fit = BoxConstraints();
-    return SizedBox(
-      width: AppSizes.splitInputWidth,
-      child: TextField(
-        controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: <TextInputFormatter>[
-          percent ? PercentInputFormatter() : RupeeInputFormatter(),
-        ],
-        textAlign: TextAlign.end,
-        textInputAction: TextInputAction.next,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          fontFeatures: const [FontFeature.tabularFigures()],
-        ),
-        decoration: InputDecoration(
-          isDense: true,
-          hintText: '0',
-          prefixIcon: percent ? null : unit,
-          prefixIconConstraints: fit,
-          suffixIcon: percent ? unit : null,
-          suffixIconConstraints: fit,
-        ),
+        unit: mode == SplitMode.percent
+            ? l10n.percentSuffix
+            : l10n.currencyPrefix,
       ),
     );
   }
@@ -433,21 +383,6 @@ class SplitStatusLine extends StatelessWidget {
         fontFeatures: const [FontFeature.tabularFigures()],
       ),
     );
-  }
-}
-
-/// Digits and one dot, at most 2 decimals, at most 100.
-class PercentInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final text = newValue.text;
-    if (text.isEmpty) return newValue;
-    if (!RegExp(r'^\d{1,3}(\.\d{0,2})?$').hasMatch(text)) return oldValue;
-    final bp = parsePercent(text);
-    return bp == null ? oldValue : newValue;
   }
 }
 

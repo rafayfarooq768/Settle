@@ -51,7 +51,7 @@ Build order (§9) decides the sequence, not separate releases.
 ### Expenses
 6. Add expense with split modes: **Equal, Exact amounts, Percentages, Itemized**.
    Itemized (restaurants): items, shared items, tax/service charge/tip spread proportionally.
-   Tax and service are a % of the items, tip is in rupees; the bill total becomes the
+   Tax and service are each a % of the items or a rupee amount, tip is in rupees; the bill total becomes the
    expense amount. A shared item (drinks) is an item with several people ticked (2026-11-20).
 7. Edit/delete expense; balances always recompute.
    Multiple payers on one expense.

@@ -67,8 +67,11 @@ void main() {
       find.widgetWithText(TextField, l10n.itemPriceLabel),
       '1500',
     );
-    // Starts with everyone; untick Sara.
-    await tester.tap(find.widgetWithText(FilterChip, 'Sara'));
+    // Nobody is ticked to start with: saving asks who had it.
+    await tester.tap(find.text(l10n.itemSaveButton));
+    await tester.pump();
+    expect(find.text(l10n.errorPickWhoHad), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilterChip, 'Ali (you)'));
     await tester.pump();
     await tester.tap(find.text(l10n.itemSaveButton));
     await tester.pumpAndSettle();
@@ -90,6 +93,34 @@ void main() {
     expect(find.text(l10n.whoOwesSection), findsOneWidget);
     expect(find.text('Rs 1,650'), findsOneWidget);
     expect(find.text('Sara'), findsNothing);
+  });
+
+  testWidgets('tax can switch to Rs and keeps what it comes to', (
+    tester,
+  ) async {
+    await open(
+      tester,
+      spec: const ItemizedSpec(
+        items: [
+          BillLine(name: 'Steak', amount: 300000, memberIds: ['m1']),
+        ],
+        taxBp: 1600,
+      ),
+    );
+    expect(find.text(l10n.billTotal('Rs 3,480')), findsOneWidget);
+    // The % is a button: tap it to switch to Rs.
+    await tester.tap(find.text(l10n.percentSuffix).first);
+    await tester.pump();
+    expect(find.text('480'), findsOneWidget);
+    expect(find.text(l10n.billTotal('Rs 3,480')), findsOneWidget);
+  });
+
+  testWidgets('the switch says what it does now', (tester) async {
+    await open(tester);
+    expect(find.text(l10n.extrasByOrder), findsOneWidget);
+    await tester.tap(find.text(l10n.extrasEqually));
+    await tester.pump();
+    expect(find.text(l10n.extrasSameForAll), findsOneWidget);
   });
 
   testWidgets('an item can be deleted', (tester) async {

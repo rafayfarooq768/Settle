@@ -229,6 +229,27 @@ void main() {
       expect(sumOf(_shares(bill, 131000)), 131000);
     });
 
+    test('tax and service can be rupee amounts from the bill', () {
+      const bill = ItemizedSpec(
+        items: [
+          BillLine(name: '', amount: 30000, memberIds: ['a']),
+          BillLine(name: '', amount: 10000, memberIds: ['b']),
+        ],
+        taxRs: 4000,
+        serviceRs: 2000,
+      );
+      expect(bill.tax, 4000);
+      expect(bill.service, 2000);
+      expect(bill.total, 46000);
+      // By what each had: a had 3/4 of the items.
+      expect(_shares(bill, 46000), {'a': 34500, 'b': 11500});
+      final back =
+          SplitSpec.fromJson(SplitMode.itemized, bill.toJson())!
+              as ItemizedSpec;
+      expect(back.taxRs, 4000);
+      expect(back.serviceRs, 2000);
+    });
+
     test('extras can be split equally instead', () {
       const bill = ItemizedSpec(
         items: [

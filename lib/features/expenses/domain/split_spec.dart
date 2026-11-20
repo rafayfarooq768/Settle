@@ -212,21 +212,30 @@ class BillLine {
 }
 
 /// Itemized (PLAN.md §4): items → people (a shared item is just an item
-/// several people had), plus tax and service charge as a percentage of
-/// the items and a tip in rupees. Those are spread in proportion to what
+/// several people had), plus tax and service charge (each a percentage
+/// of the items or a rupee amount) and a tip in rupees. Those are spread in proportion to what
 /// each person had, or equally. The bill total becomes the expense amount.
 class ItemizedSpec extends SplitSpec {
   const ItemizedSpec({
     required this.items,
     this.taxBp = 0,
+    this.taxRs = 0,
     this.serviceBp = 0,
+    this.serviceRs = 0,
     this.tip = 0,
     this.spread = ExtrasSpread.proportional,
   });
 
   final List<BillLine> items;
+
+  /// Tax as a percentage of the items (basis points) or in paisa; the
+  /// screen sets one of the two.
   final int taxBp;
+  final int taxRs;
+
+  /// Service charge, the same way.
   final int serviceBp;
+  final int serviceRs;
 
   /// Paisa.
   final int tip;
@@ -235,9 +244,10 @@ class ItemizedSpec extends SplitSpec {
   /// Before tax, service and tip.
   int get itemsTotal => items.fold(0, (sum, i) => sum + i.amount);
 
-  int get tax => percentOf(amount: itemsTotal, basisPoints: taxBp);
+  int get tax => percentOf(amount: itemsTotal, basisPoints: taxBp) + taxRs;
 
-  int get service => percentOf(amount: itemsTotal, basisPoints: serviceBp);
+  int get service =>
+      percentOf(amount: itemsTotal, basisPoints: serviceBp) + serviceRs;
 
   int get extras => tax + service + tip;
 
@@ -283,7 +293,9 @@ class ItemizedSpec extends SplitSpec {
   Json toJson() => {
     'items': [for (final i in items) i.toJson()],
     'taxBp': taxBp,
+    'taxRs': taxRs,
     'serviceBp': serviceBp,
+    'serviceRs': serviceRs,
     'tip': tip,
     'spread': spread.name,
   };
@@ -318,7 +330,9 @@ class ItemizedSpec extends SplitSpec {
     return ItemizedSpec(
       items: items,
       taxBp: intOf('taxBp'),
+      taxRs: intOf('taxRs'),
       serviceBp: intOf('serviceBp'),
+      serviceRs: intOf('serviceRs'),
       tip: intOf('tip'),
       spread: json['spread'] == ExtrasSpread.equal.name
           ? ExtrasSpread.equal

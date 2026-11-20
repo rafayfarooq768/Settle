@@ -7,6 +7,7 @@ import '../../../core/money/money.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/amount_field.dart';
+import '../../../core/widgets/inline_number_field.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../core/widgets/panel.dart';
@@ -38,7 +39,8 @@ class ItemsArgs {
 }
 
 /// Itemized split (PLAN.md §3 item 6, §4): items → people, then tax and
-/// service as a % of the items and a tip in rupees, spread by what each
+/// service (% of the items or Rs, tap the unit) and a tip in rupees,
+/// spread by what each
 /// person had (or equally). "Who owes what" shows the result live. Done
 /// pops the [ItemizedSpec]; its total becomes the expense amount.
 class ItemsScreen extends ConsumerStatefulWidget {
@@ -53,16 +55,26 @@ class ItemsScreen extends ConsumerStatefulWidget {
 
 class _ItemsScreenState extends ConsumerState<ItemsScreen> {
   late final List<BillLine> _items = [...?widget.args.spec?.items];
-  late final _tax = _controller(_percentText(widget.args.spec?.taxBp));
-  late final _service = _controller(_percentText(widget.args.spec?.serviceBp));
-  late final _tip = _controller(switch (widget.args.spec?.tip) {
-    final t? when t > 0 => RupeeInputFormatter.textFor(t),
-    _ => '',
-  });
+  late bool _taxPercent = (widget.args.spec?.taxRs ?? 0) == 0;
+  late bool _servicePercent = (widget.args.spec?.serviceRs ?? 0) == 0;
+  late final _tax = _controller(
+    _taxPercent
+        ? _percentText(widget.args.spec?.taxBp)
+        : _rupeeText(widget.args.spec?.taxRs),
+  );
+  late final _service = _controller(
+    _servicePercent
+        ? _percentText(widget.args.spec?.serviceBp)
+        : _rupeeText(widget.args.spec?.serviceRs),
+  );
+  late final _tip = _controller(_rupeeText(widget.args.spec?.tip));
   late bool _equally = widget.args.spec?.spread == ExtrasSpread.equal;
 
   static String _percentText(int? bp) =>
       bp == null || bp == 0 ? '' : formatPercent(bp).replaceAll('%', '');
+
+  static String _rupeeText(int? paisa) =>
+      paisa == null || paisa == 0 ? '' : RupeeInputFormatter.textFor(paisa);
 
   TextEditingController _controller(String text) =>
       TextEditingController(text: text)..addListener(() => setState(() {}));
@@ -77,11 +89,37 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
 
   ItemizedSpec get _spec => ItemizedSpec(
     items: _items,
-    taxBp: parsePercent(_tax.text) ?? 0,
-    serviceBp: parsePercent(_service.text) ?? 0,
+    taxBp: _taxPercent ? parsePercent(_tax.text) ?? 0 : 0,
+    taxRs: _taxPercent ? 0 : parseRupees(_tax.text) ?? 0,
+    serviceBp: _servicePercent ? parsePercent(_service.text) ?? 0 : 0,
+    serviceRs: _servicePercent ? 0 : parseRupees(_service.text) ?? 0,
     tip: parseRupees(_tip.text) ?? 0,
     spread: _equally ? ExtrasSpread.equal : ExtrasSpread.proportional,
   );
+
+  /// Flips Tax or Service between % and Rs, keeping what it comes to
+  /// (16% of Rs 3,000 becomes Rs 480 and back) so the total doesn't jump.
+  void _flipUnit(TextEditingController field, bool percent, int rupees) {
+    final items = _spec.itemsTotal;
+    final String text;
+    if (percent) {
+      text = _rupeeText(rupees);
+    } else {
+      // Nearest basis point; can be off by a paisa when it comes back.
+      final bp = items == 0
+          ? 0
+          : (rupees * fullPercentBp + items ~/ 2) ~/ items;
+      text = bp > fullPercentBp ? '' : _percentText(bp);
+    }
+    setState(() {
+      if (identical(field, _tax)) {
+        _taxPercent = !percent;
+      } else {
+        _servicePercent = !percent;
+      }
+      field.text = text;
+    });
+  }
 
   /// Add (no [index]) or edit an item.
   Future<void> _edit(List<Member> members, {int? index}) async {
@@ -152,19 +190,25 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
               _ExtraRow(
                 label: l10n.taxLabel,
                 controller: _tax,
-                percent: true,
+                percent: _taxPercent,
                 amount: spec.tax,
+                onFlip: () => _flipUnit(_tax, _taxPercent, spec.tax),
               ),
               _ExtraRow(
                 label: l10n.serviceLabel,
                 controller: _service,
-                percent: true,
+                percent: _servicePercent,
                 amount: spec.service,
+                onFlip: () =>
+                    _flipUnit(_service, _servicePercent, spec.service),
               ),
               _ExtraRow(label: l10n.tipLabel, controller: _tip),
               SwitchListTile(
                 title: Text(l10n.extrasEqually),
-                subtitle: Text(l10n.extrasEquallyHelp),
+                // Says what happens now, so the switch explains itself.
+                subtitle: Text(
+                  _equally ? l10n.extrasSameForAll : l10n.extrasByOrder,
+                ),
                 value: _equally,
                 onChanged: (on) => setState(() => _equally = on),
               ),
@@ -295,29 +339,47 @@ class _AddRow extends StatelessWidget {
   }
 }
 
-/// Tax / Service (a %) or Tip (rupees), with the rupees a % works out to.
+/// Tax / Service (% or Rs, tap the unit to switch) or Tip (Rs). A % shows
+/// the rupees it comes to under the label.
 class _ExtraRow extends StatelessWidget {
   const _ExtraRow({
     required this.label,
     required this.controller,
     this.percent = false,
     this.amount = 0,
+    this.onFlip,
   });
 
   final String label;
   final TextEditingController controller;
   final bool percent;
 
-  /// What the % comes to, shown under the label when not zero.
+  /// What it comes to, shown under the label for a %.
   final int amount;
+
+  /// Null for Tip (always rupees).
+  final VoidCallback? onFlip;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ListTile(
       minTileHeight: AppSpacing.rowHeight,
+      // The unit button has its own inner padding; trim the row's end so
+      // its edge lines up with Tip below.
+      contentPadding: EdgeInsetsDirectional.only(
+        start: AppSpacing.lg,
+        end: onFlip == null ? AppSpacing.lg : AppSpacing.sm,
+      ),
       title: Text(label),
       subtitle: percent && amount > 0 ? Text(formatRupees(amount)) : null,
-      trailing: UnitNumberField(controller: controller, percent: percent),
+      trailing: InlineNumberField(
+        controller: controller,
+        percent: percent,
+        unit: percent ? l10n.percentSuffix : l10n.currencyPrefix,
+        onUnitTap: onFlip,
+        unitTapHint: onFlip == null ? null : l10n.unitSwitchHint,
+      ),
     );
   }
 }

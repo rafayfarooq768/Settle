@@ -42,6 +42,10 @@ class AppSizes {
   /// Minimum touch target (DESIGN.md §4).
   static const double tapTarget = 48;
 
-  /// Per-person number field on the split screen.
-  static const double splitInputWidth = 120;
+  /// Inline number at the end of a row (split screen, tax and tip).
+  static const double inlineFieldMinWidth = 48;
+  static const double inlineFieldMaxWidth = 128;
+
+  /// Underline of a focused amount (AmountField, InlineNumberField).
+  static const double focusLine = 2;
 }

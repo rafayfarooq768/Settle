@@ -1627,14 +1627,8 @@ abstract class AppLocalizations {
   /// No description provided for @extrasEqually.
   ///
   /// In en, this message translates to:
-  /// **'Split these equally'**
+  /// **'Share tax, service and tip equally'**
   String get extrasEqually;
-
-  /// No description provided for @extrasEquallyHelp.
-  ///
-  /// In en, this message translates to:
-  /// **'Off: by what each person had'**
-  String get extrasEquallyHelp;
 
   /// No description provided for @whoOwesSection.
   ///
@@ -1683,6 +1677,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'By items'**
   String get splitByItems;
+
+  /// No description provided for @extrasByOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: bigger orders pay more'**
+  String get extrasByOrder;
+
+  /// No description provided for @extrasSameForAll.
+  ///
+  /// In en, this message translates to:
+  /// **'On: everyone pays the same'**
+  String get extrasSameForAll;
+
+  /// No description provided for @unitSwitchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between % and Rs'**
+  String get unitSwitchHint;
 }
 
 class _AppLocalizationsDelegate
