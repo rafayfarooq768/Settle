@@ -991,7 +991,7 @@ abstract class AppLocalizations {
   /// No description provided for @currencyPrefix.
   ///
   /// In en, this message translates to:
-  /// **'Rs '**
+  /// **'Rs'**
   String get currencyPrefix;
 
   /// No description provided for @expenseTitleLabel.
@@ -1137,6 +1137,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get doneButton;
+
+  /// No description provided for @stackYouOwe.
+  ///
+  /// In en, this message translates to:
+  /// **'you owe'**
+  String get stackYouOwe;
+
+  /// No description provided for @stackYouAreOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'you are owed'**
+  String get stackYouAreOwed;
 }
 
 class _AppLocalizationsDelegate

@@ -89,3 +89,45 @@ class BalanceHeadline extends StatelessWidget {
     );
   }
 }
+
+/// Your balance in a list row, stacked so the row keeps its width for the
+/// name: a small "you owe" over the amount in bold (DESIGN.md §11 Home).
+/// Settled is one muted line.
+class BalanceStack extends StatelessWidget {
+  const BalanceStack({super.key, required this.net});
+
+  final int net;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final money = context.moneyColors;
+    if (net == 0) {
+      return Text(
+        l10n.rowSettled,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+    final color = net > 0 ? money.owed : money.owe;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          net > 0 ? l10n.stackYouAreOwed : l10n.stackYouOwe,
+          style: theme.textTheme.bodySmall?.copyWith(color: color),
+        ),
+        Text(
+          formatRupees(net.abs()),
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: color,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+      ],
+    );
+  }
+}

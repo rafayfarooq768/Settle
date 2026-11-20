@@ -526,7 +526,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get amountLabel => 'Amount';
 
   @override
-  String get currencyPrefix => 'Rs ';
+  String get currencyPrefix => 'Rs';
 
   @override
   String get expenseTitleLabel => 'What was it for?';
@@ -615,4 +615,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get doneButton => 'Done';
+
+  @override
+  String get stackYouOwe => 'you owe';
+
+  @override
+  String get stackYouAreOwed => 'you are owed';
 }

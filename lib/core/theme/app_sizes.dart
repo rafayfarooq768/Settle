@@ -32,4 +32,7 @@ class AppSizes {
 
   /// Lockup size in Settings (BRAND.md §6: T = 32, no tagline).
   static const double settingsLogo = 32;
+
+  /// Material Symbols size (DESIGN.md §6 Icons).
+  static const double icon = 24;
 }

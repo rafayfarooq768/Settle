@@ -91,7 +91,6 @@ class _SheetList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return SafeArea(
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -101,15 +100,7 @@ class _SheetList extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenHorizontal + AppSpacing.lg,
-                0,
-                AppSpacing.screenHorizontal,
-                AppSpacing.sm,
-              ),
-              child: Text(title, style: theme.textTheme.titleLarge),
-            ),
+            SheetTitle(title),
             Flexible(child: ListView(shrinkWrap: true, children: children)),
             if (action != null)
               Padding(

@@ -43,3 +43,7 @@ class Panel extends StatelessWidget {
 /// Inset for dividers in rows that start with a 40dp avatar or tile.
 const double avatarRowDividerIndent =
     AppSpacing.lg + AppSizes.avatar + AppSpacing.lg; // padding + avatar + gap
+
+/// Inset for dividers in rows that start with a 24dp icon.
+const double iconRowDividerIndent =
+    AppSpacing.lg + AppSizes.icon + AppSpacing.lg; // padding + icon + gap

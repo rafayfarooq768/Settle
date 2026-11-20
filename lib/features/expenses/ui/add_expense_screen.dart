@@ -7,7 +7,6 @@ import '../../../core/money/money.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/form_message.dart';
 import '../../../core/widgets/loading_button.dart';
-import '../../../core/widgets/panel.dart';
 import '../../../core/widgets/screen_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../groups/domain/group.dart';
@@ -18,6 +17,10 @@ import '../domain/expense_summary.dart';
 import 'day_label.dart';
 import 'expense_pickers.dart';
 import 'expenses_providers.dart';
+import '../../../core/widgets/amount_field.dart';
+import '../../../core/widgets/select_field.dart';
+import '../../../core/widgets/member_avatar.dart';
+import '../../../core/theme/app_sizes.dart';
 
 /// Add expense (DESIGN.md §11): amount → title → paid by → split → Save.
 /// The common case is 3 taps (PLAN.md §2): paid by defaults to you and
@@ -198,16 +201,29 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       body: me == null
           ? const Center(child: CircularProgressIndicator())
           : ScreenLayout(
-              padded: false,
               body: [
-                _Fields(
-                  amount: _amount,
-                  title: _title,
-                  amountError: _amountError,
-                  titleError: _titleError,
+                const SizedBox(height: AppSpacing.xl),
+                AmountField(
+                  controller: _amount,
+                  label: l10n.amountLabel,
+                  prefix: l10n.currencyPrefix,
+                  error: _amountError,
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                _DetailsPanel(
+                TextField(
+                  controller: _title,
+                  maxLength: 100,
+                  textCapitalization: TextCapitalization.sentences,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    labelText: l10n.expenseTitleLabel,
+                    hintText: l10n.expenseTitleHint,
+                    errorText: _titleError,
+                    counterText: '',
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                _Details(
                   members: members,
                   me: me,
                   payerId: _payerId ?? me.id,
@@ -237,71 +253,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   }
 }
 
-/// Amount (large, autofocus) and title.
-class _Fields extends StatelessWidget {
-  const _Fields({
-    required this.amount,
-    required this.title,
-    required this.amountError,
-    required this.titleError,
-  });
-
-  final TextEditingController amount;
-  final TextEditingController title;
-  final String? amountError;
-  final String? titleError;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.screenHorizontal,
-        AppSpacing.lg,
-        AppSpacing.screenHorizontal,
-        0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextField(
-            controller: amount,
-            autofocus: true,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            textInputAction: TextInputAction.next,
-            // Amounts read left to right in Urdu too.
-            textDirection: TextDirection.ltr,
-            style: theme.textTheme.headlineMedium,
-            decoration: InputDecoration(
-              labelText: l10n.amountLabel,
-              prefixText: l10n.currencyPrefix,
-              prefixStyle: theme.textTheme.headlineMedium,
-              errorText: amountError,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          TextField(
-            controller: title,
-            maxLength: 100,
-            textCapitalization: TextCapitalization.sentences,
-            textInputAction: TextInputAction.done,
-            decoration: InputDecoration(
-              labelText: l10n.expenseTitleLabel,
-              hintText: l10n.expenseTitleHint,
-              errorText: titleError,
-              counterText: '',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Paid by, Split and Date rows, each opening a picker.
-class _DetailsPanel extends StatelessWidget {
-  const _DetailsPanel({
+/// Paid by, Split and Date as select fields, each opening a picker.
+class _Details extends StatelessWidget {
+  const _Details({
     required this.members,
     required this.me,
     required this.payerId,
@@ -328,10 +282,6 @@ class _DetailsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final muted = theme.textTheme.bodyMedium?.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    );
     final payer = members.where((m) => m.id == payerId).firstOrNull;
     final payerName = payerId == me.id
         ? l10n.youLabel
@@ -341,35 +291,33 @@ class _DetailsPanel extends StatelessWidget {
         ? l10n.splitEach(formatRupees(amount! ~/ count))
         : null;
 
-    return Panel(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ListTile(
-          minTileHeight: AppSpacing.rowHeight,
-          title: Text(l10n.paidByRow),
-          trailing: Text(payerName, style: theme.textTheme.bodyLarge),
+        SelectField(
+          label: l10n.paidByRow,
+          value: payerName,
+          leading: MemberAvatar(
+            name: payer?.displayName ?? me.displayName,
+            placeholder: payer?.isPlaceholder ?? false,
+            size: AppSizes.avatarSmall,
+          ),
           onTap: onPayer,
         ),
-        ListTile(
-          minTileHeight: AppSpacing.rowHeight,
-          title: Text(l10n.splitRow),
-          subtitle: splitError != null
-              ? Text(
-                  splitError!,
-                  style: muted?.copyWith(color: theme.colorScheme.error),
-                )
-              : each == null
-              ? null
-              : Text(each, style: muted),
-          trailing: Text(
-            l10n.splitEqually(count),
-            style: theme.textTheme.bodyLarge,
-          ),
+        const SizedBox(height: AppSpacing.lg),
+        SelectField(
+          label: l10n.splitRow,
+          value: l10n.splitEqually(count),
+          leading: const Icon(Icons.group_outlined),
+          helper: each,
+          error: splitError,
           onTap: onSplit,
         ),
-        ListTile(
-          minTileHeight: AppSpacing.rowHeight,
-          title: Text(l10n.dateRow),
-          trailing: Text(dayLabel(l10n, day), style: theme.textTheme.bodyLarge),
+        const SizedBox(height: AppSpacing.lg),
+        SelectField(
+          label: l10n.dateRow,
+          value: dayLabel(l10n, day),
+          leading: const Icon(Icons.calendar_today_outlined),
           onTap: onDay,
         ),
       ],

@@ -369,7 +369,7 @@
   "addExpenseTitle": "Add expense",
   "addExpenseButton": "Add expense",
   "amountLabel": "Amount",
-  "currencyPrefix": "Rs ",
+  "currencyPrefix": "Rs",
   "expenseTitleLabel": "What was it for?",
   "expenseTitleHint": "Chai, dinner, petrol",
   "paidByRow": "Paid by",
@@ -431,5 +431,7 @@
   "rowNotInvolved": "not involved",
   "rowEven": "your share is paid",
   "pickGroupTitle": "Add to which group?",
-  "doneButton": "Done"
+  "doneButton": "Done",
+  "stackYouOwe": "you owe",
+  "stackYouAreOwed": "you are owed"
 }

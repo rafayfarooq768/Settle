@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_fonts.dart';
 import '../theme/app_colors.dart';
 
 /// Which background the logo sits on (BRAND.md §1 "Colour pairs").
@@ -48,7 +49,7 @@ class SettleLogo extends StatelessWidget {
 
   static const _name = 'Settle';
   static const _tagline = 'HISAAB BARABAR';
-  static const _brandFont = 'Manrope';
+  static const _brandFont = AppFonts.brand;
 
   bool get _taglineVisible => showTagline && size >= 48;
 

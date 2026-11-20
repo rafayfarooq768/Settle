@@ -50,7 +50,9 @@ Rules:
 ## 3. Typography
 
 - **One font family for the interface.** Use the platform default (Roboto). Urdu: Noto Nastaliq Urdu or Noto Sans Arabic, only for Urdu text.
-- **Manrope** is the brand font. Use it only for the logo wordmark, the splash screen and the sign-in screen's logo. Never for body text, buttons or lists. See BRAND.md.
+- **Manrope** is the brand font: the logo wordmark, splash and sign-in logo, and (owner's decision,
+  2026-11-20) **headings**: screen titles, the big balance, section labels, sheet titles, tabs.
+  Body text, lists, inputs and buttons stay Roboto. See BRAND.md.
 - Logo, icon and brand rules live in **BRAND.md**.
 - Use Material 3 type scale; don't invent sizes.
 
@@ -107,7 +109,11 @@ One primary button per screen. Full-width only at the bottom of forms.
 
 ### Inputs
 - `OutlinedInputBorder`, radius 8, label above or floating — pick one and use it everywhere (floating).
-- Amount input: large (headlineMedium), numeric keyboard, `Rs` prefix, autofocus on Add expense.
+- Amount input (`AmountField`, owner 2026-11-20): big centred number (headlineLarge) with a muted `Rs`,
+  no box, underline that turns teal while focused, thousand separators as you type, autofocus.
+- Pickers (`SelectField`): look like the text fields (outlined, floating label), value inside, ▾ at
+  the end, optional leading avatar/icon and helper line. Used for Paid by, Split and Date.
+- Sheets start with `SheetTitle` (titleMedium).
 - Errors: inline text under the field, in plain words. No popups for validation.
 
 ### Lists

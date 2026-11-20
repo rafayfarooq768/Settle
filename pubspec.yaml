@@ -36,7 +36,7 @@ flutter:
   assets:
     - assets/images/google_g.svg
   fonts:
-    # Brand font: logo wordmark, splash and sign-in logo only (BRAND.md §4).
+    # Brand font: logo and headings (DESIGN.md §3, BRAND.md §4).
     - family: Manrope
       fonts:
         - asset: assets/fonts/Manrope-SemiBold.ttf

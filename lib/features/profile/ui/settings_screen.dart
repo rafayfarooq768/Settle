@@ -52,34 +52,39 @@ class SettingsScreen extends ConsumerWidget {
           ),
           SectionLabel(l10n.accountSection),
           Panel(
-            dividerIndent: AppSpacing.lg,
+            dividerIndent: iconRowDividerIndent,
             children: [
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,
+                leading: const Icon(Icons.person_outline),
                 title: Text(l10n.nameRow),
                 subtitle: Text(me?.name ?? ''),
-                trailing: const Icon(Icons.edit_outlined),
+                trailing: const Icon(Icons.chevron_right),
                 onTap: () => _changeName(context, ref, me?.name ?? ''),
               ),
+              // Read-only: no chevron, nothing to tap.
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,
+                leading: const Icon(Icons.mail_outline),
                 title: Text(l10n.emailRow),
                 subtitle: Text(user?.email ?? ''),
               ),
-              if (auth.hasPassword)
-                ListTile(
-                  minTileHeight: AppSpacing.rowHeight,
-                  title: Text(l10n.passwordRow),
-                  subtitle: Text(l10n.changePasswordTitle),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/settings/password'),
-                )
-              else
-                ListTile(
-                  minTileHeight: AppSpacing.rowHeight,
-                  title: Text(l10n.passwordRow),
-                  subtitle: Text(l10n.googleOnlyAccount),
+              ListTile(
+                minTileHeight: AppSpacing.rowHeight,
+                leading: const Icon(Icons.lock_outline),
+                title: Text(l10n.passwordRow),
+                subtitle: Text(
+                  auth.hasPassword
+                      ? l10n.changePasswordTitle
+                      : l10n.googleOnlyAccount,
                 ),
+                trailing: auth.hasPassword
+                    ? const Icon(Icons.chevron_right)
+                    : null,
+                onTap: auth.hasPassword
+                    ? () => context.push('/settings/password')
+                    : null,
+              ),
             ],
           ),
         ],

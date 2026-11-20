@@ -63,11 +63,8 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              l10n.editGroupTitle,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: AppSpacing.lg),
+            SheetTitle(l10n.editGroupTitle, inset: false),
+            const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: _name,
               maxLength: 60,

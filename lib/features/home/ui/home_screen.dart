@@ -125,7 +125,12 @@ class _OverallPanel extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.overallLabel, style: muted),
+              Text(
+                l10n.overallLabel,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: AppSpacing.xs),
               BalanceHeadline(net: owed - owe, settled: l10n.balanceAllSettled),
               if (owe > 0 && owed > 0) ...[
@@ -166,7 +171,7 @@ class _GroupRow extends ConsumerWidget {
       leading: MemberAvatar.group(name: group.name),
       title: Text(group.name),
       subtitle: subtitle == null ? null : Text(subtitle),
-      trailing: net == null ? null : BalanceText(net: net),
+      trailing: net == null ? null : BalanceStack(net: net),
       onTap: () => context.push('/groups/${group.id}'),
     );
   }
@@ -191,18 +196,7 @@ void _addExpense(BuildContext context, List<Group> groups) {
         child: ListView(
           shrinkWrap: true,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenHorizontal + AppSpacing.lg,
-                0,
-                AppSpacing.screenHorizontal,
-                AppSpacing.sm,
-              ),
-              child: Text(
-                l10n.pickGroupTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
+            SheetTitle(l10n.pickGroupTitle),
             for (final g in groups)
               ListTile(
                 minTileHeight: AppSpacing.rowHeight,

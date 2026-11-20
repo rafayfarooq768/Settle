@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
+import 'app_fonts.dart';
 import 'app_radius.dart';
+import 'app_spacing.dart';
 import 'app_sizes.dart';
 import 'app_theme_extensions.dart';
 
@@ -73,6 +75,7 @@ class AppTheme {
     required Color background,
     required Color linkColor,
   }) {
+    final text = _textTheme(colorScheme);
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
@@ -83,13 +86,34 @@ class AppTheme {
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: colorScheme.onSurface,
+        titleTextStyle: text.titleLarge,
+      ),
+      textTheme: text,
+      tabBarTheme: TabBarThemeData(
+        labelStyle: text.titleSmall,
+        unselectedLabelStyle: text.titleSmall,
+        labelColor: linkColor,
+        unselectedLabelColor: colorScheme.onSurfaceVariant,
+        indicatorColor: linkColor,
+        dividerColor: colorScheme.outline,
+      ),
+      listTileTheme: ListTileThemeData(
+        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        iconColor: colorScheme.onSurfaceVariant,
+        titleTextStyle: text.bodyLarge,
+        subtitleTextStyle: text.bodyMedium?.copyWith(
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
-      textTheme: _textTheme(colorScheme),
+      dialogTheme: DialogThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.sheet),
+        ),
+        titleTextStyle: text.titleLarge,
+        contentTextStyle: text.bodyLarge?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
       // DESIGN.md §2/§5: the FAB is brand Teal in both modes, fully rounded.
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
@@ -130,6 +154,18 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.standard),
           borderSide: BorderSide(color: colorScheme.outline),
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.standard),
+          borderSide: BorderSide(color: colorScheme.outline),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.standard),
+          borderSide: BorderSide(color: linkColor, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.lg,
+        ),
         floatingLabelBehavior: FloatingLabelBehavior.auto,
       ),
       dividerTheme: DividerThemeData(
@@ -160,23 +196,60 @@ class AppTheme {
     );
   }
 
+  /// DESIGN.md §3 (owner 2026-11-20): Manrope for headings and the big
+  /// numbers, Roboto (platform default) for body, lists and buttons.
   static TextTheme _textTheme(ColorScheme colorScheme) {
-    const fontFeatures = [FontFeature.tabularFigures()];
+    const tabular = [FontFeature.tabularFigures()];
     final typography = Typography.material2021(colorScheme: colorScheme);
     final isLight = colorScheme.brightness == Brightness.light;
     var theme = isLight ? typography.black : typography.white;
+    TextStyle? brand(
+      TextStyle? base,
+      double size,
+      FontWeight weight, {
+      double spacing = 0,
+      bool numbers = false,
+    }) => base?.copyWith(
+      fontFamily: AppFonts.brand,
+      fontSize: size,
+      fontWeight: weight,
+      letterSpacing: spacing,
+      height: 1.25,
+      fontFeatures: numbers ? tabular : null,
+    );
     theme = theme.copyWith(
-      titleLarge: theme.titleLarge?.copyWith(fontSize: 22),
-      headlineMedium: theme.headlineMedium?.copyWith(
-        fontSize: 28,
-        fontWeight: FontWeight.w600,
-        fontFeatures: fontFeatures,
+      // The amount being typed on Add expense.
+      headlineLarge: brand(
+        theme.headlineLarge,
+        32,
+        FontWeight.w700,
+        spacing: -0.5,
+        numbers: true,
       ),
-      bodyLarge: theme.bodyLarge?.copyWith(
-        fontSize: 16,
-        fontFeatures: fontFeatures,
+      // The one big balance on Home / Group.
+      headlineMedium: brand(
+        theme.headlineMedium,
+        28,
+        FontWeight.w700,
+        spacing: -0.4,
+        numbers: true,
       ),
-      bodyMedium: theme.bodyMedium?.copyWith(fontSize: 14),
+      headlineSmall: brand(
+        theme.headlineSmall,
+        24,
+        FontWeight.w700,
+        spacing: -0.3,
+        numbers: true,
+      ),
+      titleLarge: brand(theme.titleLarge, 22, FontWeight.w700, spacing: -0.2),
+      titleMedium: brand(theme.titleMedium, 18, FontWeight.w600),
+      // Section labels and tabs.
+      titleSmall: brand(theme.titleSmall, 14, FontWeight.w600, spacing: 0.1),
+      bodyLarge: theme.bodyLarge?.copyWith(fontSize: 16, fontFeatures: tabular),
+      bodyMedium: theme.bodyMedium?.copyWith(
+        fontSize: 14,
+        fontFeatures: tabular,
+      ),
       labelLarge: theme.labelLarge?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w500,

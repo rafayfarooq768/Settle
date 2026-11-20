@@ -82,8 +82,8 @@ class _TextInputSheetState extends State<_TextInputSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: AppSpacing.lg),
+          SheetTitle(widget.title, inset: false),
+          const SizedBox(height: AppSpacing.sm),
           TextField(
             controller: _controller,
             autofocus: true,

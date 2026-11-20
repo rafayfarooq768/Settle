@@ -93,9 +93,9 @@ No gradients, glows, shadows or outlines on any logo element.
 - **Manrope** (Google Fonts, SIL Open Font License) — brand font. Bundle the font files in
   `assets/fonts/` (Manrope-SemiBold.ttf, Manrope-Bold.ttf) so it works offline. Don't use
   the `google_fonts` package to fetch at runtime.
-- Manrope is used **only** for: the logo wordmark, splash branding, sign-in screen logo,
-  and marketing (README, website).
-- All app interface text uses **Roboto** (Android system font), per DESIGN.md.
+- Manrope is used for: the logo wordmark, splash branding, sign-in screen logo, marketing
+  (README, website) and, since 2026-11-20, in-app headings (titles, big balance, section labels).
+- Body text, lists, inputs and buttons use **Roboto** (Android system font), per DESIGN.md §3.
 
 ---
 

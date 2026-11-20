@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:settle/core/theme/app_theme.dart';
+import 'package:settle/core/widgets/amount_field.dart';
 import 'package:settle/features/expenses/ui/add_expense_screen.dart';
 import 'package:settle/features/groups/domain/group.dart';
 import 'package:settle/features/groups/ui/groups_providers.dart';
@@ -37,7 +38,12 @@ void main() {
     await tester.pump();
   }
 
-  Finder field(String label) => find.widgetWithText(TextField, label);
+  Finder field(String label) => label == l10n.amountLabel
+      ? find.descendant(
+          of: find.byType(AmountField),
+          matching: find.byType(TextField),
+        )
+      : find.widgetWithText(TextField, label);
 
   Future<void> save(WidgetTester tester) async {
     await tester.tap(find.text(l10n.saveButton));
