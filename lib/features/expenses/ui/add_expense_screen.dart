@@ -21,7 +21,7 @@ import '../../../core/widgets/amount_field.dart';
 import '../../../core/widgets/select_field.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../core/theme/app_sizes.dart';
-import '../../../core/theme/app_motion.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// Add expense (DESIGN.md §11): amount → title → paid by → split → Save.
 /// The common case is 3 taps (PLAN.md §2): paid by defaults to you and
@@ -164,21 +164,15 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         shares: draft.shares,
         splitInput: draft.splitInput,
       );
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.expenseAdded),
-          persist: false,
-          duration: AppMotion.undoSnackBar,
-          action: SnackBarAction(
-            label: l10n.undoButton,
-            // The screen is gone by then, so use the repo captured above.
-            onPressed: () => repo.setDeleted(
-              groupId: widget.groupId,
-              actorMemberId: me.id,
-              expense: added,
-              deleted: true,
-            ),
-          ),
+      messenger.showMessage(
+        l10n.expenseAdded,
+        undoLabel: l10n.undoButton,
+        // The screen is gone by then, so use the repo captured above.
+        onUndo: () => repo.setDeleted(
+          groupId: widget.groupId,
+          actorMemberId: me.id,
+          expense: added,
+          deleted: true,
         ),
       );
       if (mounted) context.pop();

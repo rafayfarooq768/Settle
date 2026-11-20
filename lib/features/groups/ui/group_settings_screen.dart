@@ -20,6 +20,7 @@ import 'groups_providers.dart';
 import '../../../core/widgets/app_sheet.dart';
 import '../../../core/widgets/screen_layout.dart';
 import '../../../core/widgets/loading_button.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// Group settings (PLAN.md §8 screen 9, DESIGN.md §11): name/type, members,
 /// placeholders, join code, leave.
@@ -142,7 +143,7 @@ class _SettingsActions {
   AppLocalizations get l10n => AppLocalizations.of(context)!;
 
   void _showError(ScaffoldMessengerState messenger, Object e) =>
-      messenger.showSnackBar(SnackBar(content: Text(errorText(l10n, e))));
+      messenger.showMessage(errorText(l10n, e));
 
   /// null while balances are still loading.
   int? _netOf(String memberId) {
@@ -230,18 +231,14 @@ class _SettingsActions {
     final messenger = ScaffoldMessenger.of(context);
     final net = _netOf(placeholder.id);
     if (net == null) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.errorNetwork)));
+      messenger.showMessage(l10n.errorNetwork);
       return;
     }
     if (net != 0) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n.placeholderNotSettled(
-              placeholder.displayName,
-              formatSignedRupees(net),
-            ),
-          ),
+      messenger.showMessage(
+        l10n.placeholderNotSettled(
+          placeholder.displayName,
+          formatSignedRupees(net),
         ),
       );
       return;
@@ -254,11 +251,7 @@ class _SettingsActions {
             actorMemberId: me.id,
             placeholder: placeholder,
           );
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.placeholderRemoved(placeholder.displayName)),
-        ),
-      );
+      messenger.showMessage(l10n.placeholderRemoved(placeholder.displayName));
     } catch (e) {
       _showError(messenger, e);
     }
@@ -294,7 +287,7 @@ class _SettingsActions {
     try {
       await ref.read(groupRepositoryProvider).deleteGroup(group);
       router.go('/home');
-      messenger.showSnackBar(SnackBar(content: Text(deleted)));
+      messenger.showMessage(deleted);
     } catch (e) {
       _showError(messenger, e);
     }
@@ -305,14 +298,12 @@ class _SettingsActions {
     final messenger = ScaffoldMessenger.of(context);
     final myNet = _netOf(me.id);
     if (myNet == null) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.errorNetwork)));
+      messenger.showMessage(l10n.errorNetwork);
       return;
     }
     if (myNet != 0) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.leaveGroupNotSettled(formatSignedRupees(myNet))),
-        ),
+      messenger.showMessage(
+        l10n.leaveGroupNotSettled(formatSignedRupees(myNet)),
       );
       return;
     }

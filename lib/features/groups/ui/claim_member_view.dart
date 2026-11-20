@@ -10,6 +10,7 @@ import '../../profile/ui/profile_providers.dart';
 import '../domain/group.dart';
 import 'groups_providers.dart';
 import '../../../core/widgets/loading_button.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// "Which one are you?" (PLAN.md §6): tap your placeholder to take over its
 /// history, or "I'm not listed" to join as a new member.
@@ -37,9 +38,7 @@ class _ClaimMemberViewState extends ConsumerState<ClaimMemberView> {
     });
     try {
       await action(me);
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.joinedGroup(widget.group.name))),
-      );
+      messenger.showMessage(l10n.joinedGroup(widget.group.name));
     } catch (e) {
       if (mounted) setState(() => _error = errorText(l10n, e));
     } finally {

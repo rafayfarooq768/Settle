@@ -6,6 +6,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_sheet.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// WhatsApp reminder (PLAN.md §3 item 11): a prefilled message you can
 /// edit, sent through a wa.me link. No API, no phone numbers stored:
@@ -50,7 +51,7 @@ class _RemindSheetState extends State<_RemindSheet> {
     if (opened) {
       navigator.pop();
     } else {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.errorOpenWhatsApp)));
+      messenger.showMessage(l10n.errorOpenWhatsApp);
     }
   }
 

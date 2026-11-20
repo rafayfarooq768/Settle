@@ -11,6 +11,7 @@ import '../../profile/ui/profile_providers.dart';
 import 'group_type_field.dart';
 import 'groups_providers.dart';
 import '../../../core/widgets/screen_layout.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// New group: name + free-text type. Works offline; it syncs later.
 class CreateGroupScreen extends ConsumerStatefulWidget {
@@ -57,7 +58,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
             creatorName: me.name,
             paymentMethods: me.paymentMethods,
           );
-      messenger.showSnackBar(SnackBar(content: Text(l10n.groupCreated)));
+      messenger.showMessage(l10n.groupCreated);
       if (mounted) context.pushReplacement('/groups/$groupId');
     } catch (e) {
       if (mounted) setState(() => _error = errorText(l10n, e));

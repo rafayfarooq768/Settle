@@ -10,6 +10,7 @@ import '../../auth/domain/auth_repository.dart';
 import '../../auth/ui/auth_error_text.dart';
 import '../../auth/ui/auth_providers.dart';
 import '../../../core/widgets/screen_layout.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// Change password: current password first (Firebase needs a recent
 /// sign-in), then the new one. Needs a connection.
@@ -51,7 +52,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
       await ref
           .read(authRepositoryProvider)
           .changePassword(current: _current.text, next: _next.text);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.passwordChanged)));
+      messenger.showMessage(l10n.passwordChanged);
       if (mounted) context.pop();
     } on AuthException catch (e) {
       if (!mounted) return;

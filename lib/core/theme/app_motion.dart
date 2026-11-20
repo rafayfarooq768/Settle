@@ -17,11 +17,11 @@ abstract final class AppMotion {
   static const sheetIn = Duration(milliseconds: 300);
   static const sheetOut = Duration(milliseconds: 200);
 
-  /// A plain SnackBar (Flutter's default).
-  static const snackBar = Duration(seconds: 4);
+  /// A plain SnackBar (owner, 2026-11-20).
+  static const snackBar = Duration(milliseconds: 2500);
 
   /// How long a SnackBar with Undo stays (DESIGN.md §8). Flutter keeps
   /// SnackBars with an action open until dismissed unless told not to;
   /// this is long enough to reach Undo, short enough not to linger.
-  static const undoSnackBar = Duration(seconds: 6);
+  static const undoSnackBar = Duration(seconds: 4);
 }

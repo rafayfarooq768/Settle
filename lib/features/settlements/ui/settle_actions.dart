@@ -10,7 +10,7 @@ import '../domain/settlement.dart';
 import 'payment_sheet.dart';
 import 'remind_sheet.dart';
 import 'settlements_providers.dart';
-import '../../../core/theme/app_motion.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// The settle flow (PLAN.md §3 items 10–11). Writes go through
 /// [SettlementRepository]; the security rules decide who may do what.
@@ -149,18 +149,9 @@ class SettleActions {
     final messenger = ScaffoldMessenger.of(context);
     try {
       await write();
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(done),
-          persist: false,
-          duration: undo == null ? AppMotion.snackBar : AppMotion.undoSnackBar,
-          action: undo == null
-              ? null
-              : SnackBarAction(label: l10n.undoButton, onPressed: undo),
-        ),
-      );
+      messenger.showMessage(done, undoLabel: l10n.undoButton, onUndo: undo);
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(errorText(l10n, e))));
+      messenger.showMessage(errorText(l10n, e));
     }
   }
 }

@@ -16,6 +16,7 @@ import 'groups_providers.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/screen_layout.dart';
 import '../../../core/widgets/selectable_code.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// Invite (PLAN.md §6): the join code, its QR, and a WhatsApp share.
 class InviteScreen extends ConsumerWidget {
@@ -104,7 +105,7 @@ class InviteScreen extends ConsumerWidget {
       mode: LaunchMode.externalApplication,
     );
     if (!opened) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.errorOpenWhatsApp)));
+      messenger.showMessage(l10n.errorOpenWhatsApp);
     }
   }
 
@@ -112,7 +113,7 @@ class InviteScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     await Clipboard.setData(ClipboardData(text: code));
-    messenger.showSnackBar(SnackBar(content: Text(l10n.codeCopied)));
+    messenger.showMessage(l10n.codeCopied);
   }
 
   /// Irreversible, so it's confirmed (DESIGN.md §8).
@@ -147,7 +148,7 @@ class InviteScreen extends ConsumerWidget {
           .read(groupRepositoryProvider)
           .regenerateJoinCode(group: group, actorMemberId: myMemberId);
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(errorText(l10n, e))));
+      messenger.showMessage(errorText(l10n, e));
     }
   }
 }

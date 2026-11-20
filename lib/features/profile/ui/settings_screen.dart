@@ -15,6 +15,7 @@ import '../../groups/ui/groups_providers.dart';
 import 'profile_providers.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/screen_layout.dart';
+import '../../../core/widgets/app_snack_bar.dart';
 
 /// Settings (PLAN.md §8 screen 11, DESIGN.md §11). Payment methods arrive in
 /// step 10, language in step 12.
@@ -127,9 +128,9 @@ class SettingsScreen extends ConsumerWidget {
       await ref
           .read(groupRepositoryProvider)
           .syncMyProfile(uid: uid, displayName: name);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.nameUpdated)));
+      messenger.showMessage(l10n.nameUpdated);
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(errorText(l10n, e))));
+      messenger.showMessage(errorText(l10n, e));
     }
   }
 }
