@@ -2,8 +2,8 @@
 class AppSizes {
   AppSizes._();
 
-  /// Minimum height of full-width form buttons (DESIGN.md §4 tap target).
-  static const double buttonHeight = 48;
+  /// Full-width form buttons: 52 tall (DESIGN (3).md §6 polish).
+  static const double buttonHeight = 52;
 
   /// Progress indicator shown inside a button while its action runs.
   static const double buttonProgress = 20;
@@ -41,6 +41,9 @@ class AppSizes {
 
   /// Minimum touch target (DESIGN.md §4).
   static const double tapTarget = 48;
+
+  /// Max width of an empty state's text (DESIGN (3).md §9).
+  static const double emptyTextWidth = 280;
 
   /// Inline number at the end of a row (split screen, tax and tip).
   static const double inlineFieldMinWidth = 48;

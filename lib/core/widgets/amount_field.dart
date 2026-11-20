@@ -88,9 +88,14 @@ class _AmountFieldState extends State<AmountField> {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
+                  // Small "Rs" so the number carries the weight
+                  // (DESIGN (3).md §3, polish 2026-11-20).
                   Text(
                     widget.prefix,
-                    style: theme.textTheme.headlineSmall?.copyWith(
+                    style: big?.copyWith(
+                      fontSize: (big.fontSize ?? 32) * 0.6,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0,
                       color: muted,
                     ),
                   ),

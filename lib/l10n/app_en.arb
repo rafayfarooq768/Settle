@@ -243,39 +243,7 @@
       }
     }
   },
-  "rowYouOwe": "you owe {amount}",
-  "@rowYouOwe": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "rowYouAreOwed": "you are owed {amount}",
-  "@rowYouAreOwed": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "rowSettled": "settled up",
-  "memberOwes": "owes {amount}",
-  "@memberOwes": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "memberIsOwed": "is owed {amount}",
-  "@memberIsOwed": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
+  "rowSettled": "Settled up",
   "membersCount": "{count, plural, =1{1 member} other{{count} members}}",
   "@membersCount": {
     "placeholders": {
@@ -418,20 +386,12 @@
       }
     }
   },
-  "rowYouLent": "you lent {amount}",
-  "@rowYouLent": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "rowNotInvolved": "not involved",
-  "rowEven": "your share is paid",
+  "rowNotInvolved": "Not involved",
+  "rowEven": "Paid your share",
   "pickGroupTitle": "Add to which group?",
   "doneButton": "Done",
-  "stackYouOwe": "you owe",
-  "stackYouAreOwed": "you are owed",
+  "stackYouOwe": "You owe",
+  "stackYouAreOwed": "You are owed",
   "transferYouPay": "You pay {name}",
   "@transferYouPay": {
     "placeholders": {
@@ -450,8 +410,8 @@
   },
   "settleYoursLabel": "Your payments",
   "settleOthersLabel": "Others in the group",
-  "stackOwes": "owes",
-  "stackIsOwed": "is owed",
+  "stackOwes": "Owes",
+  "stackIsOwed": "Gets back",
   "iPaidButton": "I paid",
   "recordPaymentButton": "Record payment",
   "remindButton": "Remind",
@@ -589,7 +549,7 @@
     }
   },
   "paymentRowLabel": "Payment",
-  "rowSettledExpense": "settled",
+  "rowSettledExpense": "Settled",
   "heroYouAreOwed": "You are owed",
   "heroYouOwe": "You owe",
   "heroYourBalance": "Your balance",
@@ -776,5 +736,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "stackYouLent": "You lent"
 }

@@ -55,7 +55,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.widgetWithText(TextButton, l10n.joinWithCodeButton),
+      find.widgetWithText(OutlinedButton, l10n.joinWithCodeButton),
       findsOneWidget,
     );
   });

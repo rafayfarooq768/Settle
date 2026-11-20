@@ -32,12 +32,14 @@ class MemberAvatar extends StatelessWidget {
     final colors = context.extraColors;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final small = size < AppSizes.avatar;
-    final textStyle =
-        (small ? theme.textTheme.labelSmall : theme.textTheme.labelLarge)
-            ?.copyWith(
-              color: placeholder ? scheme.onSurfaceVariant : colors.onAvatar,
-            );
+    // DESIGN (3).md §6: initials Roboto 600 at about 40% of the size.
+    final textStyle = theme.textTheme.labelLarge?.copyWith(
+      fontSize: (size * 0.4).roundToDouble(),
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0,
+      height: 1,
+      color: placeholder ? scheme.onSurfaceVariant : colors.onAvatar,
+    );
     return Container(
       width: size,
       height: size,

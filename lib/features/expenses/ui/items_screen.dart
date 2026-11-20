@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/money/money.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_theme_extensions.dart';
+import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/amount_field.dart';
 import '../../../core/widgets/inline_number_field.dart';
 import '../../../core/widgets/loading_button.dart';
@@ -253,9 +253,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                       title: Text(memberName(l10n, m, widget.args.meId)),
                       trailing: Text(
                         formatRupees(paisa),
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                        style: rowAmountStyle(theme),
                       ),
                     ),
               ],
@@ -343,12 +341,7 @@ class _ItemRow extends StatelessWidget {
       minTileHeight: AppSpacing.rowHeight,
       title: Text(line.name.isEmpty ? l10n.itemUnnamed : line.name),
       subtitle: Text(people, maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: Text(
-        formatRupees(line.amount),
-        style: theme.textTheme.titleSmall?.copyWith(
-          fontFeatures: const [FontFeature.tabularFigures()],
-        ),
-      ),
+      trailing: Text(formatRupees(line.amount), style: rowAmountStyle(theme)),
       onTap: onTap,
     );
   }

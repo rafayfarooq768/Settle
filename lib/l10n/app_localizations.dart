@@ -748,35 +748,11 @@ abstract class AppLocalizations {
   /// **'You owe {owe} · You are owed {owed}'**
   String balanceBothLine(String owe, String owed);
 
-  /// No description provided for @rowYouOwe.
-  ///
-  /// In en, this message translates to:
-  /// **'you owe {amount}'**
-  String rowYouOwe(String amount);
-
-  /// No description provided for @rowYouAreOwed.
-  ///
-  /// In en, this message translates to:
-  /// **'you are owed {amount}'**
-  String rowYouAreOwed(String amount);
-
   /// No description provided for @rowSettled.
   ///
   /// In en, this message translates to:
-  /// **'settled up'**
+  /// **'Settled up'**
   String get rowSettled;
-
-  /// No description provided for @memberOwes.
-  ///
-  /// In en, this message translates to:
-  /// **'owes {amount}'**
-  String memberOwes(String amount);
-
-  /// No description provided for @memberIsOwed.
-  ///
-  /// In en, this message translates to:
-  /// **'is owed {amount}'**
-  String memberIsOwed(String amount);
 
   /// No description provided for @membersCount.
   ///
@@ -1096,22 +1072,16 @@ abstract class AppLocalizations {
   /// **'You paid {amount}'**
   String expenseYouPaid(String amount);
 
-  /// No description provided for @rowYouLent.
-  ///
-  /// In en, this message translates to:
-  /// **'you lent {amount}'**
-  String rowYouLent(String amount);
-
   /// No description provided for @rowNotInvolved.
   ///
   /// In en, this message translates to:
-  /// **'not involved'**
+  /// **'Not involved'**
   String get rowNotInvolved;
 
   /// No description provided for @rowEven.
   ///
   /// In en, this message translates to:
-  /// **'your share is paid'**
+  /// **'Paid your share'**
   String get rowEven;
 
   /// No description provided for @pickGroupTitle.
@@ -1129,13 +1099,13 @@ abstract class AppLocalizations {
   /// No description provided for @stackYouOwe.
   ///
   /// In en, this message translates to:
-  /// **'you owe'**
+  /// **'You owe'**
   String get stackYouOwe;
 
   /// No description provided for @stackYouAreOwed.
   ///
   /// In en, this message translates to:
-  /// **'you are owed'**
+  /// **'You are owed'**
   String get stackYouAreOwed;
 
   /// No description provided for @transferYouPay.
@@ -1165,13 +1135,13 @@ abstract class AppLocalizations {
   /// No description provided for @stackOwes.
   ///
   /// In en, this message translates to:
-  /// **'owes'**
+  /// **'Owes'**
   String get stackOwes;
 
   /// No description provided for @stackIsOwed.
   ///
   /// In en, this message translates to:
-  /// **'is owed'**
+  /// **'Gets back'**
   String get stackIsOwed;
 
   /// No description provided for @iPaidButton.
@@ -1339,7 +1309,7 @@ abstract class AppLocalizations {
   /// No description provided for @rowSettledExpense.
   ///
   /// In en, this message translates to:
-  /// **'settled'**
+  /// **'Settled'**
   String get rowSettledExpense;
 
   /// No description provided for @heroYouAreOwed.
@@ -1761,6 +1731,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Opens your WhatsApp chat with {phone}.'**
   String remindSendsTo(String phone);
+
+  /// No description provided for @stackYouLent.
+  ///
+  /// In en, this message translates to:
+  /// **'You lent'**
+  String get stackYouLent;
 }
 
 class _AppLocalizationsDelegate

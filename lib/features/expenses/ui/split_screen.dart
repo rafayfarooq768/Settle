@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -349,6 +348,7 @@ class SplitInputRow extends StatelessWidget {
 /// adds up (DESIGN.md §11). Over-assigning is the only error.
 class SplitStatusLine extends StatelessWidget {
   const SplitStatusLine({
+    super.key,
     required this.spec,
     required this.amount,
     required this.problem,

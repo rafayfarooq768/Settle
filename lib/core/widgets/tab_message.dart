@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_spacing.dart';
+import 'empty_state.dart';
 
-/// One line of text at the top of a tab (empty, settled, error). Near the
-/// top, not floating mid-screen (DESIGN.md §9, §12 item 15).
+/// One line at the top of a tab (empty, settled, error): an [EmptyState]
+/// with no actions, so it lines up with every other empty state.
 class TabMessage extends StatelessWidget {
-  const TabMessage(this.text, {super.key, this.style});
+  const TabMessage(this.text, {super.key, this.color});
 
   final String text;
-  final TextStyle? style;
+
+  /// e.g. the settled colour for "Everyone is settled up".
+  final Color? color;
 
   @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-    children: [
-      const SizedBox(height: AppSpacing.xl),
-      Text(text, textAlign: TextAlign.center, style: style),
-    ],
-  );
+  Widget build(BuildContext context) =>
+      EmptyState(title: text, titleColor: color);
 }

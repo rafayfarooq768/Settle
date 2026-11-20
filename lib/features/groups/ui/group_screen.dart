@@ -18,6 +18,7 @@ import '../domain/group.dart';
 import 'claim_member_view.dart';
 import 'group_actions.dart';
 import 'groups_providers.dart';
+import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../expenses/ui/expense_list.dart';
 import '../../expenses/ui/expenses_providers.dart';
@@ -230,32 +231,25 @@ class _NoExpenses extends ConsumerWidget {
       actorMemberId: me.id,
     );
 
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-      children: [
-        const SizedBox(height: AppSpacing.xl),
-        Text(
-          onlyMe ? l10n.groupOnlyYou : l10n.groupNoExpenses,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        // The FAB already adds expenses, so these are the other next steps.
-        if (onlyMe) ...[
-          LoadingButton(label: l10n.inviteFriendsButton, onPressed: invite),
-          const SizedBox(height: AppSpacing.sm),
-          LoadingButton(
-            label: l10n.addByNameButton,
-            onPressed: addByName,
-            style: LoadingButtonStyle.outlined,
-          ),
-        ] else
-          LoadingButton(
-            label: l10n.inviteFriendsButton,
-            onPressed: invite,
-            style: LoadingButtonStyle.outlined,
-          ),
-      ],
+    // The FAB already adds expenses, so these are the other next steps.
+    return EmptyState(
+      title: onlyMe ? l10n.groupOnlyYou : l10n.groupNoExpenses,
+      actions: onlyMe
+          ? [
+              LoadingButton(label: l10n.inviteFriendsButton, onPressed: invite),
+              LoadingButton(
+                label: l10n.addByNameButton,
+                onPressed: addByName,
+                style: LoadingButtonStyle.outlined,
+              ),
+            ]
+          : [
+              LoadingButton(
+                label: l10n.inviteFriendsButton,
+                onPressed: invite,
+                style: LoadingButtonStyle.outlined,
+              ),
+            ],
     );
   }
 }

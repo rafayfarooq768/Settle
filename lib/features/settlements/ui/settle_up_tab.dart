@@ -5,6 +5,7 @@ import '../../../core/errors/error_text.dart';
 import '../../../core/money/money.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_theme_extensions.dart';
+import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../core/widgets/panel.dart';
 import '../../../core/widgets/row_button.dart';
@@ -32,7 +33,6 @@ class SettleUpTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final nets = ref.watch(groupNetsProvider(group.id));
     final members = ref.watch(membersProvider(group.id)).valueOrNull ?? [];
     final settlements =
@@ -52,9 +52,7 @@ class SettleUpTab extends ConsumerWidget {
         if (list.isEmpty && pending.isEmpty) {
           return TabMessage(
             l10n.settleEveryoneSettled,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: context.extraColors.settled,
-            ),
+            color: context.extraColors.settled,
           );
         }
         final actions = SettleActions(context, ref, group: group, me: me);
@@ -152,10 +150,7 @@ class _Row extends StatelessWidget {
           subtitle: status == null ? null : Text(status!),
           trailing: Text(
             formatRupees(amount),
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: amountColor,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
+            style: rowAmountStyle(theme, color: amountColor),
           ),
         ),
         if (actions.isNotEmpty)

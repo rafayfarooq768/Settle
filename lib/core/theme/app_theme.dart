@@ -97,10 +97,14 @@ class AppTheme {
         indicatorColor: linkColor,
         dividerColor: colorScheme.outline,
       ),
+      // DESIGN (3).md §4 row anatomy: 16 from the edge, 12 from the
+      // avatar/icon to the text; names weight 500 so a row scans as
+      // who → how much.
       listTileTheme: ListTileThemeData(
         contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        horizontalTitleGap: AppSpacing.md,
         iconColor: colorScheme.onSurfaceVariant,
-        titleTextStyle: text.bodyLarge,
+        titleTextStyle: text.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
         subtitleTextStyle: text.bodyMedium?.copyWith(
           color: colorScheme.onSurfaceVariant,
         ),
@@ -253,30 +257,33 @@ class AppTheme {
       double size,
       FontWeight weight, {
       double spacing = 0,
+      double height = 1.25,
       bool numbers = false,
     }) => base?.copyWith(
       fontFamily: AppFonts.brand,
       fontSize: size,
       fontWeight: weight,
       letterSpacing: spacing,
-      height: 1.25,
+      height: height,
       fontFeatures: numbers ? tabular : null,
     );
     theme = theme.copyWith(
-      // The amount being typed on Add expense.
+      // The amount being typed on Add expense; the Group header balance.
       headlineLarge: brand(
         theme.headlineLarge,
         32,
         FontWeight.w700,
         spacing: -0.5,
+        height: 1.1,
         numbers: true,
       ),
-      // The one big balance on Home / Group.
+      // The big balance on Home.
       headlineMedium: brand(
         theme.headlineMedium,
         28,
         FontWeight.w700,
-        spacing: -0.4,
+        spacing: -0.5,
+        height: 1.1,
         numbers: true,
       ),
       headlineSmall: brand(
@@ -286,18 +293,46 @@ class AppTheme {
         spacing: -0.3,
         numbers: true,
       ),
-      titleLarge: brand(theme.titleLarge, 22, FontWeight.w700, spacing: -0.2),
-      titleMedium: brand(theme.titleMedium, 18, FontWeight.w600),
-      // Section labels and tabs.
-      titleSmall: brand(theme.titleSmall, 14, FontWeight.w600, spacing: 0.1),
-      bodyLarge: theme.bodyLarge?.copyWith(fontSize: 16, fontFeatures: tabular),
+      // Screen titles.
+      titleLarge: brand(
+        theme.titleLarge,
+        22,
+        FontWeight.w700,
+        spacing: -0.2,
+        height: 1.2,
+      ),
+      // Sheet titles, empty-state titles.
+      titleMedium: brand(theme.titleMedium, 16, FontWeight.w600, height: 1.3),
+      // Section labels and tabs. 14 (not DESIGN (3)'s 13) to stay on the
+      // Material scale (owner left it to us, 2026-11-20).
+      titleSmall: brand(
+        theme.titleSmall,
+        14,
+        FontWeight.w600,
+        spacing: 0.2,
+        height: 1.2,
+      ),
+      bodyLarge: theme.bodyLarge?.copyWith(
+        fontSize: 16,
+        height: 1.3,
+        fontFeatures: tabular,
+      ),
       bodyMedium: theme.bodyMedium?.copyWith(
         fontSize: 14,
+        height: 1.35,
+        fontFeatures: tabular,
+      ),
+      bodySmall: theme.bodySmall?.copyWith(
+        fontSize: 12,
+        letterSpacing: 0.1,
+        height: 1.35,
         fontFeatures: tabular,
       ),
       labelLarge: theme.labelLarge?.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w500,
+        letterSpacing: 0.1,
+        height: 1.2,
       ),
     );
     return theme.apply(

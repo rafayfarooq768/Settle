@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/money/money.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_theme_extensions.dart';
+import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/panel.dart';
 import '../../../core/widgets/section_label.dart';
 import '../../../l10n/app_localizations.dart';
@@ -108,13 +109,11 @@ class ExpenseRow extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       trailing: settled
-          ? Text(
-              l10n.rowSettledExpense,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: context.extraColors.settled,
-              ),
+          ? MoneyStack(
+              label: l10n.rowSettledExpense,
+              color: context.extraColors.settled,
             )
-          : _MyPartText(part: myPart(expense, meId)),
+          : _MyPart(part: myPart(expense, meId)),
     );
   }
 
@@ -165,18 +164,15 @@ class PaymentRow extends StatelessWidget {
         l10n.paymentRowLabel,
         style: theme.textTheme.bodyMedium?.copyWith(color: muted),
       ),
-      trailing: Text(
-        formatRupees(s.amount),
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontFeatures: const [FontFeature.tabularFigures()],
-        ),
-      ),
+      trailing: Text(formatRupees(s.amount), style: rowAmountStyle(theme)),
     );
   }
 }
 
-class _MyPartText extends StatelessWidget {
-  const _MyPartText({required this.part});
+/// Your part of an expense, as a [MoneyStack]: "You owe" / "You lent"
+/// over the amount, or one quiet line.
+class _MyPart extends StatelessWidget {
+  const _MyPart({required this.part});
 
   final MyPart part;
 
@@ -186,18 +182,19 @@ class _MyPartText extends StatelessWidget {
     final theme = Theme.of(context);
     final money = context.moneyColors;
     final muted = theme.colorScheme.onSurfaceVariant;
-    final (text, color) = switch (part) {
-      Owe(:final amount) => (l10n.rowYouOwe(formatRupees(amount)), money.owe),
-      Lent(:final amount) => (
-        l10n.rowYouLent(formatRupees(amount)),
-        money.owed,
+    return switch (part) {
+      Owe(:final amount) => MoneyStack(
+        label: l10n.stackYouOwe,
+        amount: amount,
+        color: money.owe,
       ),
-      Even() => (l10n.rowEven, muted),
-      NotInvolved() => (l10n.rowNotInvolved, muted),
+      Lent(:final amount) => MoneyStack(
+        label: l10n.stackYouLent,
+        amount: amount,
+        color: money.owed,
+      ),
+      Even() => MoneyStack(label: l10n.rowEven, color: muted),
+      NotInvolved() => MoneyStack(label: l10n.rowNotInvolved, color: muted),
     };
-    return Text(
-      text,
-      style: theme.textTheme.bodyMedium?.copyWith(color: color),
-    );
   }
 }

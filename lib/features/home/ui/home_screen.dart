@@ -11,6 +11,7 @@ import '../../settlements/ui/settlements_providers.dart';
 import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
+import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/panel.dart';
 import '../../../core/widgets/section_label.dart';
 import '../../../l10n/app_localizations.dart';
@@ -113,30 +114,36 @@ class _OverallPanel extends ConsumerWidget {
     final muted = theme.textTheme.bodyMedium?.copyWith(
       color: theme.colorScheme.onSurfaceVariant,
     );
-    return Panel(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.overallLabel,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+        SectionLabel(l10n.overallLabel),
+        Panel(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BalanceHero(
+                    net: owed - owe,
+                    large: false,
+                    settledText: l10n.balanceAllSettled,
+                  ),
+                  if (owe > 0 && owed > 0) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      l10n.balanceBothLine(
+                        formatRupees(owe),
+                        formatRupees(owed),
+                      ),
+                      style: muted,
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: AppSpacing.xs),
-              BalanceHeadline(net: owed - owe, settled: l10n.balanceAllSettled),
-              if (owe > 0 && owed > 0) ...[
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  l10n.balanceBothLine(formatRupees(owe), formatRupees(owed)),
-                  style: muted,
-                ),
-              ],
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
@@ -176,12 +183,7 @@ class _GroupRow extends ConsumerWidget {
         start: AppSpacing.lg,
         end: AppSpacing.sm,
       ),
-      title: Text(
-        group.name,
-        style: theme.textTheme.titleMedium,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      title: Text(group.name, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: toConfirm > 0
           ? Text(
               l10n.pendingToConfirm(toConfirm),
@@ -196,7 +198,7 @@ class _GroupRow extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ?(net == null ? null : BalanceStack(net: net)),
-          const SizedBox(width: AppSpacing.xs),
+          const SizedBox(width: AppSpacing.sm),
           Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
         ],
       ),
@@ -310,36 +312,17 @@ class _NoGroups extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return ListView(
-      children: [
-        const SizedBox(height: AppSpacing.sm),
-        Panel(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.homeNoGroups,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  LoadingButton(
-                    label: l10n.createGroupButton,
-                    onPressed: () => context.push('/groups/new'),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  LoadingButton(
-                    label: l10n.joinWithCodeButton,
-                    onPressed: () => context.push('/join'),
-                    style: LoadingButtonStyle.text,
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return EmptyState(
+      title: l10n.homeNoGroups,
+      actions: [
+        LoadingButton(
+          label: l10n.createGroupButton,
+          onPressed: () => context.push('/groups/new'),
+        ),
+        LoadingButton(
+          label: l10n.joinWithCodeButton,
+          onPressed: () => context.push('/join'),
+          style: LoadingButtonStyle.outlined,
         ),
       ],
     );

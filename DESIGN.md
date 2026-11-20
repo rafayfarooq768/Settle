@@ -86,6 +86,18 @@ Rules:
 
 ---
 
+### Consistency pass (owner, 2026-11-20)
+Decisions from checking every screen against DESIGN (3).md's polish notes. Where DESIGN (3)
+uses an off-grid value we snap to the grid (owner left it to us):
+- Panels: 4 padding at top and bottom inside, so rows don't touch the rounded corners.
+- Rows: 16 from the edge, **12** from the avatar or icon to the text (dividers inset to match),
+  names weight 500. Rows at least 56 tall.
+- Avatar initials Roboto 600 at 40% of the avatar size (16 on 40, 11 on 28).
+- Section labels Manrope 14/600 (DESIGN (3) says 13; 14 keeps the Material scale).
+- Home summary panel padding 16 (DESIGN (3) says 20/16; 16 stays on the grid).
+- Full-width form buttons 52 tall; other buttons 48.
+- Line heights and tracking per the DESIGN (3).md §3 table (`_textTheme` in `app_theme.dart`).
+
 ## 5. Shape and elevation
 
 - Corner radius: **8** for buttons, inputs and chips; **12** for panels; sheets' top corners **16**. Nothing fully rounded except avatars and the FAB.
@@ -117,8 +129,16 @@ One primary button per screen. Full-width only at the bottom of forms.
 - Errors: inline text under the field, in plain words. No popups for validation.
 
 ### Lists
-- Expense row: title + "Ali paid Rs 1,000" (muted) on the left; your part on the right
-  ("you owe Rs 300" in red / "you lent Rs 700" in green / "not involved" muted).
+- **Money label** (owner, 2026-11-20 polish): the same at the end of every row
+  (`MoneyStack`). A short sentence-case word in the money colour over the amount:
+  "You owe" / "You lent" / "You are owed" / "Owes" / "Gets back" in bodySmall 12/500,
+  then "Rs 300" in bodyLarge 16/600, tabular. States with no amount are one quiet line in
+  bodyMedium: "Settled up", "Not involved", "Paid your share" (muted), "Settled" (Deep teal).
+  Sentence case, never ALL CAPS.
+- Every amount at the end of a row (payments, items, settle-up) uses that same 16/600
+  (`rowAmountStyle`).
+- Expense row: title + "Ali paid Rs 1,000" (muted) on the left; your part on the right as a
+  money label.
 - Date headers group expenses (Today, Yesterday, 12 Nov).
 
 ### Avatars
@@ -174,6 +194,10 @@ No floating blocks of content in the middle of an empty screen.
 ## 9. Empty states
 
 Plain text and one action. No illustrations.
+- Layout (owner, 2026-11-20 polish; `EmptyState`): left-aligned with the panels, 24 below the
+  top, titleMedium 16/600 line (max 280 wide), optional muted line, actions 16 below, stacked
+  with 8 between: primary `FilledButton`, then `OutlinedButton`. Tab messages (errors,
+  "Everyone is settled up") use the same layout without actions.
 - No groups: "No groups yet. Create one or join with a code." [Create group] [Join]
 - No expenses: "No expenses yet." [Add expense]
 - All settled: "Everyone is settled up." (Deep teal text, once)
@@ -220,11 +244,14 @@ Rules:
 
 **Home**
 - App bar: "Salam, Ali" (the screen's one Roman Urdu phrase); your avatar at the end opens Settings.
-- Summary panel: muted label "Overall", then the overall balance in one line of large text
-  ("You are owed Rs 900", or "You're all settled up" in tertiary) + small muted line
-  ("You owe Rs 300 · You are owed Rs 1,200") only if both are non-zero.
-- "Groups" label, then one panel of group rows: name (titleMedium), "Friends · 4 members" (muted),
-  your balance on the right stacked as "you are owed" over "Rs 700" (or "settled up"), then a chevron.
+- "Overall" section label, then a panel: the words ("You are owed", bodyLarge 16/500, in the
+  money colour) over the amount (headlineMedium 28) with a small muted "Rs" (60%, weight 600),
+  or "You're all settled up" in Deep teal; then a small muted line 8 below
+  ("You owe Rs 300 · You are owed Rs 1,200") only if both are non-zero. Same layout as the
+  Group header (`BalanceHero`), which uses headlineLarge 32.
+- "Groups" label, then one panel of group rows: name (row name style, 16/500), "Friends · 4 members"
+  (muted), the money label on the right ("You are owed" over "Rs 700", or "Settled up"), then a
+  chevron 8 after it.
   The last row is "New group or join" in teal text with a + at the end, opening a sheet with both choices.
 - FAB: Add expense. With one group it opens Add expense directly; otherwise a sheet asks which group.
 
@@ -322,7 +349,7 @@ Rules:
 
 ## 12. Anti-slop checklist (review every screen against this)
 
-Do not add:
+Add only if very, very necessary (owner, 2026-11-20: loosened from "do not add"):
 1. Gradients (any).
 2. Glassmorphism, blur, frosted layers.
 3. Glow on buttons, borders or backgrounds.

@@ -25,14 +25,18 @@ class Panel extends StatelessWidget {
         color: context.extraColors.panel,
         borderRadius: BorderRadius.circular(AppRadius.panel),
         clipBehavior: Clip.antiAlias,
+        // 4 at top and bottom so the first and last rows don't touch the
+        // rounded corners (DESIGN (3).md §4).
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: AppSpacing.xs),
             for (var i = 0; i < children.length; i++) ...[
               if (i > 0 && dividerIndent != null)
                 Divider(indent: dividerIndent, height: 1),
               children[i],
             ],
+            const SizedBox(height: AppSpacing.xs),
           ],
         ),
       ),
@@ -42,8 +46,8 @@ class Panel extends StatelessWidget {
 
 /// Inset for dividers in rows that start with a 40dp avatar or tile.
 const double avatarRowDividerIndent =
-    AppSpacing.lg + AppSizes.avatar + AppSpacing.lg; // padding + avatar + gap
+    AppSpacing.lg + AppSizes.avatar + AppSpacing.md; // padding + avatar + gap
 
 /// Inset for dividers in rows that start with a 24dp icon.
 const double iconRowDividerIndent =
-    AppSpacing.lg + AppSizes.icon + AppSpacing.lg; // padding + icon + gap
+    AppSpacing.lg + AppSizes.icon + AppSpacing.md; // padding + icon + gap

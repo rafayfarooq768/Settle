@@ -377,27 +377,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String rowYouOwe(String amount) {
-    return 'you owe $amount';
-  }
-
-  @override
-  String rowYouAreOwed(String amount) {
-    return 'you are owed $amount';
-  }
-
-  @override
-  String get rowSettled => 'settled up';
-
-  @override
-  String memberOwes(String amount) {
-    return 'owes $amount';
-  }
-
-  @override
-  String memberIsOwed(String amount) {
-    return 'is owed $amount';
-  }
+  String get rowSettled => 'Settled up';
 
   @override
   String membersCount(int count) {
@@ -594,15 +574,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String rowYouLent(String amount) {
-    return 'you lent $amount';
-  }
+  String get rowNotInvolved => 'Not involved';
 
   @override
-  String get rowNotInvolved => 'not involved';
-
-  @override
-  String get rowEven => 'your share is paid';
+  String get rowEven => 'Paid your share';
 
   @override
   String get pickGroupTitle => 'Add to which group?';
@@ -611,10 +586,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get doneButton => 'Done';
 
   @override
-  String get stackYouOwe => 'you owe';
+  String get stackYouOwe => 'You owe';
 
   @override
-  String get stackYouAreOwed => 'you are owed';
+  String get stackYouAreOwed => 'You are owed';
 
   @override
   String transferYouPay(String name) {
@@ -633,10 +608,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settleOthersLabel => 'Others in the group';
 
   @override
-  String get stackOwes => 'owes';
+  String get stackOwes => 'Owes';
 
   @override
-  String get stackIsOwed => 'is owed';
+  String get stackIsOwed => 'Gets back';
 
   @override
   String get iPaidButton => 'I paid';
@@ -754,7 +729,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentRowLabel => 'Payment';
 
   @override
-  String get rowSettledExpense => 'settled';
+  String get rowSettledExpense => 'Settled';
 
   @override
   String get heroYouAreOwed => 'You are owed';
@@ -999,4 +974,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String remindSendsTo(String phone) {
     return 'Opens your WhatsApp chat with $phone.';
   }
+
+  @override
+  String get stackYouLent => 'You lent';
 }

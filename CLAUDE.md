@@ -2,7 +2,11 @@
 
 Read these before doing any work:
 - **@PLAN.md** — what we're building, constraints, money rules, data model, build order.
-- **@DESIGN.md** — how it must look and behave. Follow the anti-slop checklist strictly.
+- **@DESIGN.md** — how it must look and behave. Its §12 checklist: add those things only if
+  very, very necessary (owner, 2026-11-20).
+- **DESIGN (3).md** — DESIGN.md plus the 2026-11-20 polish notes (type table, row anatomy,
+  vertical rhythm, empty states). Check it too; DESIGN.md wins where they differ, and
+  off-grid values in it are snapped to the 4/8/12/16/24/32 scale.
 - **@BRAND.md** — logo, app icon, brand colours and brand font. Logo files are in `assets/icon/`.
 
 If a request conflicts with PLAN.md or DESIGN.md, point out the conflict before writing code.

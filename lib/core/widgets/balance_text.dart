@@ -7,93 +7,71 @@ import '../theme/app_theme_extensions.dart';
 
 /// Who the balance belongs to, which decides the words.
 enum BalanceWording {
-  /// "you owe Rs 300" / "you are owed Rs 700" / "settled up"
+  /// "You owe" / "You are owed" (your own balance)
   you,
 
-  /// "owes Rs 300" / "is owed Rs 700" / "settled up" (after a name)
+  /// "Owes" / "Gets back" (someone else's, after their name)
   member,
 }
 
-/// A net balance in words + colour (DESIGN.md §2: never colour alone;
-/// owe/owed colours only for money). Tabular figures come from the theme.
-class BalanceText extends StatelessWidget {
-  const BalanceText({
+/// The money label at the end of a row, the same everywhere (owner
+/// 2026-11-20, polish): a short sentence-case word in the money colour over
+/// the amount in bodyLarge 16/600 with tabular figures. States with no
+/// amount ("Settled up", "Not involved") are one quiet line.
+/// DESIGN.md §2: the words always say the direction, never colour alone.
+class MoneyStack extends StatelessWidget {
+  const MoneyStack({
     super.key,
-    required this.net,
-    this.wording = BalanceWording.you,
-    this.style,
+    required this.label,
+    required this.color,
+    this.amount,
   });
 
-  final int net;
-  final BalanceWording wording;
-  final TextStyle? style;
+  final String label;
+  final Color color;
+
+  /// Paisa, shown without a sign; null for a one-line state.
+  final int? amount;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final money = context.moneyColors;
-    final amount = formatRupees(net);
-    final (text, color) = switch ((net.sign, wording)) {
-      (0, _) => (l10n.rowSettled, theme.colorScheme.onSurfaceVariant),
-      (> 0, BalanceWording.you) => (l10n.rowYouAreOwed(amount), money.owed),
-      (_, BalanceWording.you) => (l10n.rowYouOwe(amount), money.owe),
-      (> 0, _) => (l10n.memberIsOwed(amount), money.owed),
-      _ => (l10n.memberOwes(amount), money.owe),
-    };
-    return Text(
-      text,
-      style: (style ?? theme.textTheme.bodyMedium)?.copyWith(color: color),
-    );
-  }
-}
-
-/// The big one-line balance (Home summary, Group header): "You owe Rs 300",
-/// "You are owed Rs 900", or the settled message in brand teal.
-class BalanceHeadline extends StatelessWidget {
-  const BalanceHeadline({
-    super.key,
-    required this.net,
-    required this.settled,
-    this.settledAccent = false,
-  });
-
-  final int net;
-
-  /// Text shown when [net] is 0.
-  final String settled;
-
-  /// Use the brand "settled" colour (DESIGN.md §9: once per screen).
-  final bool settledAccent;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final money = context.moneyColors;
-    final amount = formatRupees(net);
-    // Settled isn't a number, so it doesn't get the big number style.
-    if (net == 0) {
+    if (amount == null) {
       return Text(
-        settled,
-        style: theme.textTheme.titleLarge?.copyWith(
-          color: settledAccent ? context.extraColors.settled : null,
-        ),
+        label,
+        style: theme.textTheme.bodyMedium?.copyWith(color: color),
       );
     }
-    final (text, color) = net > 0
-        ? (l10n.balanceYouAreOwed(amount), money.owed)
-        : (l10n.balanceYouOwe(amount), money.owe);
-    return Text(
-      text,
-      style: theme.textTheme.headlineMedium?.copyWith(color: color),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: color,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          formatRupees(amount!.abs()),
+          style: rowAmountStyle(theme, color: color),
+        ),
+      ],
     );
   }
 }
 
-/// Your balance in a list row, stacked so the row keeps its width for the
-/// name: a small "you owe" over the amount in bold (DESIGN.md §11 Home).
-/// Settled is one muted line.
+/// The amount at the end of any row: bodyLarge 16/600, tabular
+/// (DESIGN (3).md §4). [MoneyStack] uses it too, so every row amount matches.
+TextStyle? rowAmountStyle(ThemeData theme, {Color? color}) =>
+    theme.textTheme.bodyLarge?.copyWith(
+      color: color,
+      fontWeight: FontWeight.w600,
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+
+/// A net balance in a list row (Home group rows, Balances).
 class BalanceStack extends StatelessWidget {
   const BalanceStack({
     super.key,
@@ -102,81 +80,139 @@ class BalanceStack extends StatelessWidget {
   });
 
   final int net;
-
-  /// "you owe" (your own balance) or "owes" (someone else's).
   final BalanceWording wording;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final money = context.moneyColors;
     if (net == 0) {
-      return Text(
-        l10n.rowSettled,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
+      return MoneyStack(
+        label: l10n.rowSettled,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       );
     }
-    final color = net > 0 ? money.owed : money.owe;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(switch ((net > 0, wording)) {
-          (true, BalanceWording.you) => l10n.stackYouAreOwed,
-          (false, BalanceWording.you) => l10n.stackYouOwe,
-          (true, _) => l10n.stackIsOwed,
-          (false, _) => l10n.stackOwes,
-        }, style: theme.textTheme.bodySmall?.copyWith(color: color)),
-        Text(
-          formatRupees(net.abs()),
-          style: theme.textTheme.titleSmall?.copyWith(
-            color: color,
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
-        ),
-      ],
+    final owed = net > 0;
+    return MoneyStack(
+      label: switch ((owed, wording)) {
+        (true, BalanceWording.you) => l10n.stackYouAreOwed,
+        (false, BalanceWording.you) => l10n.stackYouOwe,
+        (true, _) => l10n.stackIsOwed,
+        (false, _) => l10n.stackOwes,
+      },
+      amount: net,
+      color: owed ? money.owed : money.owe,
     );
   }
 }
 
-/// The Group screen's balance (DESIGN.md §11, owner 2026-11-20): a small
-/// label that says the direction, the amount big under it. Number first.
-/// Settled is "Your balance" over "All settled" in the settled colour.
+/// A big amount with a small "Rs" (DESIGN (3).md §3, polish 2026-11-20):
+/// "Rs" about 60% of the number's size, weight 600, muted, on the number's
+/// baseline, so the number carries the weight.
+class BigAmount extends StatelessWidget {
+  const BigAmount({
+    super.key,
+    required this.paisa,
+    required this.style,
+    this.color,
+  });
+
+  final int paisa;
+  final TextStyle? style;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final number = style?.copyWith(color: color);
+    final size = number?.fontSize ?? 28;
+    // "Rs 1,200" → "1,200": the number part only.
+    final digits = formatRupees(paisa.abs())
+        .substring(l10n.currencyPrefix.length);
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: l10n.currencyPrefix,
+            style: number?.copyWith(
+              fontSize: size * 0.6,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          TextSpan(text: digits, style: number),
+        ],
+      ),
+      // Amounts read left to right in Urdu too.
+      textDirection: TextDirection.ltr,
+    );
+  }
+}
+
+/// The big balance (owner 2026-11-20; DESIGN (3).md polish): the words
+/// over the amount, number first. Home uses headlineMedium, the Group
+/// header headlineLarge ([large]). Settled is [settledLabel] over the
+/// settled message in the brand settled colour.
 class BalanceHero extends StatelessWidget {
-  const BalanceHero({super.key, required this.net});
+  const BalanceHero({
+    super.key,
+    required this.net,
+    this.large = true,
+    this.settledLabel,
+    this.settledText,
+  });
 
   final int net;
+  final bool large;
+
+  /// Defaults to "Your balance" / "All settled".
+  final String? settledLabel;
+  final String? settledText;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final money = context.moneyColors;
-    final (label, value, color, labelColor) = switch (net) {
-      > 0 => (l10n.heroYouAreOwed, formatRupees(net), money.owed, money.owed),
-      < 0 => (l10n.heroYouOwe, formatRupees(-net), money.owe, money.owe),
-      _ => (
-        l10n.heroYourBalance,
-        l10n.heroAllSettled,
-        context.extraColors.settled,
-        theme.colorScheme.onSurfaceVariant,
-      ),
-    };
+    final big = large
+        ? theme.textTheme.headlineLarge
+        : theme.textTheme.headlineMedium;
+    final labelStyle = theme.textTheme.bodyLarge?.copyWith(
+      fontWeight: FontWeight.w500,
+    );
+    if (net == 0) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            settledLabel ?? l10n.heroYourBalance,
+            style: labelStyle?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          // Settled isn't a number: the title style, not the big one.
+          Text(
+            settledText ?? l10n.heroAllSettled,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: context.extraColors.settled,
+            ),
+          ),
+        ],
+      );
+    }
+    final color = net > 0 ? money.owed : money.owe;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
-          style: theme.textTheme.titleSmall?.copyWith(color: labelColor),
+          net > 0 ? l10n.heroYouAreOwed : l10n.heroYouOwe,
+          style: labelStyle?.copyWith(color: color),
         ),
         const SizedBox(height: AppSpacing.xs),
-        Text(
-          value,
-          style: theme.textTheme.headlineLarge?.copyWith(color: color),
-        ),
+        BigAmount(paisa: net, style: big, color: color),
       ],
     );
   }
