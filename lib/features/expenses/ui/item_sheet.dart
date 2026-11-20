@@ -19,41 +19,25 @@ class ItemSheetResult {
 }
 
 /// Add or edit one bill item: name, price, who had it (DESIGN.md §8: a
-/// sheet for a small form). New items start with [ticked] (default:
-/// everyone). A [shared] item asks "Who shared it?" instead.
+/// sheet for a small form). New items start with everyone ticked: untick
+/// whoever didn't have it (one item can be shared by several people).
 Future<ItemSheetResult?> showItemSheet(
   BuildContext context, {
   required List<Member> members,
   required String meId,
   BillLine? line,
-  bool shared = false,
-  List<String>? ticked,
 }) => showAppSheet<ItemSheetResult>(
   context: context,
   scrollControlled: true,
-  builder: (_) => _ItemSheet(
-    members: members,
-    meId: meId,
-    line: line,
-    shared: shared,
-    ticked: ticked,
-  ),
+  builder: (_) => _ItemSheet(members: members, meId: meId, line: line),
 );
 
 class _ItemSheet extends StatefulWidget {
-  const _ItemSheet({
-    required this.members,
-    required this.meId,
-    required this.shared,
-    this.line,
-    this.ticked,
-  });
+  const _ItemSheet({required this.members, required this.meId, this.line});
 
   final List<Member> members;
   final String meId;
-  final bool shared;
   final BillLine? line;
-  final List<String>? ticked;
 
   @override
   State<_ItemSheet> createState() => _ItemSheetState();
@@ -68,8 +52,7 @@ class _ItemSheetState extends State<_ItemSheet> {
   );
   late final Set<String> _who = {
     ...?widget.line?.memberIds,
-    if (widget.line == null)
-      ...(widget.ticked ?? widget.members.map((m) => m.id)),
+    if (widget.line == null) ...widget.members.map((m) => m.id),
   };
   String? _priceError;
   String? _whoError;
@@ -113,9 +96,7 @@ class _ItemSheetState extends State<_ItemSheet> {
       _priceError = price == null || price == 0
           ? l10n.errorAmountRequired
           : null;
-      _whoError = _who.isEmpty
-          ? (widget.shared ? l10n.errorPickWhoShared : l10n.errorPickWhoHad)
-          : null;
+      _whoError = _who.isEmpty ? l10n.errorPickWhoHad : null;
     });
     if (_priceError != null || _whoError != null) return;
     Navigator.of(context).pop(
@@ -136,7 +117,7 @@ class _ItemSheetState extends State<_ItemSheet> {
   List<Widget> _whoHad(AppLocalizations l10n, ThemeData theme) => [
     const SizedBox(height: AppSpacing.lg),
     Text(
-      widget.shared ? l10n.itemWhoShared : l10n.itemWhoHad,
+      l10n.itemWhoHad,
       style: theme.textTheme.labelLarge?.copyWith(
         color: _whoError == null
             ? theme.colorScheme.onSurfaceVariant
@@ -186,12 +167,10 @@ class _ItemSheetState extends State<_ItemSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SheetTitle(switch ((widget.shared, widget.line == null)) {
-                (false, true) => l10n.itemAddTitle,
-                (false, false) => l10n.itemEditTitle,
-                (true, true) => l10n.sharedAddTitle,
-                (true, false) => l10n.sharedEditTitle,
-              }, inset: false),
+              SheetTitle(
+                widget.line == null ? l10n.itemAddTitle : l10n.itemEditTitle,
+                inset: false,
+              ),
               TextField(
                 controller: _name,
                 focusNode: _nameFocus,

@@ -52,8 +52,7 @@ Build order (§9) decides the sequence, not separate releases.
 6. Add expense with split modes: **Equal, Exact amounts, Percentages, Itemized**.
    Itemized (restaurants): items, shared items, tax/service charge/tip spread proportionally.
    Tax and service are a % of the items, tip is in rupees; the bill total becomes the
-   expense amount. Shared items (drinks, starters) are a separate list, each split equally
-   between who shared it (starts with everyone who had an item, or the whole group) (2026-11-20).
+   expense amount. A shared item (drinks) is an item with several people ticked (2026-11-20).
 7. Edit/delete expense; balances always recompute.
    Multiple payers on one expense.
    Recurring expenses (rent, internet), created by the app when opened on/after the due date.

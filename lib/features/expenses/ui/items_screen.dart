@@ -53,7 +53,6 @@ class ItemsScreen extends ConsumerStatefulWidget {
 
 class _ItemsScreenState extends ConsumerState<ItemsScreen> {
   late final List<BillLine> _items = [...?widget.args.spec?.items];
-  late final List<BillLine> _shared = [...?widget.args.spec?.shared];
   late final _tax = _controller(_percentText(widget.args.spec?.taxBp));
   late final _service = _controller(_percentText(widget.args.spec?.serviceBp));
   late final _tip = _controller(switch (widget.args.spec?.tip) {
@@ -76,33 +75,22 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
     super.dispose();
   }
 
-  ItemizedSpec _spec(List<String> order) => ItemizedSpec(
+  ItemizedSpec get _spec => ItemizedSpec(
     items: _items,
-    shared: _shared,
-    sharedWith: sharedWithFor(_items, order),
     taxBp: parsePercent(_tax.text) ?? 0,
     serviceBp: parsePercent(_service.text) ?? 0,
     tip: parseRupees(_tip.text) ?? 0,
     spread: _equally ? ExtrasSpread.equal : ExtrasSpread.proportional,
   );
 
-  /// Add (no [index]) or edit an item, in [_shared] when [shared].
-  Future<void> _edit(
-    List<Member> members, {
-    int? index,
-    bool shared = false,
-  }) async {
-    final list = shared ? _shared : _items;
+  /// Add (no [index]) or edit an item.
+  Future<void> _edit(List<Member> members, {int? index}) async {
+    final list = _items;
     final result = await showItemSheet(
       context,
       members: members,
       meId: widget.args.meId,
       line: index == null ? null : list[index],
-      shared: shared,
-      // A new shared item starts with everyone who had an item.
-      ticked: shared
-          ? sharedWithFor(_items, [for (final m in members) m.id])
-          : null,
     );
     if (result == null || !mounted) return;
     setState(() {
@@ -128,7 +116,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
             .toList();
     final byId = {for (final m in members) m.id: m};
     final order = [for (final m in members) m.id];
-    final spec = _spec(order);
+    final spec = _spec;
     final ready = spec.problem(null) == null;
     final owes = ready
         ? spec.shares(
@@ -155,26 +143,6 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                   onTap: () => _edit(members, index: i),
                 ),
               _AddRow(label: l10n.itemsAdd, onTap: () => _edit(members)),
-            ],
-          ),
-          SectionLabel(l10n.sharedSection),
-          Panel(
-            dividerIndent: AppSpacing.lg,
-            children: [
-              for (var i = 0; i < _shared.length; i++)
-                _ItemRow(
-                  line: _shared[i],
-                  people: l10n.sharedSplitBetween(
-                    _shared[i].memberIds.isEmpty
-                        ? spec.sharedWith.length
-                        : _shared[i].memberIds.length,
-                  ),
-                  onTap: () => _edit(members, index: i, shared: true),
-                ),
-              _AddRow(
-                label: l10n.sharedAdd,
-                onTap: () => _edit(members, shared: true),
-              ),
             ],
           ),
           SectionLabel(l10n.extrasSection),

@@ -1683,48 +1683,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'By items'**
   String get splitByItems;
-
-  /// No description provided for @sharedSection.
-  ///
-  /// In en, this message translates to:
-  /// **'Shared items'**
-  String get sharedSection;
-
-  /// No description provided for @sharedAdd.
-  ///
-  /// In en, this message translates to:
-  /// **'Add shared item'**
-  String get sharedAdd;
-
-  /// No description provided for @sharedAddTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Add shared item'**
-  String get sharedAddTitle;
-
-  /// No description provided for @sharedEditTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit shared item'**
-  String get sharedEditTitle;
-
-  /// No description provided for @sharedSplitBetween.
-  ///
-  /// In en, this message translates to:
-  /// **'Split equally between {count, plural, =1{1 person} other{{count} people}}'**
-  String sharedSplitBetween(int count);
-
-  /// No description provided for @itemWhoShared.
-  ///
-  /// In en, this message translates to:
-  /// **'Who shared it?'**
-  String get itemWhoShared;
-
-  /// No description provided for @errorPickWhoShared.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick who shared it.'**
-  String get errorPickWhoShared;
 }
 
 class _AppLocalizationsDelegate

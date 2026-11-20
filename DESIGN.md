@@ -278,9 +278,7 @@ Rules:
   "2 people paid Rs 1,500".
 - Itemized (owner, 2026-11-20: its own screen, not a 5th tab): a teal "Split a bill by items ›"
   link under the split screen's members opens "Split by items". Panels: Items (name, who had it
-  or "Everyone", price; last row "Add item" in teal with +), Shared items (name, "Split equally
-  between 4 people", price; "Add shared item"; their sheet asks "Who shared it?", ticked for
-  everyone who had an item), "Tax, service and tip" (Tax % and
+  or "Everyone", price; last row "Add item" in teal with +), "Tax, service and tip" (Tax % and
   Service charge % with the rupees under them, Tip in Rs, and a "Split these equally" switch;
   off = by what each person had), then "Who owes what" once there's an item. Above Done:
   "Bill total Rs 4,400" (and "The amount changes from Rs 4,000" if you typed something else).

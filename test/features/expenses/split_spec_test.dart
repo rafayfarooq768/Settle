@@ -253,56 +253,6 @@ void main() {
       expect(restaurant.problem(440000), isNull);
     });
 
-    test('the restaurant with drinks as a shared item gives the same', () {
-      final withShared = ItemizedSpec(
-        items: restaurant.items.take(4).toList(),
-        shared: const [BillLine(name: 'Drinks', amount: 80000, memberIds: [])],
-        sharedWith: sharedWithFor(restaurant.items.take(4).toList(), _order),
-        taxBp: 1000,
-      );
-      expect(withShared.sharedWith, ['a', 'b', 'c', 'd']);
-      expect(withShared.total, 440000);
-      expect(_shares(withShared, 440000), _shares(restaurant, 440000));
-    });
-
-    test('shared items alone are split across the whole group', () {
-      const order = ['a', 'b'];
-      expect(sharedWithFor(const [], order), order);
-      final bill = ItemizedSpec(
-        items: const [],
-        shared: const [BillLine(name: 'Pizza', amount: 2000, memberIds: [])],
-        sharedWith: sharedWithFor(const [], order),
-      );
-      expect(bill.problem(null), isNull);
-      expect(bill.shares(amount: 2000, order: order, payers: const ['a']), {
-        'a': 1000,
-        'b': 1000,
-      });
-    });
-
-    test('each shared item is split between its own people', () {
-      const bill = ItemizedSpec(
-        items: [
-          BillLine(name: '', amount: 1000, memberIds: ['a', 'b', 'c']),
-        ],
-        shared: [
-          BillLine(name: 'Drinks', amount: 600, memberIds: ['a', 'b']),
-        ],
-        sharedWith: ['a', 'b', 'c'],
-      );
-      expect(_shares(bill, 1600), {'a': 634, 'b': 633, 'c': 333});
-    });
-
-    test('older bills without shared items still read back', () {
-      final json = Map.of(restaurant.toJson())
-        ..remove('shared')
-        ..remove('sharedWith');
-      final back =
-          SplitSpec.fromJson(SplitMode.itemized, json)! as ItemizedSpec;
-      expect(back.shared, isEmpty);
-      expect(_shares(back, 440000), _shares(restaurant, 440000));
-    });
-
     test('reads back from splitInput the same', () {
       final back =
           SplitSpec.fromJson(SplitMode.itemized, restaurant.toJson())!

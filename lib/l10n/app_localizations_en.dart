@@ -954,33 +954,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splitByItems => 'By items';
-
-  @override
-  String get sharedSection => 'Shared items';
-
-  @override
-  String get sharedAdd => 'Add shared item';
-
-  @override
-  String get sharedAddTitle => 'Add shared item';
-
-  @override
-  String get sharedEditTitle => 'Edit shared item';
-
-  @override
-  String sharedSplitBetween(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count people',
-      one: '1 person',
-    );
-    return 'Split equally between $_temp0';
-  }
-
-  @override
-  String get itemWhoShared => 'Who shared it?';
-
-  @override
-  String get errorPickWhoShared => 'Pick who shared it.';
 }

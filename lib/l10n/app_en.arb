@@ -756,19 +756,5 @@
   "errorItemsNeeded": "Add at least one item.",
   "errorItemNeedsPeople": "Pick who had each item.",
   "errorPickWhoHad": "Pick who had it.",
-  "splitByItems": "By items",
-  "sharedSection": "Shared items",
-  "sharedAdd": "Add shared item",
-  "sharedAddTitle": "Add shared item",
-  "sharedEditTitle": "Edit shared item",
-  "sharedSplitBetween": "Split equally between {count, plural, =1{1 person} other{{count} people}}",
-  "@sharedSplitBetween": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "itemWhoShared": "Who shared it?",
-  "errorPickWhoShared": "Pick who shared it."
+  "splitByItems": "By items"
 }
