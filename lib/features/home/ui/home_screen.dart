@@ -13,6 +13,7 @@ import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/panel.dart';
+import '../../../core/widgets/row_chevron.dart';
 import '../../../core/widgets/section_label.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../balances/ui/balances_providers.dart';
@@ -179,10 +180,7 @@ class _GroupRow extends ConsumerWidget {
     // chevron says the row opens the group.
     return ListTile(
       minTileHeight: AppSizes.groupRowHeight,
-      contentPadding: const EdgeInsetsDirectional.only(
-        start: AppSpacing.lg,
-        end: AppSpacing.sm,
-      ),
+      contentPadding: chevronRowPadding,
       title: Text(group.name, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: toConfirm > 0
           ? Text(
@@ -194,14 +192,7 @@ class _GroupRow extends ConsumerWidget {
           : subtitle == null
           ? null
           : Text(subtitle),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ?(net == null ? null : BalanceStack(net: net)),
-          const SizedBox(width: AppSpacing.sm),
-          Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
-        ],
-      ),
+      trailing: RowEnd(child: net == null ? null : BalanceStack(net: net)),
       onTap: () => context.push('/groups/${group.id}'),
     );
   }

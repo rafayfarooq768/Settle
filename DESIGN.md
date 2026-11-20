@@ -139,6 +139,10 @@ One primary button per screen. Full-width only at the bottom of forms.
   (`rowAmountStyle`).
 - Expense row: title + "Ali paid Rs 1,000" (muted) on the left; your part on the right as a
   money label.
+- **A chevron means the row opens something** (owner, 2026-11-20). Expense rows and Home group
+  rows end with the money label, 8, then a muted chevron (`RowEnd`, end padding 8 so the
+  chevron sits where the 16 margin was). Rows in the same panel that don't open (payments)
+  keep the chevron's empty space so their amounts line up.
 - Date headers group expenses (Today, Yesterday, 12 Nov).
 
 ### Avatars

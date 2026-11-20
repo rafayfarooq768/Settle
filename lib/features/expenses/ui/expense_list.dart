@@ -5,6 +5,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_theme_extensions.dart';
 import '../../../core/widgets/balance_text.dart';
 import '../../../core/widgets/panel.dart';
+import '../../../core/widgets/row_chevron.dart';
 import '../../../core/widgets/section_label.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../groups/domain/group.dart';
@@ -99,6 +100,7 @@ class ExpenseRow extends StatelessWidget {
     );
     return ListTile(
       minTileHeight: AppSpacing.rowHeight,
+      contentPadding: chevronRowPadding,
       title: Text(
         expense.title,
         maxLines: 1,
@@ -115,12 +117,16 @@ class ExpenseRow extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: settled
-          ? MoneyStack(
-              label: l10n.rowSettledExpense,
-              color: context.extraColors.settled,
-            )
-          : _MyPart(part: myPart(expense, meId)),
+      // The chevron says the row opens the expense (DESIGN.md §6).
+      trailing: RowEnd(
+        opens: onTap != null,
+        child: settled
+            ? MoneyStack(
+                label: l10n.rowSettledExpense,
+                color: context.extraColors.settled,
+              )
+            : _MyPart(part: myPart(expense, meId)),
+      ),
       onTap: onTap,
     );
   }
@@ -172,7 +178,13 @@ class PaymentRow extends StatelessWidget {
         l10n.paymentRowLabel,
         style: theme.textTheme.bodyMedium?.copyWith(color: muted),
       ),
-      trailing: Text(formatRupees(s.amount), style: rowAmountStyle(theme)),
+      contentPadding: chevronRowPadding,
+      // Doesn't open anything, but keeps the chevron's space so its
+      // amount lines up with the expenses above and below.
+      trailing: RowEnd(
+        opens: false,
+        child: Text(formatRupees(s.amount), style: rowAmountStyle(theme)),
+      ),
     );
   }
 }
