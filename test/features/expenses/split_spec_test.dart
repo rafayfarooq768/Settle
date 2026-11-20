@@ -268,12 +268,24 @@ void main() {
         ],
         taxBp: 1000,
         tip: 2000,
-        tipBy: 'b',
+        tipBy: ['b'],
       );
       expect(_shares(byB, 46000), {'a': 33000, 'b': 13000});
       final back =
           SplitSpec.fromJson(SplitMode.itemized, byB.toJson())! as ItemizedSpec;
-      expect(back.tipBy, 'b');
+      expect(back.tipBy, ['b']);
+      // A giver who isn't in the group is skipped instead of failing.
+      const gone = ItemizedSpec(
+        items: [
+          BillLine(name: '', amount: 30000, memberIds: ['a']),
+          BillLine(name: '', amount: 10000, memberIds: ['b']),
+        ],
+        taxBp: 1000,
+        tip: 2000,
+        tipBy: ['z'],
+      );
+      // So the tip falls back to everyone on the bill, equally.
+      expect(_shares(gone, 46000), {'a': 34000, 'b': 12000});
     });
 
     test('problems: no items, an item nobody had, a changed amount', () {

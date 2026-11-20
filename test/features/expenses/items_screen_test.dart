@@ -131,10 +131,29 @@ void main() {
     await tester.tap(find.text(l10n.tipGiverLabel));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Sara').last);
+    await tester.pump();
+    await tester.tap(find.text(l10n.doneButton).last);
     await tester.pumpAndSettle();
     // Ali Rs 100; Sara Rs 200 (next to the Chai item's own Rs 200).
     expect(find.text('Rs 100'), findsOneWidget);
     expect(find.text('Rs 200'), findsNWidgets(2));
+  });
+
+  testWidgets('two people can give the tip', (tester) async {
+    await open(
+      tester,
+      spec: const ItemizedSpec(
+        items: [
+          BillLine(name: 'Chai', amount: 20000, memberIds: ['m1']),
+        ],
+        tip: 10000,
+        tipBy: ['m1', 'm2'],
+      ),
+    );
+    expect(find.text(l10n.paidByTwo('Ali (you)', 'Sara')), findsOneWidget);
+    // Ali Rs 200 + Rs 50, Sara Rs 50.
+    expect(find.text('Rs 250'), findsOneWidget);
+    expect(find.text('Rs 50'), findsOneWidget);
   });
 
   testWidgets('an item can be deleted', (tester) async {

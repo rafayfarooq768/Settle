@@ -95,14 +95,15 @@ class BillItem {
 
 /// Itemized: items → people, plus [extras] (tax + service charge, in
 /// paisa) in proportion to what each person had, plus a [tip]: equally
-/// among everyone who had an item, or all of it on [tipBy] (owner,
-/// 2026-11-20). Returns shares summing to items total + extras + tip.
+/// among everyone who had an item, or equally among [tipBy] (one or more
+/// people, owner 2026-11-20). Returns shares summing to items total +
+/// extras + tip.
 Map<String, int> splitItemized({
   required List<BillItem> items,
   required List<String> order,
   int extras = 0,
   int tip = 0,
-  String? tipBy,
+  Iterable<String> tipBy = const [],
   Iterable<String> payers = const [],
 }) {
   if (items.isEmpty) {
@@ -111,7 +112,7 @@ Map<String, int> splitItemized({
   if (extras < 0 || tip < 0) {
     throw const MoneyException('Tax, service and tip cannot be negative.');
   }
-  if (tipBy != null && !order.contains(tipBy)) {
+  if (tipBy.any((id) => !order.contains(id))) {
     throw const MoneyException('Who gives the tip must be in the group.');
   }
   final stable = payerFirstOrder(members: order, payers: payers);
@@ -142,14 +143,13 @@ Map<String, int> splitItemized({
     add(allocate(total: extras, weights: subtotals, order: stable));
   }
   if (tip > 0) {
+    final givers = tipBy.isEmpty ? subtotals.keys : tipBy;
     add(
-      tipBy != null
-          ? {tipBy: tip}
-          : allocate(
-              total: tip,
-              weights: {for (final id in subtotals.keys) id: 1},
-              order: stable,
-            ),
+      allocate(
+        total: tip,
+        weights: {for (final id in givers) id: 1},
+        order: stable,
+      ),
     );
   }
   return shares;

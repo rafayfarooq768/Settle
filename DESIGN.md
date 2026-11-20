@@ -285,7 +285,8 @@ Rules:
   switch, keeping what it comes to; a % shows its rupees under the label. Both are shared by what each
   person ordered, said in a muted line under the panel. Tip in Rs, its "Rs" in the same end slot
   so the numbers line up; once there's a tip, a "Who gives the tip" row opens a sheet: "Everyone,
-  equally" or one person (owner, 2026-11-20)), then "Who owes what" once there's an item. Above Done:
+  equally" (picks and closes) or tick one or more people and Done; the row then reads "Ali" /
+  "Ali and Sara" / "Ali and 2 others" (owner, 2026-11-20)), then "Who owes what" once there's an item. Above Done:
   "Bill total Rs 4,400" (and "The amount changes from Rs 4,000" if you typed something else).
   An item is added or edited in a sheet: Item name, Price, "Who had it?" chips (nobody ticked for
   a new item, owner 2026-11-20), Save item, and Delete item (owe-red) when editing. The bill total becomes the

@@ -184,9 +184,11 @@ class AppTheme {
           (s) => s.contains(WidgetState.selected) ? AppColors.primary : null,
         ),
         checkmarkColor: AppColors.white,
-        labelStyle: WidgetStateTextStyle.resolveWith(
-          (s) => (text.labelLarge ?? const TextStyle()).copyWith(
-            color: s.contains(WidgetState.selected)
+        // Chips read the label colour as a WidgetStateColor (a
+        // WidgetStateTextStyle is ignored and left the names unreadable).
+        labelStyle: text.labelLarge?.copyWith(
+          color: WidgetStateColor.resolveWith(
+            (s) => s.contains(WidgetState.selected)
                 ? AppColors.white
                 : colorScheme.onSurface,
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_sheet.dart';
+import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/member_avatar.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../groups/domain/group.dart';
@@ -54,53 +55,99 @@ Future<String?> pickPayer(
   );
 }
 
-/// What [pickTipGiver] returns for "Everyone, equally".
-const tipEveryone = '';
-
-/// "Who gives the tip?" sheet: everyone on the bill equally, or one
-/// person. [selected] is null for everyone.
-Future<String?> pickTipGiver(
+/// "Who gives the tip?" sheet. "Everyone, equally" picks and closes
+/// (returns an empty list); otherwise tick one or more people and Done.
+/// [selected] empty = everyone. Null = closed without choosing.
+Future<List<String>?> pickTipGivers(
   BuildContext context, {
   required List<Member> members,
   required String meId,
-  required String? selected,
-}) {
-  final l10n = AppLocalizations.of(context)!;
-  return showAppSheet<String>(
-    context: context,
-    scrollControlled: true,
-    builder: (sheet) => _SheetList(
+  required List<String> selected,
+}) => showAppSheet<List<String>>(
+  context: context,
+  scrollControlled: true,
+  builder: (_) =>
+      _TipGiversSheet(members: members, meId: meId, selected: selected),
+);
+
+class _TipGiversSheet extends StatefulWidget {
+  const _TipGiversSheet({
+    required this.members,
+    required this.meId,
+    required this.selected,
+  });
+
+  final List<Member> members;
+  final String meId;
+  final List<String> selected;
+
+  @override
+  State<_TipGiversSheet> createState() => _TipGiversSheetState();
+}
+
+class _TipGiversSheetState extends State<_TipGiversSheet> {
+  late final Set<String> _ticked = {...widget.selected};
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final everyone = widget.selected.isEmpty;
+    return _SheetList(
       title: l10n.tipGiverTitle,
+      footer: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.screenHorizontal,
+          AppSpacing.sm,
+          AppSpacing.screenHorizontal,
+          AppSpacing.lg,
+        ),
+        child: LoadingButton(
+          label: l10n.doneButton,
+          onPressed: _ticked.isEmpty
+              ? null
+              : () => Navigator.of(context).pop([
+                  for (final m in widget.members)
+                    if (_ticked.contains(m.id)) m.id,
+                ]),
+        ),
+      ),
       children: [
         ListTile(
           minTileHeight: AppSpacing.rowHeight,
           leading: const Icon(Icons.group_outlined),
           title: Text(l10n.tipEveryone),
-          trailing: selected == null ? const Icon(Icons.check) : null,
-          onTap: () => Navigator.of(sheet).pop(tipEveryone),
+          trailing: everyone && _ticked.isEmpty
+              ? const Icon(Icons.check)
+              : null,
+          onTap: () => Navigator.of(context).pop(const <String>[]),
         ),
-        for (final m in members)
-          ListTile(
-            minTileHeight: AppSpacing.rowHeight,
-            leading: MemberAvatar(
+        for (final m in widget.members)
+          CheckboxListTile(
+            controlAffinity: ListTileControlAffinity.trailing,
+            secondary: MemberAvatar(
               name: m.displayName,
               placeholder: m.isPlaceholder,
             ),
-            title: Text(_name(l10n, m, meId)),
-            trailing: m.id == selected ? const Icon(Icons.check) : null,
-            onTap: () => Navigator.of(sheet).pop(m.id),
+            title: Text(_name(l10n, m, widget.meId)),
+            value: _ticked.contains(m.id),
+            onChanged: (on) => setState(
+              () => on == true ? _ticked.add(m.id) : _ticked.remove(m.id),
+            ),
           ),
       ],
-    ),
-  );
+    );
+  }
 }
 
 /// Sheet body: title and a scrollable list.
 class _SheetList extends StatelessWidget {
-  const _SheetList({required this.title, required this.children});
+  const _SheetList({required this.title, required this.children, this.footer});
 
   final String title;
   final List<Widget> children;
+
+  /// Pinned under the list (a Done button).
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +162,7 @@ class _SheetList extends StatelessWidget {
           children: [
             SheetTitle(title),
             Flexible(child: ListView(shrinkWrap: true, children: children)),
+            ?footer,
           ],
         ),
       ),

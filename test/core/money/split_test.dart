@@ -148,17 +148,30 @@ void main() {
 
     test('one person can give the whole tip, even with no item', () {
       expect(
-        splitItemized(items: items, tip: 500, tipBy: 'a', order: ['a', 'b']),
+        splitItemized(items: items, tip: 500, tipBy: ['a'], order: ['a', 'b']),
         {'a': 1500, 'b': 3000},
       );
       expect(
         splitItemized(
           items: items,
           tip: 500,
-          tipBy: 'c',
+          tipBy: ['c'],
           order: ['a', 'b', 'c'],
         ),
         {'a': 1000, 'b': 3000, 'c': 500},
+      );
+    });
+
+    test('two people can share the tip', () {
+      expect(
+        splitItemized(
+          items: items,
+          tip: 501,
+          tipBy: ['b', 'c'],
+          order: ['a', 'b', 'c'],
+        ),
+        // The odd paisa goes to the first in group order.
+        {'a': 1000, 'b': 3251, 'c': 250},
       );
     });
 
@@ -167,7 +180,7 @@ void main() {
         () => splitItemized(
           items: items,
           tip: 500,
-          tipBy: 'z',
+          tipBy: ['z'],
           order: ['a', 'b'],
         ),
         throwsA(isA<MoneyException>()),

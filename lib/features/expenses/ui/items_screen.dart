@@ -70,7 +70,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
         : _rupeeText(widget.args.spec?.serviceRs),
   );
   late final _tip = _controller(_rupeeText(widget.args.spec?.tip));
-  late String? _tipBy = widget.args.spec?.tipBy;
+  late List<String> _tipBy = widget.args.spec?.tipBy ?? const [];
 
   static String _percentText(int? bp) =>
       bp == null || bp == 0 ? '' : formatPercent(bp).replaceAll('%', '');
@@ -124,14 +124,14 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
   }
 
   Future<void> _pickTipGiver(List<Member> members) async {
-    final picked = await pickTipGiver(
+    final picked = await pickTipGivers(
       context,
       members: members,
       meId: widget.args.meId,
       selected: _tipBy,
     );
     if (picked == null || !mounted) return;
-    setState(() => _tipBy = picked == tipEveryone ? null : picked);
+    setState(() => _tipBy = picked);
   }
 
   /// Add (no [index]) or edit an item.
@@ -218,14 +218,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
               _ExtraRow(label: l10n.tipLabel, controller: _tip),
               if (spec.tip > 0)
                 _TipGiverRow(
-                  value: switch (_tipBy) {
-                    final id? when byId[id] != null => memberName(
-                      l10n,
-                      byId[id]!,
-                      widget.args.meId,
-                    ),
-                    _ => l10n.tipEveryone,
-                  },
+                  value: _tipGiversText(l10n, byId),
                   onTap: () => _pickTipGiver(members),
                 ),
             ],
@@ -296,6 +289,20 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
         ],
       ),
     );
+  }
+
+  /// "Everyone, equally", "Ali", "Ali and Sara" or "Ali and 2 others".
+  String _tipGiversText(AppLocalizations l10n, Map<String, Member> byId) {
+    final names = [
+      for (final id in _tipBy)
+        if (byId[id] case final m?) memberName(l10n, m, widget.args.meId),
+    ];
+    return switch (names) {
+      [] => l10n.tipEveryone,
+      [final one] => one,
+      [final a, final b] => l10n.paidByTwo(a, b),
+      [final a, ...final rest] => l10n.paidByMany(a, rest.length),
+    };
   }
 
   /// "Everyone", or the names of who had it.

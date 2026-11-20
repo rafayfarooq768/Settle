@@ -71,9 +71,7 @@ void main() {
             basisPoints: random.nextInt(2500),
           ),
           tip: random.nextInt(50000),
-          tipBy: random.nextBool()
-              ? null
-              : members[random.nextInt(members.length)],
+          tipBy: members.where((_) => random.nextInt(3) == 0).toList(),
           order: members,
           payers: [payer],
         );

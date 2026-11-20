@@ -214,7 +214,7 @@ class BillLine {
 /// Itemized (PLAN.md §4): items → people (a shared item is just an item
 /// several people had), plus tax and service charge (each a percentage
 /// of the items or a rupee amount), shared by what each person had, and a
-/// tip in rupees: equally, or given by one person ([tipBy]). The bill
+/// tip in rupees: equally, or given by the people in [tipBy]. The bill
 /// total becomes the expense amount.
 class ItemizedSpec extends SplitSpec {
   const ItemizedSpec({
@@ -224,7 +224,7 @@ class ItemizedSpec extends SplitSpec {
     this.serviceBp = 0,
     this.serviceRs = 0,
     this.tip = 0,
-    this.tipBy,
+    this.tipBy = const [],
   });
 
   final List<BillLine> items;
@@ -241,9 +241,9 @@ class ItemizedSpec extends SplitSpec {
   /// Paisa.
   final int tip;
 
-  /// The member who gives the whole tip; null = everyone on the bill,
-  /// equally.
-  final String? tipBy;
+  /// Who gives the tip, equally between them; empty = everyone on the
+  /// bill, equally.
+  final List<String> tipBy;
 
   /// Before tax, service and tip.
   int get itemsTotal => items.fold(0, (sum, i) => sum + i.amount);
@@ -286,7 +286,9 @@ class ItemizedSpec extends SplitSpec {
         order: order,
         extras: tax + service,
         tip: tip,
-        tipBy: tip > 0 ? tipBy : null,
+        // Givers no longer in the group (or not loaded yet) are skipped;
+        // with none left, everyone on the bill shares the tip.
+        tipBy: tip > 0 ? tipBy.where(order.contains) : const [],
         payers: payers,
       ),
     );
@@ -337,7 +339,10 @@ class ItemizedSpec extends SplitSpec {
       serviceBp: intOf('serviceBp'),
       serviceRs: intOf('serviceRs'),
       tip: intOf('tip'),
-      tipBy: json['tipBy'] is String ? json['tipBy'] as String : null,
+      tipBy: switch (json['tipBy']) {
+        final String id => [id],
+        final Object? raw => ids(raw) ?? const [],
+      },
     );
   }
 }
