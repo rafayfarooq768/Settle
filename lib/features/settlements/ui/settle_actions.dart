@@ -7,6 +7,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../groups/domain/group.dart';
 import '../../profile/ui/profile_providers.dart';
 import '../domain/settlement.dart';
+import '../../balances/ui/balances_providers.dart';
 import 'payment_sheet.dart';
 import 'remind_sheet.dart';
 import 'settlements_providers.dart';
@@ -94,7 +95,12 @@ class SettleActions {
     () => ref
         .read(settlementRepositoryProvider)
         .confirm(groupId: group.id, actorMemberId: me.id, settlement: s),
-    done: _l10n.paymentConfirmed,
+    done: _settledOr(
+      _l10n.paymentConfirmed,
+      from: s.from,
+      to: s.to,
+      amount: s.amount,
+    ),
   );
 
   /// "Not received" (the person paid) or "Cancel" (the payer).
@@ -105,6 +111,21 @@ class SettleActions {
     done: done,
   );
 
+  /// The success message, or "Shabash, sab settle ho gaya" when this
+  /// payment brings everyone in the group to zero (DESIGN.md §10).
+  String _settledOr(
+    String done, {
+    required String from,
+    required String to,
+    required int amount,
+  }) {
+    final nets = ref.read(groupNetsProvider(group.id)).valueOrNull;
+    if (nets == null) return done;
+    return settlesEveryone(nets, from: from, to: to, amount: amount)
+        ? _l10n.paymentAllSettled
+        : done;
+  }
+
   Future<void> _record({
     required String from,
     required String to,
@@ -112,6 +133,9 @@ class SettleActions {
     required bool confirmed,
     required String done,
   }) async {
+    if (confirmed) {
+      done = _settledOr(done, from: from, to: to, amount: amount);
+    }
     final identity = ref.read(myIdentityProvider);
     if (identity == null) return;
     final repo = ref.read(settlementRepositoryProvider);

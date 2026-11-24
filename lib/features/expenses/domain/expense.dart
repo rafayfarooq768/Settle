@@ -22,6 +22,7 @@ class Expense {
     this.splitInput = const {},
     this.note = '',
     this.deleted = false,
+    this.pendingSync = false,
   });
 
   final String id;
@@ -47,6 +48,10 @@ class Expense {
 
   /// Soft delete: deleted expenses stay for the activity log and Undo.
   final bool deleted;
+
+  /// Saved on this phone but not on the server yet (offline), so the
+  /// rest of the group can't see it yet.
+  final bool pendingSync;
 
   LedgerExpense toLedger() =>
       LedgerExpense(amount: amount, payers: payers, shares: shares);

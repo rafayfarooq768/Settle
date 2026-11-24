@@ -22,9 +22,24 @@ class ExpenseRepository {
       _group(groupId).collection(Col.expenses);
 
   /// Newest first, including deleted ones (needed for Undo and history).
-  Stream<List<Expense>> watch(String groupId) => retryWhenDenied(
-    () => _expenses(groupId).orderBy('date', descending: true).snapshots(),
-  ).map((s) => [for (final d in s.docs) ?expenseFromMap(d.id, d.data())]);
+  /// Metadata changes too, so a row's "Not synced yet" clears once the
+  /// server has it (metadata-only updates cost no reads).
+  Stream<List<Expense>> watch(String groupId) =>
+      retryWhenDenied(
+        () =>
+            _expenses(groupId)
+                .orderBy('date', descending: true)
+                .snapshots(includeMetadataChanges: true),
+      ).map(
+        (s) => [
+          for (final d in s.docs)
+            ?expenseFromMap(
+              d.id,
+              d.data(),
+              pendingSync: d.metadata.hasPendingWrites,
+            ),
+        ],
+      );
 
   /// Returns the new expense id. Throws [MoneyException] if payers or shares
   /// don't sum exactly to the amount.

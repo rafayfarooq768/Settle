@@ -191,7 +191,7 @@ class _GroupRow extends ConsumerWidget {
     return ListTile(
       minTileHeight: AppSizes.groupRowHeight,
       contentPadding: chevronRowPadding,
-      title: Text(group.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+      title: Text(group.name, maxLines: 2, overflow: TextOverflow.ellipsis),
       subtitle: toConfirm > 0
           ? Text(
               l10n.pendingToConfirm(toConfirm),

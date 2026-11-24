@@ -53,7 +53,14 @@ class MemberAvatar extends StatelessWidget {
             ? null
             : Border.all(color: ring!, width: AppSizes.avatarOutline * 2),
       ),
-      child: Text(initials(name), style: textStyle),
+      // Initials are a mark, not reading text: fixed to the circle so a
+      // large font setting doesn't push them out of it. The name beside
+      // the avatar still follows the font setting.
+      child: Text(
+        initials(name),
+        style: textStyle,
+        textScaler: TextScaler.noScaling,
+      ),
     );
   }
 }

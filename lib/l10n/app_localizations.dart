@@ -2235,6 +2235,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not involved'**
   String get monthNotInvolved;
+
+  /// No description provided for @membersAndSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member} other{{count} members}} · Settings'**
+  String membersAndSettings(int count);
+
+  /// No description provided for @notSyncedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced yet'**
+  String get notSyncedYet;
+
+  /// No description provided for @paymentAllSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Shabash, sab settle ho gaya'**
+  String get paymentAllSettled;
 }
 
 class _AppLocalizationsDelegate

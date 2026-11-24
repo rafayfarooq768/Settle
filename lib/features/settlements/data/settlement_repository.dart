@@ -19,12 +19,22 @@ class SettlementRepository {
   CollectionReference<Json> _settlements(String groupId) =>
       _group(groupId).collection(Col.settlements);
 
-  Stream<List<Settlement>> watch(String groupId) => retryWhenDenied(
-    () =>
-        _settlements(groupId)
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-  ).map((s) => [for (final d in s.docs) ?settlementFromMap(d.id, d.data())]);
+  Stream<List<Settlement>> watch(String groupId) =>
+      retryWhenDenied(
+        () =>
+            _settlements(groupId)
+                .orderBy('createdAt', descending: true)
+                .snapshots(includeMetadataChanges: true),
+      ).map(
+        (s) => [
+          for (final d in s.docs)
+            ?settlementFromMap(
+              d.id,
+              d.data(),
+              pendingSync: d.metadata.hasPendingWrites,
+            ),
+        ],
+      );
 
   /// "I paid" → pending until [to] confirms. Or, when [confirmed] is true,
   /// the person paid records it directly.
@@ -120,7 +130,11 @@ class SettlementRepository {
   }
 }
 
-Settlement? settlementFromMap(String id, Json data) {
+Settlement? settlementFromMap(
+  String id,
+  Json data, {
+  bool pendingSync = false,
+}) {
   final amount = data['amount'];
   final status = readEnum(SettlementStatus.values, data['status']);
   if (amount is! int || status == null) return null;
@@ -133,5 +147,6 @@ Settlement? settlementFromMap(String id, Json data) {
     createdBy: readString(data['createdBy']),
     createdAt: readDate(data['createdAt']),
     confirmedAt: readOptionalDate(data['confirmedAt']),
+    pendingSync: pendingSync,
   );
 }

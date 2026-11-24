@@ -73,29 +73,36 @@ class _ActivityList extends StatelessWidget {
       final d = a.createdAt;
       byDay.putIfAbsent(DateTime(d.year, d.month, d.day), () => []).add(a);
     }
-    return ListView(
+    final days = byDay.entries.toList();
+    // One item per day, built only as it scrolls into view.
+    return ListView.builder(
       padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
-      children: [
-        for (final MapEntry(key: day, value: list) in byDay.entries) ...[
-          SectionLabel(dayLabel(l10n, day)),
-          Panel(
-            dividerIndent: avatarRowDividerIndent,
-            children: [
-              for (final a in list)
-                ActivityRow(
-                  activity: a,
-                  members: members,
-                  meId: meId,
-                  onTap: isExpenseActivity(a.type) && a.targetId != null
-                      ? () => context.push(
-                          '/groups/$groupId/expenses/${a.targetId}',
-                        )
-                      : null,
-                ),
-            ],
-          ),
-        ],
-      ],
+      itemCount: days.length,
+      itemBuilder: (context, i) {
+        final MapEntry(key: day, value: list) = days[i];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SectionLabel(dayLabel(l10n, day)),
+            Panel(
+              dividerIndent: avatarRowDividerIndent,
+              children: [
+                for (final a in list)
+                  ActivityRow(
+                    activity: a,
+                    members: members,
+                    meId: meId,
+                    onTap: isExpenseActivity(a.type) && a.targetId != null
+                        ? () => context.push(
+                            '/groups/$groupId/expenses/${a.targetId}',
+                          )
+                        : null,
+                  ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

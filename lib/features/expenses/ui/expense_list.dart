@@ -45,32 +45,65 @@ class ExpenseList extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final names = {for (final m in members) m.id: m.displayName};
     final days = timelineByDay(expenses, settlements, where: where);
-    return ListView(
+    // One item per day, built only as it scrolls into view, so a group
+    // with hundreds of expenses opens fast on a cheap phone.
+    return ListView.builder(
       // Room for the FAB so it never covers the last row.
       padding: const EdgeInsets.only(bottom: AppSpacing.fabClearance),
+      itemCount: days.length,
+      itemBuilder: (context, i) {
+        final (day, list) = days[i];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SectionLabel(dayLabel(l10n, day)),
+            Panel(
+              children: [
+                for (final item in list)
+                  switch (item) {
+                    ExpenseItem(:final expense, :final settled) => ExpenseRow(
+                      expense: expense,
+                      names: names,
+                      meId: meId,
+                      settled: settled,
+                      onTap: onOpen == null ? null : () => onOpen!(expense),
+                    ),
+                    PaymentItem(:final settlement) => PaymentRow(
+                      settlement: settlement,
+                      names: names,
+                      meId: meId,
+                    ),
+                  },
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// The muted line under a row's title. Wraps rather than cutting off an
+/// amount, and says when the row hasn't reached the server yet.
+class _Subtitle extends StatelessWidget {
+  const _Subtitle({
+    required this.text,
+    required this.style,
+    required this.pendingSync,
+  });
+
+  final String text;
+  final TextStyle? style;
+  final bool pendingSync;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!pendingSync) return Text(text, style: style);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final (day, list) in days) ...[
-          SectionLabel(dayLabel(l10n, day)),
-          Panel(
-            children: [
-              for (final item in list)
-                switch (item) {
-                  ExpenseItem(:final expense, :final settled) => ExpenseRow(
-                    expense: expense,
-                    names: names,
-                    meId: meId,
-                    settled: settled,
-                    onTap: onOpen == null ? null : () => onOpen!(expense),
-                  ),
-                  PaymentItem(:final settlement) => PaymentRow(
-                    settlement: settlement,
-                    names: names,
-                    meId: meId,
-                  ),
-                },
-            ],
-          ),
-        ],
+        Text(text, style: style),
+        Text(AppLocalizations.of(context)!.notSyncedYet, style: style),
       ],
     );
   }
@@ -115,11 +148,12 @@ class ExpenseRow extends StatelessWidget {
               )
             : null,
       ),
-      subtitle: Text(
-        _paidLine(l10n),
+      // Carries an amount, so it wraps instead of ending in "…" when the
+      // font is large (PRODUCT.md: never wrong about money).
+      subtitle: _Subtitle(
+        text: _paidLine(l10n),
         style: muted,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        pendingSync: expense.pendingSync,
       ),
       // The chevron says the row opens the expense (DESIGN.md §6).
       trailing: RowEnd(
@@ -178,9 +212,10 @@ class PaymentRow extends StatelessWidget {
     return ListTile(
       minTileHeight: AppSpacing.rowHeight,
       title: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(
-        l10n.paymentRowLabel,
+      subtitle: _Subtitle(
+        text: l10n.paymentRowLabel,
         style: theme.textTheme.bodyMedium?.copyWith(color: muted),
+        pendingSync: s.pendingSync,
       ),
       contentPadding: chevronRowPadding,
       // Doesn't open anything, but keeps the chevron's space so its

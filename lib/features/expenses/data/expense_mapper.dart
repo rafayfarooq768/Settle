@@ -6,7 +6,7 @@ import '../domain/expense_summary.dart';
 
 /// Null if the doc can't be read as money (missing/non-int amounts). Such
 /// docs are skipped rather than crashing the list or the balances.
-Expense? expenseFromMap(String id, Json data) {
+Expense? expenseFromMap(String id, Json data, {bool pendingSync = false}) {
   final amount = data['amount'];
   final payers = readPaisaMap(data['payers']);
   final shares = readPaisaMap(data['shares']);
@@ -25,6 +25,7 @@ Expense? expenseFromMap(String id, Json data) {
     splitInput: readJson(data['splitInput']) ?? const {},
     note: readString(data['note']),
     deleted: readBool(data['deleted']),
+    pendingSync: pendingSync,
   );
 }
 

@@ -1070,5 +1070,15 @@
     }
   },
   "monthYourShare": "Your share",
-  "monthNotInvolved": "Not involved"
+  "monthNotInvolved": "Not involved",
+  "membersAndSettings": "{count, plural, =1{1 member} other{{count} members}} · Settings",
+  "@membersAndSettings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notSyncedYet": "Not synced yet",
+  "paymentAllSettled": "Shabash, sab settle ho gaya"
 }

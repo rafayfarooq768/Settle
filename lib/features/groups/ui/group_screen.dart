@@ -106,9 +106,12 @@ class _GroupTabs extends StatelessWidget {
           _Header(group: group),
           const SizedBox(height: AppSpacing.sm),
           TabBar(
+            // Three equal tabs; labels shrink to fit rather than being cut
+            // off when the phone's font size is large.
+            labelPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
             tabs: [
-              Tab(text: l10n.tabExpenses),
-              Tab(text: l10n.tabBalances),
+              Tab(child: _TabText(l10n.tabExpenses)),
+              Tab(child: _TabText(l10n.tabBalances)),
               _SettleUpTabLabel(groupId: group.id, meId: me.id),
             ],
           ),
@@ -167,9 +170,13 @@ class _Header extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    l10n.membersCount(members.length),
-                    style: theme.textTheme.bodyMedium?.copyWith(color: muted),
+                  // Says where it goes: the only way into Group settings
+                  // (no settings icon in the app bar).
+                  Flexible(
+                    child: Text(
+                      l10n.membersAndSettings(members.length),
+                      style: theme.textTheme.bodyMedium?.copyWith(color: muted),
+                    ),
                   ),
                   Icon(Icons.chevron_right, color: muted),
                 ],
@@ -281,8 +288,19 @@ class _SettleUpTabLabel extends ConsumerWidget {
       child: Badge.count(
         count: count,
         isLabelVisible: count > 0,
-        child: Text(l10n.tabSettleUp),
+        child: _TabText(l10n.tabSettleUp),
       ),
     );
   }
+}
+
+/// A tab label that shrinks to fit its tab instead of being clipped.
+class _TabText extends StatelessWidget {
+  const _TabText(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) =>
+      FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1));
 }

@@ -15,6 +15,7 @@ class Settlement {
     required this.createdBy,
     required this.createdAt,
     this.confirmedAt,
+    this.pendingSync = false,
   });
 
   final String id;
@@ -31,6 +32,9 @@ class Settlement {
   final String createdBy;
   final DateTime createdAt;
   final DateTime? confirmedAt;
+
+  /// Saved on this phone but not on the server yet (offline).
+  final bool pendingSync;
 
   bool get isConfirmed => status == SettlementStatus.confirmed;
 

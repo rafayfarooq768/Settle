@@ -1299,4 +1299,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthNotInvolved => 'Not involved';
+
+  @override
+  String membersAndSettings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0 · Settings';
+  }
+
+  @override
+  String get notSyncedYet => 'Not synced yet';
+
+  @override
+  String get paymentAllSettled => 'Shabash, sab settle ho gaya';
 }

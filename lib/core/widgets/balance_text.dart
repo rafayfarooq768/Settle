@@ -42,22 +42,29 @@ class MoneyStack extends StatelessWidget {
         style: theme.textTheme.bodyMedium?.copyWith(color: color),
       );
     }
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: color,
-            fontWeight: FontWeight.w500,
+    // A list row gives its end a fixed height; at a very large font size
+    // the two lines shrink together to fit it rather than the amount being
+    // cut off at the bottom.
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: AlignmentDirectional.centerEnd,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-        Text(
-          formatRupees(amount!.abs()),
-          style: rowAmountStyle(theme, color: color),
-        ),
-      ],
+          Text(
+            formatRupees(amount!.abs()),
+            style: rowAmountStyle(theme, color: color),
+          ),
+        ],
+      ),
     );
   }
 }

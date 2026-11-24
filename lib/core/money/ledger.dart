@@ -56,6 +56,21 @@ class LedgerSettlement {
 /// Positive = is owed, negative = owes. Always sums to 0 across the group.
 ///
 /// [members] seeds everyone at 0 so people with no activity still appear.
+/// True when a confirmed payment of [amount] from [from] to [to] brings
+/// every net in [nets] to zero: the group is fully settled.
+bool settlesEveryone(
+  Map<String, int> nets, {
+  required String from,
+  required String to,
+  required int amount,
+}) {
+  for (final MapEntry(key: id, value: net) in nets.entries) {
+    final after = net + (id == from ? amount : 0) - (id == to ? amount : 0);
+    if (after != 0) return false;
+  }
+  return nets.containsKey(from) && nets.containsKey(to);
+}
+
 Map<String, int> netBalances({
   required Iterable<LedgerExpense> expenses,
   Iterable<LedgerSettlement> settlements = const [],
