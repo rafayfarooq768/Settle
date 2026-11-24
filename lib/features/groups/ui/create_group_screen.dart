@@ -84,6 +84,9 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               labelText: l10n.groupNameLabel,
+              // Autofocused: the label sits at the top from the first
+              // frame instead of moving up once focus lands (DESIGN.md §6).
+              floatingLabelBehavior: FloatingLabelBehavior.always,
               errorText: _nameError,
               counterText: '',
             ),

@@ -28,8 +28,14 @@ class ActivityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final entries = ref.watch(activityProvider(groupId));
-    final members = ref.watch(membersProvider(groupId)).valueOrNull ?? [];
+    // Names come from the members, so wait for both: a sentence never
+    // starts as "Someone added..." and then changes.
+    final names = ref.watch(membersProvider(groupId));
+    final members = names.valueOrNull ?? [];
+    final log = ref.watch(activityProvider(groupId));
+    final entries = names.hasValue || names.hasError
+        ? log
+        : const AsyncLoading<List<Activity>>();
     final me = ref.watch(myMemberProvider(groupId)).valueOrNull;
 
     return Scaffold(

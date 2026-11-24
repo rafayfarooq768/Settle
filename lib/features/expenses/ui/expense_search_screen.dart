@@ -70,8 +70,8 @@ class _ExpenseSearchScreenState extends ConsumerState<ExpenseSearchScreen> {
     final l10n = AppLocalizations.of(context)!;
     final me = ref.watch(myMemberProvider(widget.groupId)).valueOrNull;
     final members = ref.watch(membersProvider(widget.groupId)).valueOrNull;
-    final expenses =
-        ref.watch(expensesProvider(widget.groupId)).valueOrNull ?? const [];
+    final loaded = ref.watch(expensesProvider(widget.groupId));
+    final expenses = loaded.valueOrNull ?? const [];
     final settlements =
         ref.watch(settlementsProvider(widget.groupId)).valueOrNull ?? const [];
     final months = expenseMonths(expenses);
@@ -162,7 +162,7 @@ class _ExpenseSearchScreenState extends ConsumerState<ExpenseSearchScreen> {
             ),
           ),
           Expanded(
-            child: members == null || me == null
+            child: members == null || me == null || !loaded.hasValue
                 ? const Center(child: CircularProgressIndicator())
                 : any
                 ? ExpenseList(

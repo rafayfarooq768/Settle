@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/widgets/keyboard_space.dart';
 import 'features/profile/ui/profile_providers.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
@@ -30,6 +31,9 @@ class SettleApp extends ConsumerWidget {
       localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: router,
+      // Room for the keyboard as soon as a field is focused, so buttons
+      // above it don't hide and then jump (KeyboardSpace).
+      builder: (context, child) => KeyboardSpace(child: child!),
     );
   }
 }

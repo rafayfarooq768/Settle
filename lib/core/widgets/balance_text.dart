@@ -171,7 +171,10 @@ class BalanceHero extends StatelessWidget {
     this.settledText,
   });
 
-  final int net;
+  /// Null while the balance is still loading: the space is kept, empty,
+  /// so nothing jumps when it arrives. Never shown as 0 ("settled") or as
+  /// a part of the total: a wrong balance is worse than none for a moment.
+  final int? net;
   final bool large;
 
   /// Defaults to "Your balance" / "All settled".
@@ -189,6 +192,19 @@ class BalanceHero extends StatelessWidget {
     final labelStyle = theme.textTheme.bodyLarge?.copyWith(
       fontWeight: FontWeight.w500,
     );
+    final net = this.net;
+    if (net == null) {
+      // The height of the amount layout, invisible and silent.
+      return ExcludeSemantics(
+        child: Visibility(
+          visible: false,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          child: BalanceHero(net: 1, large: large),
+        ),
+      );
+    }
     if (net == 0) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,

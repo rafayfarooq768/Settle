@@ -34,6 +34,16 @@ class SettingsScreen extends ConsumerWidget {
     final user = ref.watch(userChangesProvider).valueOrNull;
     final auth = ref.read(authRepositoryProvider);
     final isDark = theme.brightness == Brightness.dark;
+    // Wait for the profile (instant once cached), so the phone row never
+    // says "Not added" and the payment methods never appear one by one
+    // for someone who has them.
+    final profile = ref.watch(myProfileProvider);
+    if (!profile.hasValue && !profile.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.settingsTitle)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),

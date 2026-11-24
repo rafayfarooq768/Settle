@@ -181,6 +181,19 @@ class GroupRepository {
     await batch.commit(); // must reach the server
   }
 
+  /// Downloads the group and its members into the phone's cache, so
+  /// "Which one are you?" opens with every name already there. Called
+  /// right after [join], while the Join button is still spinning: an empty
+  /// list for a moment could make someone tap "I'm not listed" and join
+  /// twice instead of claiming their name.
+  Future<void> preloadGroup(String groupId) async {
+    const server = GetOptions(source: Source.server);
+    await Future.wait([
+      _group(groupId).get(server),
+      _members(groupId).get(server),
+    ]);
+  }
+
   /// "That's me": takes over a placeholder and its history.
   Future<void> claimPlaceholder({
     required String groupId,

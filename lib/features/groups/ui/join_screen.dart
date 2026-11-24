@@ -59,6 +59,9 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
         return;
       }
       await repo.join(groupId: groupId, code: code, uid: me.uid);
+      // Keep spinning until the names are here, so the next screen opens
+      // complete instead of filling in.
+      await repo.preloadGroup(groupId);
       if (mounted) context.pushReplacement('/groups/$groupId');
     } catch (e) {
       if (mounted) setState(() => _error = errorText(l10n, e));
@@ -87,6 +90,11 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
             decoration: InputDecoration(
               labelText: l10n.joinCodeLabel,
               hintText: l10n.joinCodeHint,
+              // The example code is shown from the first frame. With the
+              // label floating only on focus, it appeared about a second
+              // late: after the page slid in, focus landed and the label
+              // moved up (owner, 2026-11-24).
+              floatingLabelBehavior: FloatingLabelBehavior.always,
               errorText: _codeError,
             ),
           ),

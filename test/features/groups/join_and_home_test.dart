@@ -63,4 +63,24 @@ void main() {
       findsOneWidget,
     );
   });
+
+  // Owner, 2026-11-24: the example code took a second to appear.
+  testWidgets('Join: the example code shows on the first frame', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(const JoinScreen(), [
+        myIdentityProvider.overrideWithValue(
+          const MyIdentity(uid: 'u1', name: 'Ali'),
+        ),
+      ]),
+    );
+    final hint = find.text(l10n.joinCodeHint);
+    expect(hint, findsOneWidget);
+    // Not faded out, waiting for focus and the label animation.
+    final fade = tester.widgetList<AnimatedOpacity>(
+      find.ancestor(of: hint, matching: find.byType(AnimatedOpacity)),
+    );
+    expect(fade.every((o) => o.opacity == 1), isTrue);
+  });
 }

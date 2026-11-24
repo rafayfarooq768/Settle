@@ -84,6 +84,14 @@ class _HomeBody extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final sorted = [...groups]
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    // Show Home once, complete: not a total that fills in group by group
+    // with rows growing their balances one after another. Cached data is
+    // ready at once; only a first start waits here.
+    final ready = groups.every((g) {
+      final net = ref.watch(myGroupNetProvider(g.id));
+      return net.hasValue || net.hasError;
+    });
+    if (!ready) return const Center(child: CircularProgressIndicator());
     return ListView(
       padding: const EdgeInsets.only(bottom: AppSpacing.xl),
       children: [
@@ -116,11 +124,17 @@ class _OverallPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    var owe = 0, owed = 0;
+    // Unknown (null) if any group's balance is: a total missing a group
+    // would be a wrong number, not a smaller one.
+    int? owe = 0, owed = 0;
     for (final g in groups) {
-      final net = ref.watch(myGroupNetProvider(g.id)).valueOrNull ?? 0;
-      if (net < 0) owe -= net;
-      if (net > 0) owed += net;
+      final net = ref.watch(myGroupNetProvider(g.id)).valueOrNull;
+      if (net == null) {
+        owe = owed = null;
+        break;
+      }
+      if (net < 0) owe = owe! - net;
+      if (net > 0) owed = owed! + net;
     }
     final muted = theme.textTheme.bodyMedium?.copyWith(
       color: theme.colorScheme.onSurfaceVariant,
@@ -137,11 +151,11 @@ class _OverallPanel extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BalanceHero(
-                    net: owed - owe,
+                    net: owe == null || owed == null ? null : owed - owe,
                     large: false,
                     settledText: l10n.balanceAllSettled,
                   ),
-                  if (owe > 0 && owed > 0) ...[
+                  if (owe != null && owed != null && owe > 0 && owed > 0) ...[
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       l10n.balanceBothLine(

@@ -87,6 +87,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               labelText: l10n.currentPasswordLabel,
+              // Autofocused: the label sits at the top from the first
+              // frame instead of moving up once focus lands (DESIGN.md §6).
+              floatingLabelBehavior: FloatingLabelBehavior.always,
               errorText: _currentError,
             ),
           ),

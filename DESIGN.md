@@ -125,6 +125,9 @@ One primary button per screen. Full-width only at the bottom of forms.
 
 ### Inputs
 - `OutlinedInputBorder`, radius 8, label above or floating — pick one and use it everywhere (floating).
+  A field that gets the cursor when its screen opens (group name, join code, a sheet's one
+  field) keeps its label at the top from the start, so its hint shows at once instead of
+  about a second later (owner, 2026-11-24).
 - Amount input (`AmountField`, owner 2026-11-20): big centred number (headlineLarge) with a muted `Rs`,
   no box, underline that turns teal while focused, thousand separators as you type, autofocus.
 - Pickers (`SelectField`): look like the text fields (outlined, floating label), value inside, ▾ at
@@ -195,6 +198,13 @@ One primary button per screen. Full-width only at the bottom of forms.
 - The keyboard opens only when you tap a field, or with a new form's autofocus. Closing a
   sheet, dialog, date picker or screen never brings it back (owner, 2026-11-20;
   `KeyboardStaysClosedObserver` on the router).
+- When a field gets the cursor, buttons above the keyboard move up at once, not after the
+  keyboard has finished opening (owner, 2026-11-24; `KeyboardSpace`: Samsung's keyboard
+  reports its height late, so the app reserves the last known height straight away).
+- **While loading, never a wrong state** (owner, 2026-11-24): no "settled", no part of a
+  total, no empty list that is only late. The screen waits in one place (the balance keeps
+  its space, or one progress indicator), then shows everything at once. Joining loads the
+  group's names before the group opens.
 
 ### Whole-screen layout
 Forms and single-purpose screens (sign in, sign up, reset, create group, join, change

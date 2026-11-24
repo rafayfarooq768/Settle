@@ -204,6 +204,11 @@ class _NameField extends StatelessWidget {
           textCapitalization: TextCapitalization.words,
           decoration: InputDecoration(
             labelText: l10n.paymentMethodNameLabel,
+            // Autofocused when adding: the label sits at the top from the
+            // first frame instead of moving up once focus lands.
+            floatingLabelBehavior: autofocus
+                ? FloatingLabelBehavior.always
+                : null,
             helperText: l10n.paymentMethodNameHelper,
             errorText: error,
             counterText: '',

@@ -106,6 +106,9 @@ class _TextInputSheetState extends State<_TextInputSheet> {
             onSubmitted: (_) => _submit(),
             decoration: InputDecoration(
               labelText: widget.label,
+              // Autofocused: the label sits at the top from the first
+              // frame instead of moving up once focus lands (DESIGN.md §6).
+              floatingLabelBehavior: FloatingLabelBehavior.always,
               helperText: widget.helper,
               errorText: _error,
               counterText: '',

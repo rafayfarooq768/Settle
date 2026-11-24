@@ -110,6 +110,7 @@ Future<GoRouter> pumpSettle(
   required FakeFirebaseFirestore db,
   required FakeAuth auth,
   String? location,
+  List<Override> overrides = const [],
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 3;
@@ -120,6 +121,7 @@ Future<GoRouter> pumpSettle(
       overrides: [
         firestoreProvider.overrideWithValue(db),
         authRepositoryProvider.overrideWithValue(auth),
+        ...overrides,
       ],
       child: const SettleApp(),
     ),
@@ -155,3 +157,6 @@ Future<void> tapAndSettle(WidgetTester tester, Finder finder) async {
 /// for ever; use this to seed or read data from inside a widget test.
 Future<T> real<T>(WidgetTester tester, Future<T> Function() body) async =>
     (await tester.runAsync(body)) as T;
+
+/// A stream that never delivers: data still loading, as on a slow network.
+Stream<T> neverLoads<T>() => StreamController<T>().stream;

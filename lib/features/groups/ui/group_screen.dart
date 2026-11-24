@@ -140,7 +140,8 @@ class _Header extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
-    final net = ref.watch(myGroupNetProvider(group.id)).valueOrNull ?? 0;
+    // Null until expenses, payments and members have all loaded.
+    final net = ref.watch(myGroupNetProvider(group.id)).valueOrNull;
     final members = (ref.watch(membersProvider(group.id)).valueOrNull ?? [])
         .where((m) => m.active)
         .toList();
