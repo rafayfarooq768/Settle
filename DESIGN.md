@@ -149,9 +149,11 @@ One primary button per screen. Full-width only at the bottom of forms.
   keep the chevron's empty space so their amounts line up.
 - Date headers group expenses (Today, Yesterday, 12 Nov).
 - **Large font sizes** (critique 2026-11-24): a line that carries an amount never ends in
-  "…"; it wraps. Names may shorten after two lines. The money label shrinks to fit its row
-  rather than losing the amount, tab labels shrink to fit their tab, and avatar initials
-  keep their size (the name beside them scales). Widget tests run rows at font size 2.0.
+  "…"; it wraps. Names may shorten after two lines. The money label takes at most 30% of
+  the screen width (`RowEnd.maxWidthShare`) and shrinks to fit its row rather than losing
+  the amount, so names keep room for whole words. Tab labels shrink to fit their tab, and
+  avatar initials keep their size (the name beside them scales). Checked on the phone at
+  font size 1.3 and 2.0 (2026-11-24); widget tests run rows at 2.0.
 - **Not synced yet** (critique 2026-11-24): an expense or payment saved offline shows a
   muted "Not synced yet" line under its row until the server has it.
 

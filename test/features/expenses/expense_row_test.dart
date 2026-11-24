@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:settle/core/theme/app_theme.dart';
 import 'package:settle/core/widgets/member_avatar.dart';
+import 'package:settle/core/widgets/row_chevron.dart';
 import 'package:settle/features/expenses/domain/expense.dart';
 import 'package:settle/features/expenses/ui/expense_list.dart';
 import 'package:settle/l10n/app_localizations.dart';
@@ -92,5 +93,20 @@ void main() {
     final initials = tester.getSize(find.text('RF'));
     expect(initials.width, lessThan(28));
     expect(initials.height, lessThan(28));
+  });
+
+  // Phone check 2026-11-24: at font size 2.0 the money label took so much
+  // width that the group name broke mid-word ("Shawarm / a Dinner").
+  testWidgets('the money label keeps to 30% of the width at a large font', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      ExpenseRow(expense: dinner(), names: const {}, meId: 'me', onTap: () {}),
+      scale: 2,
+    );
+    final label = tester.getSize(find.byType(FittedBox).first);
+    expect(label.width, lessThanOrEqualTo(360 * RowEnd.maxWidthShare));
+    expect(tester.takeException(), isNull);
   });
 }

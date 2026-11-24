@@ -20,11 +20,22 @@ class RowEnd extends StatelessWidget {
   final Widget? child;
   final bool opens;
 
+  /// The money label never takes more than this share of the screen
+  /// width, so at a large font size the name keeps room for whole words
+  /// and the label shrinks to fit instead ([MoneyStack] scales down).
+  static const maxWidthShare = 0.3;
+
   @override
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      ?child,
+      if (child != null)
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.sizeOf(context).width * maxWidthShare,
+          ),
+          child: child,
+        ),
       const SizedBox(width: AppSpacing.sm),
       opens
           ? Icon(
