@@ -10,7 +10,8 @@ import 'package:material_ui/material_ui.dart';
 /// Save) sits behind it, then jumps up about 0.3 s later.
 ///
 /// So when focus lands on a text field while no keyboard is showing, this
-/// reports the keyboard's last known height straight away, through the
+/// reports the keyboard's last known height straight away (and when focus
+/// leaves the field, no keyboard at once, so buttons come down with it), through the
 /// same [MediaQueryData.viewInsets] every Scaffold and sheet already uses.
 /// The real height replaces it as soon as the keyboard reports it. If no
 /// keyboard comes (e.g. a hardware keyboard), the space goes after [wait].
@@ -34,7 +35,9 @@ class KeyboardSpace extends StatefulWidget {
 }
 
 class _KeyboardSpaceState extends State<KeyboardSpace> {
-  bool _opening = false;
+  /// The height to report instead of the real one while the keyboard is
+  /// on its way up (the last known height) or down (0). Null: the real one.
+  double? _forced;
   bool _keyboardUp = false;
   double _peak = 0;
   Timer? _timer;
@@ -57,14 +60,24 @@ class _KeyboardSpaceState extends State<KeyboardSpace> {
     final onTextField =
         context != null &&
         context.findAncestorStateOfType<EditableTextState>() != null;
-    final opening = onTextField && !_keyboardUp && KeyboardSpace.lastHeight > 0;
+    double? forced;
+    if (onTextField && !_keyboardUp && KeyboardSpace.lastHeight > 0) {
+      forced = KeyboardSpace.lastHeight; // opening
+    } else if (!onTextField) {
+      // Closing: give the room back now, not when the keyboard is gone.
+      forced = _keyboardUp ? 0 : null;
+    } else if (onTextField && _forced == 0) {
+      forced = null; // back on a field before it closed: the real height
+    } else {
+      forced = _forced;
+    }
     _timer?.cancel();
-    if (opening) {
+    if (forced != null) {
       _timer = Timer(KeyboardSpace.wait, () {
-        if (mounted) setState(() => _opening = false);
+        if (mounted) setState(() => _forced = null);
       });
     }
-    if (opening != _opening && mounted) setState(() => _opening = opening);
+    if (forced != _forced && mounted) setState(() => _forced = forced);
   }
 
   @override
@@ -81,26 +94,41 @@ class _KeyboardSpaceState extends State<KeyboardSpace> {
       KeyboardSpace.lastHeight = _peak;
       _peak = 0;
     }
-    if (_opening && real >= KeyboardSpace.lastHeight) {
-      // The keyboard is fully up: its own height takes over.
-      _opening = false;
+    final forced = _forced;
+    final done = forced == null
+        ? false
+        : forced == 0
+        ? real ==
+              0 // fully closed
+        : real >= forced; // fully open
+    if (done) {
+      _forced = null;
       _timer?.cancel();
     }
-    if (!_opening) return widget.child;
 
-    // Never less room than the keyboard already asks for.
-    final height = real > KeyboardSpace.lastHeight
+    // Opening never gives less room than the keyboard already asks for.
+    final height = _forced == null
         ? real
-        : KeyboardSpace.lastHeight;
+        : _forced == 0
+        ? 0.0
+        : (real > _forced! ? real : _forced!);
+    // Always the same widgets above the app, whatever the height: swapping
+    // them would rebuild every screen and drop open sheets (bug filmed by
+    // the owner 2026-11-24: Add item's Save did nothing).
     return MediaQuery(
-      data: data.copyWith(
-        viewInsets: data.viewInsets.copyWith(bottom: height),
-        // As Android does with a real keyboard: the keyboard covers the
-        // navigation bar, so that padding goes.
-        padding: data.padding.copyWith(
-          bottom: (data.viewPadding.bottom - height).clamp(0, double.infinity),
-        ),
-      ),
+      data: height == real
+          ? data
+          : data.copyWith(
+              viewInsets: data.viewInsets.copyWith(bottom: height),
+              // As Android does: an open keyboard covers the navigation
+              // bar, so that padding goes while it's up.
+              padding: data.padding.copyWith(
+                bottom: (data.viewPadding.bottom - height).clamp(
+                  0,
+                  double.infinity,
+                ),
+              ),
+            ),
       child: widget.child,
     );
   }

@@ -99,4 +99,33 @@ void main() {
     await tester.pump();
     expect(seen, 300);
   });
+
+  // Owner, 2026-11-24: the button stayed up a moment after the keyboard
+  // started closing.
+  testWidgets('closing gives the room back at once', (tester) async {
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    await pump(tester);
+    await tester.tap(find.byType(TextField));
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+    await tester.pump();
+    expect(seen, 300);
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pump(); // the keyboard still reports its full height
+    expect(seen, 0);
+    tester.view.viewInsets = FakeViewPadding.zero;
+    await tester.pump();
+    expect(seen, 0);
+  });
+
+  testWidgets('screens under it keep their state', (tester) async {
+    KeyboardSpace.lastHeight = 300;
+    await pump(tester);
+    final before = tester.state(find.byType(Scaffold));
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+    expect(seen, 300);
+    expect(tester.state(find.byType(Scaffold)), same(before));
+  });
 }
