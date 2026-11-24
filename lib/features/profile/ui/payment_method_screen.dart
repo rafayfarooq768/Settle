@@ -16,15 +16,18 @@ import 'profile_providers.dart';
 
 /// Saves [methods] on your profile and your member doc in every group, so
 /// group-mates see them at settle-up (PLAN.md §5).
-Future<void> saveMyPaymentMethods(
+/// Saves [methods] on your profile and every member doc. Returns a save
+/// that keeps working after the screen closes (Undo runs from the
+/// SnackBar, when this screen's `ref` is already gone).
+Future<void> Function(List<PaymentMethod> methods) paymentMethodSaver(
   WidgetRef ref,
-  List<PaymentMethod> methods,
-) async {
+) {
   final uid = ref.read(myIdentityProvider)?.uid;
-  if (uid == null) return;
-  await ref
-      .read(groupRepositoryProvider)
-      .saveMyProfile(uid: uid, paymentMethods: methods);
+  final repo = ref.read(groupRepositoryProvider);
+  return (methods) async {
+    if (uid == null) return;
+    await repo.saveMyProfile(uid: uid, paymentMethods: methods);
+  };
 }
 
 /// Add or edit one payment method (PLAN.md §5): name with suggestions,
@@ -100,20 +103,19 @@ class _PaymentMethodScreenState extends ConsumerState<PaymentMethodScreen> {
     final l10n = AppLocalizations.of(context)!;
     final original = _original!;
     final before = _current;
+    final save = paymentMethodSaver(ref);
     _write(
       removeMethod(before, original.id),
       l10n.paymentMethodDeleted,
-      undo: () => saveMyPaymentMethods(ref, before),
+      undo: () => save(before),
     );
   }
 
   void _write(List<PaymentMethod> methods, String done, {VoidCallback? undo}) {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
-    saveMyPaymentMethods(
-      ref,
-      methods,
-    ).catchError((Object e) => messenger.showMessage(errorText(l10n, e)));
+    paymentMethodSaver(ref)(methods)
+        .catchError((Object e) => messenger.showMessage(errorText(l10n, e)));
     messenger.showMessage(
       done,
       undoLabel: undo == null ? null : l10n.undoButton,

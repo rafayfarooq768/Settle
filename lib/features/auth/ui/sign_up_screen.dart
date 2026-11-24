@@ -126,8 +126,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               onPressed: busy ? null : _signUpWithEmail,
             ),
             const SizedBox(height: AppSpacing.sm),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            // Wrap, so a large font size moves "Sign in" to its own line.
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(
                   l10n.signInPrompt,

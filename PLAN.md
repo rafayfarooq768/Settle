@@ -293,7 +293,15 @@ See DESIGN.md for how each one should look.
 - Unit tests for every money function, including all §4 examples and random property tests
   (shares sum to total; group nets sum to 0; simplify output settles everyone).
 - Widget tests for add-expense validation.
-- Manual test on a low-end Android phone with slow/offline network.
+- Saving tests (`test/data/`, 2026-11-24): every repository against an in-memory Firestore
+  (`fake_cloud_firestore`, a free test-only package that never ships in the app), plus the
+  §2 chai scene end to end through the real providers. They check what is saved, not who
+  may save it (that is the rules tests' job).
+- Screen tests (`test/screens/`): the real app and router with a fake sign-in
+  (`test/helpers/test_app.dart`), tapping through sign in, groups, joining, settle up,
+  settings and payment methods.
+- Manual test on a low-end Android phone with slow/offline network, and one two-phone test
+  (join, claim, pay, confirm) before sharing a release.
 
 ---
 

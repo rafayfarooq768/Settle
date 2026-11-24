@@ -77,6 +77,9 @@ class SettleLogo extends StatelessWidget {
             children: [
               Text(
                 _name,
+                // Part of the logo, sized from T (BRAND.md §2): it must not
+                // grow with the phone's font size, or it runs off the screen.
+                textScaler: TextScaler.noScaling,
                 style: TextStyle(
                   fontFamily: _brandFont,
                   fontWeight: FontWeight.w700,
@@ -90,6 +93,7 @@ class SettleLogo extends StatelessWidget {
                 SizedBox(height: 0.1 * t),
                 Text(
                   _tagline,
+                  textScaler: TextScaler.noScaling,
                   style: TextStyle(
                     fontFamily: _brandFont,
                     fontWeight: FontWeight.w600,

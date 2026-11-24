@@ -40,7 +40,13 @@ class GoogleSignInButton extends StatelessWidget {
                   excludeFromSemantics: true,
                 ),
                 const SizedBox(width: AppSpacing.md),
-                Text(l10n.signInWithGoogle),
+                // Wraps at a large font size instead of overflowing.
+                Flexible(
+                  child: Text(
+                    l10n.signInWithGoogle,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
             ),
     );
