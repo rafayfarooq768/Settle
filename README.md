@@ -46,8 +46,8 @@ Settle isn't on the Play Store. You install it from this page:
 1. On your Android phone, open the
    [latest release](https://github.com/rafayfarooq768/Settle/releases/latest).
 2. Under **Assets**, download the APK:
-   - `app-arm64-v8a-release.apk` for almost every phone from the last few years.
-   - `app-armeabi-v7a-release.apk` if that one says "App not installed" (older phones).
+   - `Settle-<version>.apk` for almost every phone from the last few years.
+   - `Settle-<version>-older-phones.apk` if that one says "App not installed".
 3. Open the downloaded file and tap **Install**.
    - If Android asks, allow your browser (or WhatsApp) to **install unknown apps**.
    - If Play Protect warns about an unknown app, tap **More details → Install anyway**.
