@@ -151,7 +151,7 @@ One primary button per screen. Full-width only at the bottom of forms.
 - **Large font sizes** (critique 2026-11-24): a line that carries an amount never ends in
   "…"; it wraps. Names may shorten after two lines. The money label shrinks to fit its row
   rather than losing the amount, tab labels shrink to fit their tab, and avatar initials
-  keep their size (the name beside them scales). Checked at font size 1.3 and 2.0.
+  keep their size (the name beside them scales). Widget tests run rows at font size 2.0.
 - **Not synced yet** (critique 2026-11-24): an expense or payment saved offline shows a
   muted "Not synced yet" line under its row until the server has it.
 
@@ -311,10 +311,10 @@ Rules:
   "You pay Ali" → **I paid**; "Ali pays you" → **Record payment**, **Remind**.
   A pending "I paid" sits in that person's row and replaces its actions: Ali's row shows
   "Says they paid Rs 100" → **Confirm**, **Not received**; your row to Ali shows
-  "Rs 100 sent, waiting for Ali to confirm" → **Cancel payment**.
-  When a confirmed payment brings everyone in the group to zero, its SnackBar says
-  "Shabash, sab settle ho gaya" instead of "Payment recorded" (the moment §10 names). When it's refused or
-  cancelled the row goes back to its usual actions. A pending payment with no matching row
+  "Rs 100 sent, waiting for Ali to confirm" → **Cancel payment**. When it's refused or
+  cancelled the row goes back to its usual actions. When a confirmed payment brings
+  everyone in the group to zero, its SnackBar says "Shabash, sab settle ho gaya" instead of
+  "Payment recorded" (the moment §10 names). A pending payment with no matching row
   gets a row of its own. A count badge on the Settle up tab and a teal "1 payment to confirm"
   line on the Home group row are the in-app notices (no push).
 - I paid / Record open a sheet: title "Pay Ali", the money line it settles, the amount
